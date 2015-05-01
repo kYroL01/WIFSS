@@ -14,8 +14,10 @@ void* command_handler(void* data)
 		if(str_beginwith(buffer, "STOP")) {
 			broadcast(SID, "[WIFSS] Le serveur va être arrêté.\n");
 			close_all_connections();
-			for(i=0;i<MAX_CLIENTS;i++) 
+			for(i=0; i<MAX_CLIENTS; i++)
+			{
 				pthread_cancel(threads[i]);
+			}
 			
 			running = 0;
 		}
