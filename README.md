@@ -1,2 +1,2 @@
 # WIFSS
-WIFSS is not a file sharing server
+WIFSS Is not a File Sharing Server
