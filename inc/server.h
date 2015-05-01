@@ -15,17 +15,18 @@
 #define MAX_CLIENTS	4
 #define FREE 		1
 #define TAKEN		2
-#define SID			-1
+#define SID		-1
 
 #define RUNNING		1
 #define	STOPPING	2
+
 
 struct client_t
 {
 	struct sockaddr_in addr;
 	int sock;
-	unsigned int id;
 	int status;
+	unsigned int id;
 };
 
 struct client_t g_clients[MAX_CLIENTS];
@@ -40,7 +41,6 @@ void 	close_all_connections();
 int 	process_command(const char*, int);
 void* 	command_handler(void* data);
 void* 	on_connection(void *data);
-int		start_server(void);
+int	start_server(void);
 
 #endif
-
