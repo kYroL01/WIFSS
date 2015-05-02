@@ -19,22 +19,24 @@ typedef bool int;
 
 int main(int argc, char const *argv[])
 {
-	char buff[BUFFER] = "";
-	int port = 0;
+	char buff[BUFFER];
+	short int port;
 
 	printf("\n\033[32mStarting client...\033[0m\n");
 
-	while(inet_buff(buff) != INbuff_NONE)
+	do
 	{
 		printf("\n\033[1;0mServer IP: \033[0m");
 		fgets(buff, BUFFER, stdin);
-	}
 
-	while(port > 65535 || port < 1024)
+	} while(inet_buff(buff) != INbuff_NONE);
+
+	do
 	{
 		printf("\n\033[1;0mPort: \033[0m");
-		scanf("%d", &port);
-	}
+		scanf("%hd", &port);
+
+	} while(port > 65535 || port < 1024);
 
 	struct sockbuff_in SERVER;
 	SERVER.sin_family      = AF_INET;
@@ -76,6 +78,7 @@ int main(int argc, char const *argv[])
 
 	close(SOCK);
 	printf("\n\033[35mConnexion successfully closed.\033[35m\n\n");
+
 
 	return 1;
 }
