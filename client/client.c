@@ -29,7 +29,7 @@ int main(int argc, char const *argv[])
 		printf("\n\033[1;0mServer IP: \033[0m");
 		fgets(buff, BUFFER, stdin);
 
-	} while(inet_buff(buff) != INbuff_NONE);
+	} while(inet_buff(buff) != INADDR_NONE);
 
 	do
 	{
@@ -41,19 +41,19 @@ int main(int argc, char const *argv[])
 	struct sockaddr_in SERVER;
 	SERVER.sin_family      = AF_INET;
 	SERVER.sin_port        = htons(port);
-	SERVER.sin_addr.s_addr = inet_addr(buff);
+	SERVER.sin_addr.s_addr = inet_buff(buff);
 
-	int SOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 
-	int value = 1;
+	short int value = 1;
 	while(value != 0)
 	{
-		value = connect(SOCK, (struct sockaddr*)&SERVER, sizeof(SERVER));
+		value = connect(sock, (const struct sockaddr*)&SERVER, sizeof(SERVER));
 
 		if(value != 0)
 		{
-			printf("\n\n\033[31mError while connecting to %s:%d.\nLet's try again.\033[0m\n\n", buff, PORT);
+			printf("\n\n\033[31mErreur during connexion to %s:%d.\nLet's retry.\033[0m\n\n", buff, PORT);
 			sleep(3);
 		}
 	}
@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
 	}
 
 
-	close(SOCK);
+	close(sock);
 	printf("\n\033[35mConnexion successfully closed.\033[35m\n\n");
 
 
