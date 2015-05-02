@@ -38,10 +38,10 @@ int main(int argc, char const *argv[])
 
 	} while(port > 65535 || port < 1024);
 
-	struct sockbuff_in SERVER;
+	struct sockaddr_in SERVER;
 	SERVER.sin_family      = AF_INET;
 	SERVER.sin_port        = htons(port);
-	SERVER.sin_buff.s_buff = inet_buff(buff);
+	SERVER.sin_addr.s_addr = inet_addr(buff);
 
 	int SOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -49,11 +49,11 @@ int main(int argc, char const *argv[])
 	int value = 1;
 	while(value != 0)
 	{
-		value = connect(SOCK, (const struct sockbuff*)&SERVER, sizeof(SERVER));
+		value = connect(SOCK, (struct sockaddr*)&SERVER, sizeof(SERVER));
 
 		if(value != 0)
 		{
-			printf("\n\n\033[31mErreur during connexion to %s:%d.\nLet's retry.\033[0m\n\n", buff, PORT);
+			printf("\n\n\033[31mErreur pendant la connexion à %s:%d.\nRéessayons.\033[0m\n\n", buff, PORT);
 			sleep(3);
 		}
 	}
