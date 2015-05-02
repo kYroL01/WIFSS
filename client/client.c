@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
 
 		if(value != 0)
 		{
-			printf("\n\n\033[31mErreur pendant la connexion à %s:%d.\nRéessayons.\033[0m\n\n", buff, PORT);
+			printf("\n\n\033[31mError while connecting to %s:%d.\nLet's try again.\033[0m\n\n", buff, PORT);
 			sleep(3);
 		}
 	}
