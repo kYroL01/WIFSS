@@ -41,7 +41,7 @@ int main(int argc, char const *argv[])
 	struct sockaddr_in SERVER;
 	SERVER.sin_family      = AF_INET;
 	SERVER.sin_port        = htons(port);
-	SERVER.sin_addr.s_addr = inet_buff(buff);
+	SERVER.sin_addr.s_addr = inet_addr(buff);
 
 	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
