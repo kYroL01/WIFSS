@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <netdb.h>
@@ -14,7 +15,60 @@
 
 #define true  1
 #define false 0
-typedef bool int;
+typedef int bool;
+
+
+
+
+int beginWith(char *str, char *cmd)
+{
+	short int __i, lenght = strlen(str);
+
+	for(__i = 0; __i < lenght && str[__i] != ' '; __i++)
+	{
+		str[__i] = tolower(str[__i]);
+
+		if(str[__i] != cmd[__i])
+		{
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+
+void upload(char *path, int sock)
+{
+	FILE *__file = NULL;
+	__file = fopen(path, "r");
+
+	if(__file == NULL)
+	{
+		printf("%s file asked is unreachable.\n", path);
+	}
+
+	else
+	{
+		printf("Sending of %s file is started.\n", path);
+
+		char *__buff;
+		rewind(__file);
+
+		while(ftell(__file) != SEEK_END)									//... tant que l'on n'est pas à la fin du fichier en question
+		{
+			fgets(hash, BUFFER, __file); 									//On récupère la ligne actuelle
+
+			while(send(sock, __buff, strlen(__buff), 0) != strlen(__buff)); //... tant qu'elle n'est pas partie convenablement
+			
+			fseek(__file, SEEK_CUR, SEEK_CUR + BUFFER); 					//On se positionne une taille de Buffer plus loin pour le prochain envoi
+			memset(__buff, 0, BUFFER); 										//On réinitialise proprement le Buffer
+		}
+
+		fclose(__file);
+	}
+}
+
 
 
 int main(int argc, char const *argv[])
@@ -53,7 +107,7 @@ int main(int argc, char const *argv[])
 
 		if(value != 0)
 		{
-			printf("\n\n\033[31mErreur during connexion to %s:%d.\nLet's retry.\033[0m\n\n", buff, PORT);
+			printf("\n\n\033[31mErreur during connexion to %s:%d.\nLet's retry.\033[0m\n\n", buff, port);
 			sleep(3);
 		}
 	}
@@ -66,7 +120,12 @@ int main(int argc, char const *argv[])
 		printf("|: ");
 		fgets(buff, BUFFER, stdin);
 
-		/* ... */
+		//...
+
+		//cmd_thread
+		//snd_thread
+		//rcv_thread
+
 
 		if(!strcmp(buff, ENDSIG))
 		{
