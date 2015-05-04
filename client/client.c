@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
 		//rcv_thread
 
 
-		if(!strcmp(buff, ENDSIG))
+		if(!strcmp(buff, END))
 		{
 			keepGoing = false;
 			printf("\n\nLet's close connexion with Server...");
@@ -78,56 +78,4 @@ int main(int argc, char const *argv[])
 
 
 	return 1;
-}
-
-
-
-
-int beginWith(char *str, char *cmd)
-{
-	short int __i, lenght = strlen(str);
-
-	for(__i = 0; __i < lenght && str[__i] != ' '; __i++)
-	{
-		str[__i] = tolower(str[__i]);
-
-		if(str[__i] != cmd[__i])
-		{
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-
-void upload(char *path, int sock)
-{
-	FILE *__file = NULL;
-	__file = fopen(path, "r");
-
-	if(__file == NULL)
-	{
-		printf("%s file asked is unreachable.\n", path);
-	}
-
-	else
-	{
-		printf("Sending of %s file is started.\n", path);
-
-		char *__buff;
-		rewind(__file);
-
-		while(ftell(__file) != SEEK_END)									//... tant que l'on n'est pas à la fin du fichier en question
-		{
-			fgets(__buff, BUFFER, __file); 									//On récupère la ligne actuelle
-
-			while(send(sock, __buff, strlen(__buff), 0) != strlen(__buff)); //... tant qu'elle n'est pas partie convenablement
-			
-			fseek(__file, SEEK_CUR, SEEK_CUR + BUFFER); 					//On se positionne une taille de Buffer plus loin pour le prochain envoi
-			memset(__buff, 0, BUFFER); 										//On réinitialise proprement le Buffer
-		}
-
-		fclose(__file);
-	}
 }
