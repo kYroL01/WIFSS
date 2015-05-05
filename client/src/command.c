@@ -1,18 +1,25 @@
 #include <client.h>
 
-int str_beginwith(const char *w,const char *s)
+
+
+int str_beginwith(const char *w, const char *s)
 {
-	while(*s) {
-		if(*s != *w) {
+	while(*s)
+	{
+		if(*s != *w)
+		{
 			return 0;
 		}
+
 		w++;
 		s++;
 	}
+
 	return 1;
 }
 
-int serverCommunication(int cmd, int sock, char *path)
+
+int serverCommunication(int cmd, int sock, const char *path = NULL)
 {
 	char __buff[BUFFER];
 
@@ -54,6 +61,20 @@ int serverCommunication(int cmd, int sock, char *path)
 			recv(sock, __buff, BUFFER, false);
 			if(!strcmp(__buff, OK))
 			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+			break;
+
+		case ASKLIST:
+			send(sock, LIST, strlen(LIST), false);
+			recv(sock, __buff, BUFFER, false);
+			if(str_beginwith(__buff, "list:")) //Le Server commence la phrase par "list:"
+			{
+				puts(__buff);
 				return 1;
 			}
 			else
