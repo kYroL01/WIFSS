@@ -1,48 +1,48 @@
 #include <client.h>
 
+
+
 int upload(const char *path, int sock)
 {
-	FILE *file = NULL;
-	uint32_t fsize = 0;
+	FILE *__file = NULL;
+
+	uint32_t __fsize = 0;
 
 	printf("Trying to upload : %s\n", path);
-	file = fopen(path, "rb");
+	__file = fopen(path, "rb");
 
-	if(file == NULL)
+	if(__file == NULL)
 	{
 		printf("%s file asked is unreachable.\n", path);
-		return 1;
+		return 0;
 	}
 
-	/* calcul de la taille */
-	fseek(file, 0, SEEK_END);
-	fsize = ftell(file);
-	fseek(file, 0, 0);
+	fseek(__file, 0, SEEK_END);
+	__fsize = ftell(__file);
+	fseek(__file, 0, 0);
 	
-	printf("File size is: %d\n", fsize);
+	printf("File size is: %d.\n", __fsize);
 	
-	if(fsize > BUFFER) {
+	if(__fsize > BUFFER)
+	{
 		/* Fichier plus gros que Buffer -> découpage donc il faudra revoir l'algo ci-dessous ... */
 	}
 	
 	else
 	{
-		printf("Sending: %s\n", path);
+		printf("Sending: %s...\n", path);
 
-		char buff[BUFFER];
-		/* rewind(__file); */
+		char __buff[BUFFER];
 
-		while(ftell(file) != SEEK_END)
+		while(ftell(__file) != SEEK_END)
 		{
-			fgets(buff, BUFFER, file);
+			memset(__buff, 0, BUFFER);
 
-			while(send(sock, buff, strlen(buff), false) != strlen(buff));
+			fgets(__buff, BUFFER, __file);
 
-			/* fseek(file, SEEK_CUR, SEEK_CUR + BUFFER); 
-			   fgets se déplace déjà non ? */
-			memset(buff, 0, BUFFER);
+			while(send(sock, __buff, strlen(__buff), false) != strlen(__buff));
 		}
 
-		fclose(file);
+		fclose(__file);
 	}
 }
