@@ -1,10 +1,12 @@
 #include <client.h>
 
-int download(char *path, int sock)
+
+
+int download(const char *path, int sock)
 {
 	FILE *__file = NULL;
 
-	if(!access(path, F_OK)) //Check existence of the file before download one with the same name
+	if(!access(path, F_OK))
 	{
 		__file = fopen(path, "wb");
 	}
