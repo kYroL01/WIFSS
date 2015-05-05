@@ -1,7 +1,5 @@
-#ifndef __HEADER__
-#define __HEADER__
-
-
+#ifndef __HEADER_H
+#define __HEADER_H
 
 #include <unistd.h>
 #include <netdb.h>
@@ -9,8 +7,6 @@
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
-
 
 #define BUFFER   256
 
@@ -29,12 +25,8 @@
 #define false 0
 typedef int bool;
 
-
-
-int beginWith(char*, char*);
+int str_beginwith(char*, char*);
 void upload(char*, int);
 void download(char*, int);
-
-
 
 #endif
