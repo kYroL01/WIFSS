@@ -1,13 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-#include <header.h>
-
-
-
-
+#include <client.h>
 
 int main(int argc, char const *argv[])
 {
@@ -36,8 +30,7 @@ int main(int argc, char const *argv[])
 	SERVER.sin_addr.s_addr = inet_addr(buff);
 
 	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-
+	
 	short int value = 1;
 	while(value != 0)
 	{
@@ -68,13 +61,13 @@ int main(int argc, char const *argv[])
 		if(!strcmp(buff, END))
 		{
 			keepGoing = false;
-			printf("\n\nLet's close connexion with Server...");
+			printf("\n\nLet's close connection with Server...");
 		}
 	}
 
 
 	close(sock);
-	printf("\n\033[35mConnexion successfully closed.\033[35m\n\n");
+	printf("\n\033[35mConnection successfully closed.\033[35m\n\n");
 
 
 	return 1;
