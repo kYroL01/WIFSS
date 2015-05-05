@@ -1,6 +1,7 @@
 #ifndef __CLIENT_H
 #define __CLIENT_H
 
+
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -21,8 +22,11 @@
 #define false 0
 typedef int bool;
 
+
 int str_beginwith(const char*,const char*);
 int upload(const char*, int);
-int download(char*, int);
+int download(const char*, int);
+int serverCommunication(int, int, const char*);
+
 
 #endif
