@@ -19,7 +19,7 @@ int str_beginwith(const char *w, const char *s)
 }
 
 
-int serverCommunication(int cmd, int sock, const char *path = NULL)
+int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
 {
 	char __buff[BUFFER];
 
@@ -39,10 +39,7 @@ int serverCommunication(int cmd, int sock, const char *path = NULL)
 			break;
 
 		case ASKFILE:
-			strcpy(__buff, ISPRESENT); //Formatage du buffer... "ispresent path_file"
-			strcat(__buff, " ");
-			strcat(__buff, path);
-
+			sprintf(__buff, "%s %s %d", ISPRESENT, path, id_Client);
 			send(sock, __buff, BUFFER, false);
 			sleep(1);
 			recv(sock, __buff, BUFFER, false);
