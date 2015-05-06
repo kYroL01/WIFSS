@@ -22,9 +22,12 @@ int download(const char *path, int idClient, int sock)
 
 	char __buff[BUFFER];
 
+
 	bool keepGoing = true;
 	while(keepGoing)
 	{
+		memset(__buff, 0, BUFFER);
+		
 		while(recv(sock, __buff, BUFFER, false) != BUFFER)
 
 		if(!strcmp(__buff, FINISHED))
@@ -37,7 +40,6 @@ int download(const char *path, int idClient, int sock)
 		}
 
 		fseek(__file, SEEK_CUR, SEEK_CUR + BUFFER);
-		memset(__buff, 0, BUFFER);
 	}
 
 	fclose(__file);
