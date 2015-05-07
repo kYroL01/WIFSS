@@ -1,4 +1,3 @@
-- (Broadcast -> done) / Tunneling between clients 
-- Download system (Check Upload parse file)
+- Tunneling between clients 
 - Port display bug
-- Command communication (Server / Client)
+- Address display bug
