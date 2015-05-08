@@ -2,6 +2,9 @@
 #define __CLIENT_H
 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -9,9 +12,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define BUFFER   256
 
@@ -20,13 +20,15 @@
 
 #define true  1
 #define false 0
-typedef int bool;
+typedef char bool;
 
 
-int str_beginwith(const char*,const char*);
-int upload(const char*, int);
-int download(const char*, int);
-int serverCommunication(int, int, const char*);
+void initialisation(struct sockaddr_in*, int*, bool*);
+void disconnection(int);
+int s_Com(int, int, const char*, int);
+int str_beginwith(const char*, const char*);
+int upload(const char*, int, int);
+int download(const char*, int, int);
 
 
 #endif
