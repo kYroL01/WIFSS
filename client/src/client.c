@@ -4,14 +4,18 @@
 
 int main(int argc, char const *argv[])
 {
-	short int port;
+	int sock;
 	struct sockaddr_in SERVER;
+	bool connected;
 
-	initialisation(&SERVER, &port);
-	
-	
+	char buff[BUFFER];
+
+
+	initialisation(&SERVER, &sock, &connected);
+
+
 	bool keepGoing = true;
-	while(keepGoing)
+	while(keepGoing && connected)
 	{
 		/*memset(buff, 0, BUFFER); //Dialogue basique
 
@@ -28,8 +32,8 @@ int main(int argc, char const *argv[])
 	}
 
 
-	close(sock);
-	printf("\n\033[35mConnection successfully closed.\033[35m\n\n");
+
+	disconnection(sock);
 
 	return 1;
 }
