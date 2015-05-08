@@ -1,17 +1,10 @@
 #include <client.h>
 
-
-
-int upload(const char *path, int idClient, int sock)
+int upload(const char *path, int sock)
 {
-	if(!s_Com(ASKFILE, sock, path, idClient))
-	{
-		printf("Client %d does\'nt have %s file...\n", idClient, path);
-		return -1;
-	}
 
 	FILE *_file = NULL;
-
+	char _buff[BUFFER];
 	uint32_t _fsize = 0;
 
 	printf("Trying to upload %s to Server...\n", path);
@@ -20,6 +13,7 @@ int upload(const char *path, int idClient, int sock)
 	if(_file == NULL)
 	{
 		printf("%s file asked is unreachable.\n", path);
+		send(sock, "fail", 5, 0);
 		return -1;
 	}
 
@@ -28,8 +22,11 @@ int upload(const char *path, int idClient, int sock)
 	fseek(_file, 0, 0);
 
 	printf("Sending: %d bytes of %s\n", _fsize, path);
+	
+	/* On dit la taille du fichier au serveur */
+	sprintf(_buff, "size: %d", _fsize);
+	send(sock, _buff, BUFFER, 0);
 
-	char _buff[BUFFER];
 
 	while(ftell(_file) != SEEK_END)
 	{
@@ -37,10 +34,12 @@ int upload(const char *path, int idClient, int sock)
 
 		fread(_buff, sizeof(char), BUFFER, _file);
 
-		while(send(sock, _buff, strlen(_buff), false) != (ssize_t)strlen(_buff));
+		while(send(sock, _buff, strlen(_buff), false) != (int)strlen(_buff));
 	}
+	
+	send(sock, "ENDT", 5, 0);
 
 	fclose(_file);
-
 	return 1;
 }
+	
