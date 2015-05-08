@@ -37,8 +37,10 @@ int upload(const char *path, int idClient, int sock)
 
 		fread(_buff, sizeof(char), BUFFER, _file);
 
-		while(send(sock, _buff, strlen(_buff), false) != strlen(_buff));
+		while(send(sock, _buff, strlen(_buff), false) != (ssize_t)strlen(_buff));
 	}
 
 	fclose(_file);
+
+	return 1;
 }

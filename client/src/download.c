@@ -2,7 +2,7 @@
 
 
 
-int download(const char *path, int idClient, int sock)
+int download(const char *path, int sock)
 {
 	FILE *_file = NULL;
 

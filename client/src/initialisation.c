@@ -19,7 +19,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 		printf("Port: ");
 		scanf("%hd", &_port);
 
-	} while(_port > 65535 || _port < 1024);
+	} while(_port < 1024);
 
 	SERVER->sin_family      = AF_INET;
 	SERVER->sin_port        = htons(_port);
@@ -39,7 +39,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 			scanf("%s", _buff);
 			getchar();
 
-			for(_i = 0; _i < strlen(_buff); _i++) { _buff[_i] = tolower(_buff[_i]); }
+			for(_i = 0; _i < (short int)strlen(_buff); _i++) { _buff[_i] = tolower(_buff[_i]); }
 
 			if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
 			{

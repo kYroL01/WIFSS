@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -28,7 +29,7 @@ void disconnection(int);
 int s_Com(int, int, const char*, int);
 int str_beginwith(const char*, const char*);
 int upload(const char*, int, int);
-int download(const char*, int, int);
+int download(const char*, int);
 
 
 #endif
