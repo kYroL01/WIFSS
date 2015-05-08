@@ -24,6 +24,7 @@ void* scom(void *data)
 	
 	sock = *((int*)data);
 	
+	bool keepGoing = true;
 	while(keepGoing)
 	{
 		memset(buff, 0, BUFFER);
@@ -45,7 +46,7 @@ void* scom(void *data)
 			keepGoing = false;
 			return NULL;
 		}
-		
+
 		printf("[sthread] received from server : %s\n", buff);
 	}
 	
