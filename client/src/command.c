@@ -19,18 +19,18 @@ int str_beginwith(const char *w, const char *s)
 }
 
 
-int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
+int s_Com(int cmd, int sock, const char *path, int idClient)
 {
-	char __buff[BUFFER];
-	memset(__buff, 0, BUFFER);
+	char _buff[BUFFER];
+	memset(_buff, 0, BUFFER);
 
 	switch(cmd)
 	{
 		case ENDSIG:
 			send(sock, END, strlen(END), false);
-			memset(__buff, 0, BUFFER);
-			recv(sock, __buff, BUFFER, false);
-			if(!strcmp(__buff, STOP))
+			memset(_buff, 0, BUFFER);
+			recv(sock, _buff, BUFFER, false);
+			if(!strcmp(_buff, STOP))
 			{
 				return 1;
 			}
@@ -41,12 +41,12 @@ int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
 			break;
 
 		case ASKFILE:
-			sprintf(__buff, "%s %s %d", ISPRESENT, path, id_Client);
-			send(sock, __buff, BUFFER, false);
-			memset(__buff, 0, BUFFER);
+			sprintf(_buff, "%s %s %d", ISPRESENT, path, idClient); // "ispresent path/ client"
+			send(sock, _buff, BUFFER, false);
+			memset(_buff, 0, BUFFER);
 			sleep(1);
-			recv(sock, __buff, BUFFER, false);
-			if(!strcmp(__buff, PRESENT))
+			recv(sock, _buff, BUFFER, false);
+			if(!strcmp(_buff, PRESENT))
 			{
 				return 1;
 			}
@@ -58,9 +58,9 @@ int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
 
 		case FILEDWL:
 			send(sock, FINISHED, strlen(FINISHED), false);
-			memset(__buff, 0, BUFFER);
-			recv(sock, __buff, BUFFER, false);
-			if(!strcmp(__buff, OK))
+			memset(_buff, 0, BUFFER);
+			recv(sock, _buff, BUFFER, false);
+			if(!strcmp(_buff, OK))
 			{
 				return 1;
 			}
@@ -72,11 +72,11 @@ int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
 
 		case ASKLIST:
 			send(sock, LIST, strlen(LIST), false);
-			memset(__buff, 0, BUFFER);
-			recv(sock, __buff, BUFFER, false);
-			if(str_beginwith(__buff, "list:")) //Le Server commence la phrase par "list:"
+			memset(_buff, 0, BUFFER);
+			recv(sock, _buff, BUFFER, false);
+			if(str_beginwith(_buff, "list:")) //Le Server commence la phrase par "list:"
 			{
-				puts(__buff);
+				puts(_buff);
 				return 1;
 			}
 			else
@@ -86,7 +86,7 @@ int s_Com(int cmd, int sock, const char *path = NULL, int idClient = 0)
 			break;
 
 		default:
-			printf("Unknown signal.\n");
+			printf("Unknown signal (\'commands\' Switch).\n");
 			return 0;
 			break;
 	}
