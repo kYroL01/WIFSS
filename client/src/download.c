@@ -4,15 +4,15 @@
 
 int download(const char *path, int idClient, int sock)
 {
-	FILE *__file = NULL;
+	FILE *_file = NULL;
 
 	if(!access(path, F_OK))
 	{
-		__file = fopen(path, "wb");
+		_file = fopen(path, "wb");
 	}
 
 
-	if(__file == NULL)
+	if(_file == NULL)
 	{
 		printf("%s file cannot be created.\n", path);
 		return -1;
@@ -20,29 +20,29 @@ int download(const char *path, int idClient, int sock)
 
 	printf("Reception of %s file started.\n", path);
 
-	char __buff[BUFFER];
+	char _buff[BUFFER];
 
 
 	bool keepGoing = true;
 	while(keepGoing)
 	{
-		memset(__buff, 0, BUFFER);
+		memset(_buff, 0, BUFFER);
 		
-		while(recv(sock, __buff, BUFFER, false) != BUFFER)
+		while(recv(sock, _buff, BUFFER, false) != BUFFER)
 
-		if(!strcmp(__buff, FINISHED))
+		if(!strcmp(_buff, FINISHED))
 		{
 			keepGoing = false;
 		}
 		else
 		{
-			fwrite(__buff, BUFFER, BUFFER, __file);
+			fwrite(_buff, BUFFER, BUFFER, _file);
 		}
 
-		fseek(__file, SEEK_CUR, SEEK_CUR + BUFFER);
+		fseek(_file, SEEK_CUR, SEEK_CUR + BUFFER);
 	}
 
-	fclose(__file);
+	fclose(_file);
 
 	return 1;
 }
