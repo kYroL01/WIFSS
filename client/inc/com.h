@@ -5,6 +5,7 @@
 #define OK        "ok"
 #define END       "quit"
 #define LIST      "list"
+#define STOP      "stop"
 #define PRESENT   "present"
 #define FINISHED  "finished"
 #define ISPRESENT "ispresent"
