@@ -1,6 +1,5 @@
+
 #include <client.h>
-
-
 
 int str_beginwith(const char *w, const char *s)
 {
@@ -18,76 +17,31 @@ int str_beginwith(const char *w, const char *s)
 	return 1;
 }
 
-
-int s_Com(int cmd, int sock, const char *path, int idClient)
+void* scom(void *data)
 {
-	char _buff[BUFFER];
-	memset(_buff, 0, BUFFER);
-
-	switch(cmd)
-	{
-		case ENDSIG:
-			send(sock, END, strlen(END), false);
-			memset(_buff, 0, BUFFER);
-			recv(sock, _buff, BUFFER, false);
-			if(!strcmp(_buff, STOP))
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-			break;
-
-		case ASKFILE:
-			sprintf(_buff, "%s %s %d", ISPRESENT, path, idClient); // "ispresent path/ client"
-			send(sock, _buff, BUFFER, false);
-			memset(_buff, 0, BUFFER);
-			sleep(1);
-			recv(sock, _buff, BUFFER, false);
-			if(!strcmp(_buff, PRESENT))
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-			break;
-
-		case FILEDWL:
-			send(sock, FINISHED, strlen(FINISHED), false);
-			memset(_buff, 0, BUFFER);
-			recv(sock, _buff, BUFFER, false);
-			if(!strcmp(_buff, OK))
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-			break;
-
-		case ASKLIST:
-			send(sock, LIST, strlen(LIST), false);
-			memset(_buff, 0, BUFFER);
-			recv(sock, _buff, BUFFER, false);
-			if(str_beginwith(_buff, "list:")) //Le Server commence la phrase par "list:"
-			{
-				puts(_buff);
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-			break;
-
-		default:
-			printf("Unknown signal (\'commands\' Switch).\n");
-			return 0;
-			break;
+	int sock;
+	int res;
+	char buff[BUFFER] = {0};
+	
+	sock = *((int*)data);
+	
+	while(keepGoing) {
+		memset(buff, 0, BUFFER);
+		res = recv(sock, buff, BUFFER, 0);
+		
+		/* Ici on reçoit des choses du serveur */
+		if(str_beginwith(buff, "upload")) {
+			/* Le serv demande d'upload un fichier 
+				on l'envoie au serveur via la fonction upload */
+			char path[BUFFER] = {0};
+			sscanf(buff, "upload %s", path);
+			printf("Server is asking us to upload: %s\n", path);
+			upload(path, sock);
+		}
+		
+		if(res <= 0) { keepGoing = false; return NULL; }
+		printf("[sthread] received from server : %s\n", buff);
 	}
+	
+	return NULL;
 }
