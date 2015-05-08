@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 	bool keepGoing = true;
 	while(keepGoing && connected)
 	{
-		/*memset(buff, 0, BUFFER); //Dialogue basique
+		/*memset(buff, 0, BUFFER); //Basic communication
 
 		printf("|: ");
 		fgets(buff, BUFFER, stdin);
