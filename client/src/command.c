@@ -1,4 +1,3 @@
-
 #include <client.h>
 
 int str_beginwith(const char *w, const char *s)
@@ -25,12 +24,14 @@ void* scom(void *data)
 	
 	sock = *((int*)data);
 	
-	while(keepGoing) {
+	while(keepGoing)
+	{
 		memset(buff, 0, BUFFER);
 		res = recv(sock, buff, BUFFER, 0);
 		
 		/* Ici on reçoit des choses du serveur */
-		if(str_beginwith(buff, "upload")) {
+		if(str_beginwith(buff, "upload"))
+		{
 			/* Le serv demande d'upload un fichier 
 				on l'envoie au serveur via la fonction upload */
 			char path[BUFFER] = {0};
@@ -39,7 +40,12 @@ void* scom(void *data)
 			upload(path, sock);
 		}
 		
-		if(res <= 0) { keepGoing = false; return NULL; }
+		if(res <= 0)
+		{
+			keepGoing = false;
+			return NULL;
+		}
+		
 		printf("[sthread] received from server : %s\n", buff);
 	}
 	

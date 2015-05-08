@@ -1,7 +1,5 @@
 #include <client.h>
 
-
-
 void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 {
 	char _buff[BUFFER];
@@ -27,13 +25,13 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 
 	*sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	
-	int result;
+	int _result;
 	short int _i;
 	do
 	{
-		result = connect(*sock, (struct sockaddr*)SERVER, sizeof(*SERVER));
+		_result = connect(*sock, (struct sockaddr*)SERVER, sizeof(*SERVER));
 
-		if(result == -1)
+		if(_result == -1)
 		{
 			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (yes / no)\033[0m\n:| ", inet_ntoa(SERVER->sin_addr), _port);
 			scanf("%s", _buff);
@@ -54,11 +52,11 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(SERVER->sin_addr), ntohs(SERVER->sin_port));
 		}
 
-	} while(result == -1 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
+	} while(_result == -1 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
 }
 
 
-void disconnection(int sock)
+void disconnect(int sock)
 {
 	if(close(sock) == -1)
 	{

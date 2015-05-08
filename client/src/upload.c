@@ -2,7 +2,6 @@
 
 int upload(const char *path, int sock)
 {
-
 	FILE *_file = NULL;
 	char _buff[BUFFER];
 	uint32_t _fsize = 0;
@@ -13,7 +12,7 @@ int upload(const char *path, int sock)
 	if(_file == NULL)
 	{
 		printf("%s file asked is unreachable.\n", path);
-		send(sock, "fail", 5, 0);
+		send(sock, FAIL, strlen(FAIL), false);
 		return -1;
 	}
 
@@ -25,7 +24,7 @@ int upload(const char *path, int sock)
 	
 	/* On dit la taille du fichier au serveur */
 	sprintf(_buff, "size: %d", _fsize);
-	send(sock, _buff, BUFFER, 0);
+	send(sock, _buff, BUFFER, false);
 
 
 	while(ftell(_file) != SEEK_END)
@@ -37,7 +36,7 @@ int upload(const char *path, int sock)
 		while(send(sock, _buff, strlen(_buff), false) != (int)strlen(_buff));
 	}
 	
-	send(sock, "ENDT", 5, 0);
+	send(sock, ENDT, strlen(ENDT), false);
 
 	fclose(_file);
 	return 1;

@@ -4,6 +4,8 @@
 
 #define OK        "ok"
 #define END       "quit"
+#define ENDT      "ENDT"
+#define FAIL      "fail"
 #define LIST      "list"
 #define STOP      "stop"
 #define PRESENT   "present"

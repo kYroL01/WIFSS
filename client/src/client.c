@@ -42,3 +42,6 @@ int main(void)
 
 	return 1;
 }
+
+
+//gcc *.c -Wall -W -I\../inc -o client_WIFFS && ./client_WIFFS
