@@ -17,9 +17,10 @@ int main(void)
 
 	initialisation(&SERVER, &sock, &connected);
 
-	keepGoing = true;
 
-	pthread_create(&sthread, NULL, &scom, (void*) &sock);	
+	pthread_create(&sthread, NULL, &scom, (void*)&sock);
+	
+	keepGoing = true;
 	while(keepGoing && connected)
 	{
 		memset(buff, 0, BUFFER);
@@ -38,10 +39,10 @@ int main(void)
 
 
 
-	disconnection(sock);
+	disconnect(sock);
 
 	return 1;
 }
 
 
-//gcc *.c -Wall -W -I\../inc -o client_WIFFS && ./client_WIFFS
+//gcc *.c -Wall -W -lpthread -I\../inc -o client_WIFFS && ./client_WIFFS

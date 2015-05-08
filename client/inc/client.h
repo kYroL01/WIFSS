@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <pthread.h>
 
+
 #define BUFFER   256
 
 #include <com.h>
