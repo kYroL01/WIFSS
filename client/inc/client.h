@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -13,6 +12,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdint.h>
+#include <ctype.h>
+#include <pthread.h>
 
 #define BUFFER   256
 
@@ -23,13 +24,16 @@
 #define false 0
 typedef char bool;
 
+bool keepGoing;
 
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnection(int);
-int s_Com(int, int, const char*, int);
 int str_beginwith(const char*, const char*);
-int upload(const char*, int, int);
+int upload(const char*, int);
 int download(const char*, int);
+void* scom(void*);
+
 
 
 #endif
+
