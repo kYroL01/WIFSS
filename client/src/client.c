@@ -26,9 +26,11 @@ void handle_command(const char *command, int sock, bool *connected)
 
 	else if(str_beginwith(command, TUNNEL))
 	{
-		char _idClient[16] = {0};
+		int idClient;
 
-		sscanf(_idClient, "tunnel %d")
+		sscanf(command, "tunnel %d", idClient);
+
+		tunneling(sock, idClient);
 	}
 
 	else
