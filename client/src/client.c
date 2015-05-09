@@ -13,12 +13,9 @@ void handle_command(const char *command, int sock, bool *connected)
 		unsigned short _i, _j;
 		char _path[BUFFER / 4];
 
-		for(_i = 0; _i < strlen(command); _i++)
+		for(_i = strlen(DOWNLOAD) + 1, _j = 0; _i < strlen(command); _i++, _j++)
 		{
-			if(_i > strlen(DOWNLOAD))
-			{
-				_path[_j++] = command[_i];
-			}
+			_path[_j] = command[_i];
 		}
 
 		if(!download(_path, sock))
