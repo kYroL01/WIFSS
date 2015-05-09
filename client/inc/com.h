@@ -6,18 +6,15 @@
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
-
-//CMD
-#define QUIT      "quit"
-#define STOP      "stop"
-#define UPLOAD    "upload"
-#define DOWNLOAD  "download"
-#define ISPRESENT "ispresent"
-
-//COM
 #define LIST      "list"
 #define PRESENT   "present"
 #define FINISHED  "finished"
+
+//CMD
+#define QUIT      "quit "
+#define UPLOAD    "upload "
+#define DOWNLOAD  "download "
+#define ISPRESENT "ispresent "
 
 //SIG
 #define ENDSIG  -1
