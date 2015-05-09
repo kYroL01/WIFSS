@@ -6,7 +6,7 @@ void tunneling(int sockServ, int idClient)
 
 	printf("\nLet's create a tunnel with %d Client...\nGathering client data from server...", idClient);
 
-	sprintf(_buff, "%s %d", DATACLIENT, idclient);
+	sprintf(_buff, "%s %d", DATACLIENT, idClient);
 
 	send(sockServ, _buff, BUFFER, false); //On demande les DATA du Client correspondant au Server
 	
