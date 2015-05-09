@@ -41,7 +41,16 @@ void tunneling(int sockServ, int idClient)
 
 		else
 		{
-			//Tunnel ouvert...
+			bool keepGoing = true;
+			while(keepGoing)
+			{
+				memset(_buff, 0, BUFFER);
+				recv(_sockClient, _buff, BUFFER, false);
+				memset(_buff, 0, BUFFER);
+				send(_sockClient, _buff, BUFFER, false);
+
+				handle_command(_buff, _sockClient, NULL);
+			}
 		}
 	}
 

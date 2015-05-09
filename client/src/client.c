@@ -1,43 +1,6 @@
 #include <client.h>
 
-void handle_command(const char *command, int sock, bool *connected)
-{
-	if(!strcmp(command, QUIT))
-	{
-		printf("\n\nLet's close connection with Server...");
-		*connected = false;
-	}
 
-	else if(str_beginwith(command, DOWNLOAD))
-	{
-		char _path[32] = {0};
-
-		sscanf(command, "download %s", _path);
-
-		if(!download(command, sock))
-		{
-			printf("File couldn't be downloaded correctly.\n\n");
-		}
-		else
-		{
-			printf("File downloaded !\n\n");
-		}
-	}
-
-	else if(str_beginwith(command, TUNNEL))
-	{
-		int idClient = 0;
-
-		sscanf(command, "tunnel %d", &idClient);
-
-		tunneling(sock, idClient);
-	}
-
-	else
-	{
-		printf("\nCommand unknown.\n");
-	}
-}
 
 int main(void)
 {
