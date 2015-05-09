@@ -35,10 +35,10 @@ void* scom(void *data)
 		{
 			/* Le serv demande d'upload un fichier 
 				on l'envoie au serveur via la fonction upload */
-			char path[BUFFER] = {0};
+			char _path[BUFFER] = {0};
 			sscanf(buff, "upload %s", _path);
-			printf("Server is asking us to upload: %s\n", path);
-			upload(path, sock);
+			printf("Server is asking us to upload: %s\n", _path);
+			upload(_path, sock);
 		}
 		
 		if(result <= 0)
