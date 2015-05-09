@@ -25,14 +25,14 @@ void tunneling(int sockServ, int idClient)
 		char _addr[16] = {0};
 		struct sockaddr_in _clientTunneled;
 
-		sscanf(_buff, "idclient: %s %hd", _addr, _port);
+		sscanf(_buff, "idclient: %s %hd", _addr, &_port);
 
 		_clientTunneled.sin_family      = AF_INET;
 		_clientTunneled.sin_port        = htons(_port);
 		_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
 
 		int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		int _result = connect(*_sockClient, (struct sockaddr*)_clientTunneled, sizeof(*_clientTunneled));
+		int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
 	
 		if(_result <= 0)
 		{
