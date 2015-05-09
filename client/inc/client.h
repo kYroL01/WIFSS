@@ -15,11 +15,10 @@
 #include <ctype.h>
 #include <pthread.h>
 
-
-#define BUFFER   256
-
 #include <com.h>
 
+
+#define BUFFER 256
 
 #define true  1
 #define false 0
@@ -40,4 +39,3 @@ void* scom(void*);
 
 
 #endif
-

@@ -36,7 +36,7 @@ void* scom(void *data)
 			/* Le serv demande d'upload un fichier 
 				on l'envoie au serveur via la fonction upload */
 			char path[BUFFER] = {0};
-			sscanf(buff, "Upload %s", path);
+			sscanf(buff, "upload %s", _path);
 			printf("Server is asking us to upload: %s\n", path);
 			upload(path, sock);
 		}
@@ -47,7 +47,7 @@ void* scom(void *data)
 			return NULL;
 		}
 
-		printf("[sthread] received from server : %s\n", buff);
+		printf("[sthread] received from server: %s\n", buff);
 	}
 	
 	return NULL;

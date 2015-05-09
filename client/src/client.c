@@ -2,7 +2,7 @@
 
 void handle_command(const char *command, int sock, bool *connected)
 {
-	if(str_beginwith(command, QUIT))
+	if(!strcmp(command, QUIT))
 	{
 		printf("\n\nLet's close connection with Server...");
 		*connected = false;
@@ -10,15 +10,11 @@ void handle_command(const char *command, int sock, bool *connected)
 
 	else if(str_beginwith(command, DOWNLOAD))
 	{
-		unsigned short _i, _j;
-		char _path[BUFFER / 4];
+		char _path[32] = {0};
 
-		for(_i = strlen(DOWNLOAD) + 1, _j = 0; _i < strlen(command); _i++, _j++)
-		{
-			_path[_j] = command[_i];
-		}
+		sscanf(command, "download %s", _path);
 
-		if(!download(_path, sock))
+		if(!download(command, sock))
 		{
 			printf("File couldn't be downloaded correctly.\n\n");
 		}
@@ -28,10 +24,12 @@ void handle_command(const char *command, int sock, bool *connected)
 		}
 	}
 
-	/*else if()
+	else if(str_beginwith(command, TUNNEL))
 	{
+		char _idClient[16] = {0};
 
-	}*/
+		sscanf(_idClient, "tunnel %d")
+	}
 
 	else
 	{
@@ -44,7 +42,7 @@ int main(void)
 	int sock;
 	bool connected;
 	char buff[BUFFER];
-	unsigned short int _i;
+	short int _i;
 	struct sockaddr_in SERVER;
 
 	pthread_t sthread;
@@ -65,7 +63,7 @@ int main(void)
 		//send(sock, buff, BUFFER, false);
 
 		//
-		for(_i = 0; _i < strlen(buff) && buff[_i] != ' '; _i++) //On passe en minuscule le premier terme
+		for(_i = 0; _i < (short int)strlen(buff) && buff[_i] != ' '; _i++)
 		{
 			buff[_i] = tolower(buff[_i]);
 		}

@@ -6,15 +6,18 @@
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
-#define LIST      "list"
+#define LIST      "list: "
+#define TUNNEL    "tunnel "
 #define PRESENT   "present"
+#define IDCLIENT  "idclient: "
 #define FINISHED  "finished"
 
 //CMD
-#define QUIT      "quit "
-#define UPLOAD    "upload "
-#define DOWNLOAD  "download "
-#define ISPRESENT "ispresent "
+#define QUIT       "quit"
+#define UPLOAD     "upload "
+#define DOWNLOAD   "download "
+#define ISPRESENT  "ispresent "
+#define DATACLIENT "dataclient"
 
 //SIG
 #define ENDSIG  -1

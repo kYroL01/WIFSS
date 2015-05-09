@@ -37,7 +37,10 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 			scanf("%s", _buff);
 			getchar();
 
-			for(_i = 0; _i < (short int)strlen(_buff); _i++) { _buff[_i] = tolower(_buff[_i]); }
+			for(_i = 0; _i < (short int)strlen(_buff); _i++)
+			{
+				_buff[_i] = tolower(_buff[_i]);
+			}
 
 			if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
 			{
