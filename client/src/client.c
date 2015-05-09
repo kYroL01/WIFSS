@@ -10,9 +10,16 @@ void handle_command(const char *command, int sock, bool *connected)
 
 	else if(str_beginwith(command, DOWNLOAD))
 	{
-		char _path[BUFFER] = {0};
-		printf("File to download: ");
-		scanf("%s", _path);
+		unsigned short _i, _j;
+		char _path[BUFFER / 4];
+
+		for(_i = 0; _i < strlen(command); _i++)
+		{
+			if(_i > strlen(DOWNLOAD))
+			{
+				_path[_j++] = command[_i];
+			}
+		}
 
 		if(!download(_path, sock))
 		{
@@ -51,7 +58,7 @@ int main(void)
 
 	pthread_create(&sthread, NULL, &scom, (void*)&sock);
 	
-	
+
 	keepGoing = true;
 	while(keepGoing && connected)
 	{
