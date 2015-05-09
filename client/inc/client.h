@@ -32,6 +32,7 @@ void disconnect(int);
 int str_beginwith(const char*, const char*);
 int upload(const char*, int);
 int download(const char*, int);
+void tunneling(int, int);
 
 //THREAD
 void* scom(void*);
