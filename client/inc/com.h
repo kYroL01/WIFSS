@@ -2,16 +2,24 @@
 #define __COM_H
 
 
+//ACK
 #define OK        "ok"
-#define END       "quit"
-#define ENDT      "ENDT"
 #define FAIL      "fail"
-#define LIST      "list"
+#define ENDT      "ENDT"
+
+//CMD
+#define QUIT      "quit"
 #define STOP      "stop"
-#define PRESENT   "present"
-#define FINISHED  "finished"
+#define UPLOAD    "upload"
+#define DOWNLOAD  "download"
 #define ISPRESENT "ispresent"
 
+//COM
+#define LIST      "list"
+#define PRESENT   "present"
+#define FINISHED  "finished"
+
+//SIG
 #define ENDSIG  -1
 #define ASKFILE  1
 #define FILEDWL  2

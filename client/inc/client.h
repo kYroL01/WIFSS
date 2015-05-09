@@ -27,11 +27,14 @@ typedef char bool;
 
 bool keepGoing;
 
+//FCT
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnect(int);
 int str_beginwith(const char*, const char*);
 int upload(const char*, int);
 int download(const char*, int);
+
+//THREAD
 void* scom(void*);
 
 

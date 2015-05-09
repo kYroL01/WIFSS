@@ -19,7 +19,7 @@ int str_beginwith(const char *w, const char *s)
 void* scom(void *data)
 {
 	int sock;
-	int res;
+	int result;
 	char buff[BUFFER] = {0};
 	
 	sock = *((int*)data);
@@ -28,22 +28,22 @@ void* scom(void *data)
 	while(keepGoing)
 	{
 		memset(buff, 0, BUFFER);
-		res = recv(sock, buff, BUFFER, 0);
+		result = recv(sock, buff, BUFFER, 0);
 		
 		/* Ici on reçoit des choses du serveur */
-		if(str_beginwith(buff, "upload"))
+		if(str_beginwith(buff, UPLOAD))
 		{
 			/* Le serv demande d'upload un fichier 
 				on l'envoie au serveur via la fonction upload */
 			char path[BUFFER] = {0};
-			sscanf(buff, "upload %s", path);
+			sscanf(buff, "Upload %s", path);
 			printf("Server is asking us to upload: %s\n", path);
 			upload(path, sock);
 		}
 		
-		if(res <= 0)
+		if(result <= 0)
 		{
-			keepGoing = false;
+			//keepGoing = false;
 			return NULL;
 		}
 
