@@ -91,7 +91,7 @@ void handle_command(const char *command, int sock, bool *connected)
 		*connected = false;
 	}
 
-	else if(str_beginwith(command, DOWNLOAD))
+	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
 		char _path[32] = {0};
 
@@ -107,7 +107,7 @@ void handle_command(const char *command, int sock, bool *connected)
 		}
 	}
 
-	else if(str_beginwith(command, TUNNEL))
+	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))
 	{
 		int idClient = 0;
 
@@ -119,5 +119,15 @@ void handle_command(const char *command, int sock, bool *connected)
 	else
 	{
 		printf("\nCommand unknown.\n");
+	}
+}
+
+void lowerCase(char *buff)
+{
+	short int _i;
+
+	for(_i = 0; _i < (short int)strlen(buff) && buff[_i] != ' '; _i++)
+	{
+		buff[_i] = tolower(buff[_i]);
 	}
 }

@@ -41,4 +41,3 @@ int upload(const char *path, int sock)
 	fclose(_file);
 	return 1;
 }
-	

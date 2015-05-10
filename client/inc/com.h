@@ -25,5 +25,10 @@
 #define FILEDWL  2
 #define ASKLIST  3
 
+//ARG
+#define ARGTUN 2
+#define ARGDWL 2
+#define ARGUPL 3
+
 
 #endif
