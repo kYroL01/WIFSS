@@ -26,7 +26,7 @@ int download(const char *path, int sock)
 	{
 		memset(_buff, 0, BUFFER);
 		
-		while(recv(sock, _buff, BUFFER, false) != BUFFER)
+		while(recv(sock, _buff, BUFFER, false) != BUFFER);
 
 		if(!strcmp(_buff, FINISHED))
 		{

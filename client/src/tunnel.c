@@ -45,11 +45,12 @@ void tunneling(int sockServ, int idClient)
 			while(keepGoing)
 			{
 				memset(_buff, 0, BUFFER);
-				recv(_sockClient, _buff, BUFFER, false);
-				memset(_buff, 0, BUFFER);
-				send(_sockClient, _buff, BUFFER, false);
+				printf("|: ");
+				scanf("%s", _buff);
 
-				handle_command(_buff, _sockClient, NULL);
+				lowerCase(_buff);
+
+				handle_command(_buff, _sockClient, &keepGoing);
 			}
 		}
 	}

@@ -87,7 +87,7 @@ void handle_command(const char *command, int sock, bool *connected)
 {
 	if(!strcmp(command, QUIT))
 	{
-		printf("\n\nLet's close connection with Server...");
+		printf("\n\nLet's close this connection...");
 		*connected = false;
 	}
 
@@ -126,7 +126,7 @@ void lowerCase(char *buff)
 {
 	short int _i;
 
-	for(_i = 0; _i < (short int)strlen(buff) && buff[_i] != ' '; _i++)
+	for(_i = 0; _i < (short int)strlen(buff); _i++)
 	{
 		buff[_i] = tolower(buff[_i]);
 	}
