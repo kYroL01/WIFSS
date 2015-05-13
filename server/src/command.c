@@ -3,26 +3,27 @@
 void* command_handler(void* data)
 {
 	char buffer[BSIZE] = "";
-	int running = 1;
+	bool running = true;
 	int i;
 
 	while(running)
 	{
 		scanf("%s", buffer);
 		
-		if(str_beginwith(buffer, "STOP")) {
+		if(str_beginwith(buffer, "STOP"))
+		{
 			broadcast(SID, "[WIFSS] Server is going to shutdown.\n");
 			close_all_connections();
-			for(i=0; i<MAX_CLIENTS; i++)
+			for(i = 0; i < MAX_CLIENTS; i++)
 			{
 				pthread_cancel(threads[i]);
 			}
 			
-			running = 0;
+			running = false;
 		}
 	}
 	
 	printf("[WIFSS] Server stopped.\n");
-	exit(0);
+	exit(false);
 	return data;
 }

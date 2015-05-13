@@ -10,15 +10,21 @@
 #include <pthread.h>
 #include <str.h>
 
+#include <com.h>
+
 #define PORT 		12444
 #define BSIZE		512
 #define MAX_CLIENTS	4
 #define FREE 		1
 #define TAKEN		2
-#define SID		-1
+#define SID			-1
 
 #define RUNNING		1
 #define	STOPPING	2
+
+#define true  1
+#define false 0
+typedef char bool;
 
 struct client_t
 {
@@ -39,7 +45,7 @@ void 	broadcast(int, const char*);
 void 	close_all_connections();
 int 	process_command(const char*, int);
 void* 	command_handler(void* data);
-void* 	on_connection(void *data);
-int	start_server(void);
+void* 	on_connection(void* data);
+int		start_server(void);
 
 #endif

@@ -2,9 +2,11 @@
 
 int isvalid(const char *s)
 {
-	// pour se déconnecter un client envoie une chaine commencant par "qxt"
-	if(str_beginwith(s, "quit"))
-		return 0;
+	if(str_beginwith(s, QUIT))
+	{
+		return 0;		
+	}
+
 	return 1;
 }
 
@@ -12,8 +14,10 @@ void broadcast(int sender, const char *msg)
 {
 	int i;
 	
-	for(i=0;i<MAX_CLIENTS;i++) {
-		if(i != sender) {
+	for(i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(i != sender)
+		{
 			send(g_clients[i].sock, msg, BSIZE, 0);
 		}
 	}
@@ -22,37 +26,42 @@ void broadcast(int sender, const char *msg)
 void close_all_connections()
 {
 	int i;
-	printf("[WIFSS] Fermeture de toutes les connections.... ");
+
+	printf("[WIFSS] Closing all connections...");
 	
-	for(i=0;i<MAX_CLIENTS;i++)
+	for(i = 0; i < MAX_CLIENTS; i++)
+	{
 		close(g_clients[i].sock);
-	printf("fait.\n");
+	}
+
+	printf("Done.\n");
 }
 
-int process_command(const char* command, int sender_id)
+int process_command(const char *command, int sender_id)
 {
 	char cpy[BSIZE] = ""; // Pour copier le message 
 	char buffer[BSIZE] = "";
 	int fsize;
 
-	if(str_beginwith(command, "download"))	{
+	if(str_beginwith(command, DOWNLOAD))
+	{
 		int remote_id = -1;
 		char filename[BSIZE] = "";
 	
-		printf("[Client %d] Demande de téléchargement !\n", sender_id);
+		printf("[Client %d] Asking for upload !\n", sender_id);
 		
 		sscanf(command, "download %s %d", filename, &remote_id);
-		printf("[Client %d] Fichier : \"%s\" de %d\n", sender_id, filename, remote_id);
+		printf("[Client %d] File: \"%s\" of %d\n", sender_id, filename, remote_id);
 		
 		if((remote_id > (MAX_CLIENTS - 1)) || (remote_id < 0) || (remote_id == sender_id)) {
-			send(g_clients[sender_id].sock, "Erreur : Le client demandé est incorrect..\n",
+			send(g_clients[sender_id].sock, "Error: Client wanted is invalid..\n",
 										 		52, 0);
 			return 0;
 		}
 			
 		
 		if(g_clients[remote_id].sock <= 0) {
-			send(g_clients[sender_id].sock, "Erreur : Le client demandé n'est pas connecté..\n",
+			send(g_clients[sender_id].sock, "Erreur: Client asked is not connected..\n",
 										 		52, 0);
 			return 0;
 		}
@@ -62,9 +71,9 @@ int process_command(const char* command, int sender_id)
 		
 		recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
 		sscanf(buffer, "size: %d", &fsize);
-		printf("Taille du fichier : %d\n", fsize);
+		printf("File size: %d\n", fsize);
 		
-		while(strcmp(buffer, "ENDT")) {
+		while(strcmp(buffer, ENDT)) {
 			recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
 			printf("%s", buffer);
 		}	
@@ -74,7 +83,7 @@ int process_command(const char* command, int sender_id)
 		return 0;
 	}
 	
-	else if(str_beginwith(command, "quit")) {
+	else if(str_beginwith(command, QUIT)) {
 		close(g_clients[sender_id].sock);
 		return 1;
 	}
@@ -93,9 +102,9 @@ void* on_connection(void *data)
 	int res;
 	struct client_t client = *((struct client_t*)data);
 
-	printf("[WIFSS] Connexion reçue de %s\n", inet_ntoa(client.addr.sin_addr));
+	printf("[WIFSS] Connection received of %s\n", inet_ntoa(client.addr.sin_addr));
 
-	sprintf(buffer, "[Client %d] Se connecte.\n", client.id);
+	sprintf(buffer, "[Client %d] Connecting...\n", client.id);
 	broadcast(client.id, buffer);
 	
 	while(client.sock > 0)
@@ -106,13 +115,13 @@ void* on_connection(void *data)
 			break; // Le client s'est déco
 		}
 
-		printf("[Client %d] Reçu : %s", client.id, buffer);
+		printf("[Client %d] Received: %s", client.id, buffer);
 		
 		process_command(buffer, client.id);
 	}
 
-	printf("[Client %d] Déconnexion..\n", client.id);
-	sprintf(buffer, "(Le client %d se déconnecte.)\n", client.id);
+	printf("[Client %d] Deconnection..\n", client.id);
+	sprintf(buffer, "(Client %d is deconnecting.)\n", client.id);
 	broadcast(client.id, buffer);;
 	close(client.sock);
 	
@@ -137,20 +146,20 @@ int start_server(void)
 
 	res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
 	if(res < 0) {
-		printf("Erreur bind (%d)\n", res);
+		printf("Error bind (%d)\n", res);
 		return res;
 	}
 	listen(listen_socket, MAX_CLIENTS);
 
 	
-	printf("[WIFSS] Initialisation de la liste des clients..\n");
+	printf("[WIFSS] Initialisation of Clients list..\n");
 	for(i=0;i<MAX_CLIENTS;i++) {
 		g_clients[i].status = FREE;
 	}
 	
 	asize = sizeof(struct sockaddr_in);
 	
-	printf("[WIFSS] Serveur allumé, attente de client..\n");
+	printf("[WIFSS] Server opened, waiting for Clients...\n");
 	
 	
 	pthread_create(&command_thread, NULL, &command_handler, NULL);
@@ -165,7 +174,7 @@ int start_server(void)
 			}
 		}
 		
-		printf("[WIFSS] Connexion reçue  %s:%d -> numéro attribué %d \n", inet_ntoa(client.sin_addr), (unsigned int)ntohs(client.sin_port),
+		printf("[WIFSS] Connection received %s:%d -> Number given: %d \n", inet_ntoa(client.sin_addr), (unsigned int)ntohs(client.sin_port),
 																   current_id);
 		
 		new_client.id 		= current_id;
@@ -177,8 +186,8 @@ int start_server(void)
 		res = pthread_create(&threads[current_id], NULL, &on_connection, (void*)&new_client);
 		
 		if(res != 0) {
-			printf("Erreur lors de la création du thread %d : Erreur %d \n", current_id, res);
-			broadcast(SID, "Erreur critique du serveur, arrêt.\n");
+			printf("Error during Thread creation %d: Error %d \n", current_id, res);
+			broadcast(SID, "Server fatal error, stopping now.\n");
 			close_all_connections();
 			return res;
 		}
@@ -190,11 +199,11 @@ int start_server(void)
 				count++;
 			}
 		}
-		printf("[WIFSS] Il y a %d client(s) connecté(s).\n", count);
+		printf("[WIFSS] There is %d client(s) connected.\n", count);
 	}
 	
 	if(count >= MAX_CLIENTS)
-		broadcast(SID, "Capacitié dépassée, arrêt du serveur.\n");
+		broadcast(SID, "Maximum capacity reached, stopping now.\n");
 	
 	close_all_connections();
 	close(sock);
