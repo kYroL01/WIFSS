@@ -36,7 +36,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 			scanf("%s", _buff);
 			getchar();
 
-			lowerCase(_buff);
+			str_lowerCase(_buff);
 
 			if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
 			{

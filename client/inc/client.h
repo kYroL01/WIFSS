@@ -32,13 +32,14 @@ void disconnect(int);
 void handle_command(const char*, int, bool*);
 int str_beginwith(const char*, const char*);
 int str_validation(const char*, short int);
-void lowerCase(char*);
+void str_lowerCase(char*);
 int upload(const char*, int);
 int download(const char*, int);
-void tunneling(int, int);
+void start_tunnel(int, int);
 
 //THREAD
 void* scom(void*);
+void* tunneling(void*);
 
 
 

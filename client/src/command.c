@@ -46,6 +46,17 @@ int str_validation(const char *str, short int nbArgs)
 	}
 }
 
+void str_lowerCase(char *_buff)
+{
+	short int _i;
+	short int length = (short int)strlen(_buff);
+
+	for(_i = 0; _i < length; _i++)
+	{
+		_buff[_i] = tolower(_buff[_i]);
+	}
+}
+
 void* scom(void *data)
 {
 	int _sock;
@@ -112,22 +123,11 @@ void handle_command(const char *command, int _sock, bool *connected)
 
 		sscanf(command, "tunnel %d", &idClient);
 
-		tunneling(_sock, idClient);
+		start_tunnel(_sock, idClient);
 	}
 
 	else
 	{
 		printf("\nCommand unknown.\n");
-	}
-}
-
-void lowerCase(char *_buff)
-{
-	short int _i;
-	short int length = (short int)strlen(_buff);
-
-	for(_i = 0; _i < length; _i++)
-	{
-		_buff[_i] = tolower(_buff[_i]);
 	}
 }

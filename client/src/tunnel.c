@@ -1,6 +1,6 @@
 #include <client.h>
 
-void tunneling(int sockServ, int idClient)
+void start_tunnel(int sockServ, int idClient)
 {
 	char _buff[BUFFER] = {0};
 
@@ -21,37 +21,50 @@ void tunneling(int sockServ, int idClient)
 
 	else
 	{
-		short int _port;
-		char _addr[16] = {0};
-		struct sockaddr_in _clientTunneled;
+		pthread_t tunnel;
 
-		sscanf(_buff, "idclient: %s %hd", _addr, &_port);
+		pthread_create(&tunnel, NULL, &tunneling, (void*)&_buff);
+	}
+}
 
-		_clientTunneled.sin_family      = AF_INET;
-		_clientTunneled.sin_port        = htons(_port);
-		_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
+void* tunneling(void *data)
+{
+	char *_buff;
 
-		int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
-	
-		if(_result <= 0)
+	_buff = *((char**)data);
+
+	short int _port;
+	char _addr[16] = {0};
+	struct sockaddr_in _clientTunneled;
+
+	sscanf(_buff, "idclient: %s %hd", _addr, &_port);
+
+	_clientTunneled.sin_family      = AF_INET;
+	_clientTunneled.sin_port        = htons(_port);
+	_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
+
+	int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
+
+	if(_result <= 0)
+	{
+		printf("\n\033[31mCan't connect to this Client.\033[0m\n\n");
+	}
+
+	else
+	{
+		bool keepGoing = true;
+		while(keepGoing)
 		{
-			printf("\n\033[31mCan't connect to %d Client.\033[0m\n\n", idClient);
-		}
+			memset(_buff, 0, BUFFER);
+			printf("|: ");
+			scanf("%s", _buff);
 
-		else
-		{
-			bool keepGoing = true;
-			while(keepGoing)
-			{
-				memset(_buff, 0, BUFFER);
-				printf("|: ");
-				scanf("%s", _buff);
+			str_lowerCase(_buff);
 
-				lowerCase(_buff);
-
-				handle_command(_buff, _sockClient, &keepGoing);
-			}
+			handle_command(_buff, _sockClient, &keepGoing);
 		}
 	}
+
+	return NULL;
 }

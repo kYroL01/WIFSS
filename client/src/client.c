@@ -25,7 +25,7 @@ int main(void)
 		printf("|: ");
 		scanf("%s", buff);
 
-		lowerCase(buff);
+		str_lowerCase(buff);
 
 		handle_command(buff, sock, &connected);
 	}
