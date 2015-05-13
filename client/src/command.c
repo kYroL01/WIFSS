@@ -48,42 +48,41 @@ int str_validation(const char *str, short int nbArgs)
 
 void* scom(void *data)
 {
-	int sock;
-	int result;
-	char buff[BUFFER] = {0};
-	
-	sock = *((int*)data);
-	
-	bool keepGoing = true;
-	while(keepGoing)
+	int _sock;
+	int _result;
+	char _buff[BUFFER] = {0};
+
+	_sock = *((int*)data);
+
+	bool _keepGoing = true;
+	while(_keepGoing)
 	{
-		memset(buff, 0, BUFFER);
-		result = recv(sock, buff, BUFFER, 0);
-		
-		/* Ici on reçoit des choses du serveur */
-		if(str_beginwith(buff, UPLOAD))
+		memset(_buff, 0, BUFFER);
+		_result = recv(_sock, _buff, BUFFER, 0);
+
+		if(_result <= 0)
 		{
-			/* Le serv demande d'upload un fichier 
-				on l'envoie au serveur via la fonction upload */
-			char _path[BUFFER] = {0};
-			sscanf(buff, "upload %s", _path);
-			printf("Server is asking us to upload: %s\n", _path);
-			upload(_path, sock);
-		}
-		
-		if(result <= 0)
-		{
-			//keepGoing = false;
-			return NULL;
+			_keepGoing = false;
 		}
 
-		printf("[sthread] received from server: %s\n", buff);
+		else
+		{
+			if(str_beginwith(_buff, UPLOAD))
+			{
+				char _path[BUFFER] = {0};
+				sscanf(_buff, "upload %s", _path);
+				printf("Server is asking us to upload: %s\n", _path);
+				upload(_path, _sock);
+			}
+
+			printf("[sthread] received from server: %s\n", _buff);
+		}
 	}
-	
+
 	return NULL;
 }
 
-void handle_command(const char *command, int sock, bool *connected)
+void handle_command(const char *command, int _sock, bool *connected)
 {
 	if(!strcmp(command, QUIT))
 	{
@@ -97,7 +96,7 @@ void handle_command(const char *command, int sock, bool *connected)
 
 		sscanf(command, "download %s", _path);
 
-		if(!download(command, sock))
+		if(!download(command, _sock))
 		{
 			printf("File couldn't be downloaded correctly.\n\n");
 		}
@@ -113,7 +112,7 @@ void handle_command(const char *command, int sock, bool *connected)
 
 		sscanf(command, "tunnel %d", &idClient);
 
-		tunneling(sock, idClient);
+		tunneling(_sock, idClient);
 	}
 
 	else
@@ -122,12 +121,13 @@ void handle_command(const char *command, int sock, bool *connected)
 	}
 }
 
-void lowerCase(char *buff)
+void lowerCase(char *_buff)
 {
 	short int _i;
+	short int length = (short int)strlen(_buff);
 
-	for(_i = 0; _i < (short int)strlen(buff); _i++)
+	for(_i = 0; _i < length; _i++)
 	{
-		buff[_i] = tolower(buff[_i]);
+		_buff[_i] = tolower(_buff[_i]);
 	}
 }

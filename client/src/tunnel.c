@@ -8,7 +8,7 @@ void tunneling(int sockServ, int idClient)
 
 	sprintf(_buff, "%s %d", DATACLIENT, idClient);
 
-	send(sockServ, _buff, BUFFER, false); //On demande les DATA du Client correspondant au Server
+	send(sockServ, _buff, BUFFER, false); //We're asking Server for Client ID wanted
 	
 	memset(_buff, 0, BUFFER);
 
