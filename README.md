@@ -11,10 +11,11 @@ Run with:
 ### Commands  
 
 List of functions available:  
-```quit```  
+```quit ```  
+```exit ```  
 ```clear ```  
-```download file idclient```  
+```download file idclient ```  
 
 ## Additionnal content  
 
-You can try the system by connect your client to your local server with ```localhost``` or ```local``` as address.
+You can try the system by connect your client to your local server with ```localhost ``` or ```local ``` as address.
