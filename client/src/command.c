@@ -40,10 +40,7 @@ int str_validation(const char *str, short int nbArgs)
 		return 0;
 	}
 
-	else
-	{
-		return 1;
-	}
+	return 1;
 }
 
 void str_lowerCase(char *_buff)
@@ -95,6 +92,8 @@ void* scom(void *data)
 
 void handle_command(const char *command, int _sock, bool *connected)
 {
+	printf("%s\n", command);
+
 	if(!strcmp(command, QUIT))
 	{
 		printf("\n\nLet's close this connection...");

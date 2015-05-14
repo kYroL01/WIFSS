@@ -12,10 +12,12 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 	scanf("%s", _buff);
 	getchar();
 
+	str_lowerCase(_buff);
+
 	if(!strcmp(_buff, LOCALHOST))
 	{
 		memset(_buff, 0, BUFFER);
-		sprintf(_buff, "%s", ADDRLOCAl);
+		sprintf(_buff, "%s", ADDRLOCAL);
 	}
 
 	do
