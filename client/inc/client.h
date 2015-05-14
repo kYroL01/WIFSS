@@ -25,6 +25,7 @@
 typedef char bool;
 
 bool keepGoing;
+bool tunnelOpened;
 
 //FCT
 void initialisation(struct sockaddr_in*, int*, bool*);
@@ -35,12 +36,13 @@ int str_validation(const char*, short int);
 void str_lowerCase(char*);
 int upload(const char*, int);
 int download(const char*, int);
-void start_tunnel(int, int);
+void startunnel(int, int);
+void acceptunnel(int);
 
 //THREAD
 void* scom(void*);
-void* tunneling(void*);
 
+//STRUCT
 
 
 #endif

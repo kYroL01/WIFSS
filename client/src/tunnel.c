@@ -1,6 +1,6 @@
 #include <client.h>
 
-void start_tunnel(int sockServ, int idClient)
+void startunnel(int sockServ, int idClient)
 {
 	char _buff[BUFFER] = {0};
 
@@ -14,57 +14,76 @@ void start_tunnel(int sockServ, int idClient)
 
 	recv(sockServ, _buff, BUFFER, false);
 
+
 	if(!str_beginwith(_buff, IDCLIENT))
 	{
+		tunnelOpened = false;
+
 		printf("\n\033[31mCan't access to client data...\033[0m\n");
 	}
 
 	else
 	{
-		pthread_t tunnel;
+		tunnelOpened = true;
 
-		pthread_create(&tunnel, NULL, &tunneling, (void*)&_buff);
+		short int _port;
+		char _addr[16] = {0};
+		struct sockaddr_in _clientTunneled;
+
+		sscanf(_buff, "idclient: %s %hd", _addr, &_port);
+
+		_clientTunneled.sin_family      = AF_INET;
+		_clientTunneled.sin_port        = htons(_port);
+		_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
+
+		int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+		int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
+
+		if(_result <= 0)
+		{
+			printf("\n\033[31m [tthread] Can't connect to %d Client.\033[0m\n\n", idClient);
+		}
+
+		else
+		{
+			bool _keepTunnel = true;
+			while(_keepTunnel)
+			{
+				memset(_buff, 0, BUFFER);
+				printf("[tthread] |: ");
+				scanf("%s", _buff);
+
+				str_lowerCase(_buff);
+
+				handle_command(_buff, _sockClient, &_keepTunnel);
+			}
+		}
+
+		tunnelOpened = false;
+		close(_sockClient);
 	}
 }
 
-void* tunneling(void *data)
+void acceptunnel(int clientAsking)
 {
-	char *_buff;
+	char _answer[8];
 
-	_buff = *((char**)data);
+	printf("Client %d is asking you to start a tunnel. Accept ? (Yes / No)\n", clientAsking);
 
-	short int _port;
-	char _addr[16] = {0};
-	struct sockaddr_in _clientTunneled;
+	scanf("%s", _answer);
 
-	sscanf(_buff, "idclient: %s %hd", _addr, &_port);
+	str_lowerCase(_answer);
 
-	_clientTunneled.sin_family      = AF_INET;
-	_clientTunneled.sin_port        = htons(_port);
-	_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
-
-	int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
-
-	if(_result <= 0)
+	if(!strcmp(_answer, "yes") || !strcmp(_answer, "y"))
 	{
-		printf("\n\033[31mCan't connect to this Client.\033[0m\n\n");
+		/* */
+
+
+		tunnelOpened = true;
 	}
 
 	else
 	{
-		bool keepGoing = true;
-		while(keepGoing)
-		{
-			memset(_buff, 0, BUFFER);
-			printf("|: ");
-			scanf("%s", _buff);
-
-			str_lowerCase(_buff);
-
-			handle_command(_buff, _sockClient, &keepGoing);
-		}
+		tunnelOpened = false;
 	}
-
-	return NULL;
 }

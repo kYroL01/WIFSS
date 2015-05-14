@@ -52,6 +52,8 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 		}
 
 	} while(_result <= 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
+
+	tunnelOpened = false;
 }
 
 

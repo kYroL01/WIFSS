@@ -11,6 +11,7 @@
 #define PRESENT   "present"
 #define IDCLIENT  "idclient: "
 #define FINISHED  "finished"
+#define ASKTUNNEL "asktunnel "
 
 //CMD
 #define QUIT       "quit"

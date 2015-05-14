@@ -1,2 +1,6 @@
-- Tunneling between clients 
-- Port display bug
+- Tunneling between clients (Client)
+- Port display bug (Server)
+- Recv problem (Server)
+- Download / Upload Threads (Client)
+
+(- Server force Clients deconnection ?)

@@ -77,7 +77,7 @@ void* scom(void *data)
 		}
 
 		else
-		{
+		{			
 			if(str_beginwith(_buff, UPLOAD))
 			{
 				char _path[BUFFER] = {0};
@@ -117,13 +117,22 @@ void handle_command(const char *command, int _sock, bool *connected)
 		}
 	}
 
-	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))
+	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
 	{
 		int idClient = 0;
 
 		sscanf(command, "tunnel %d", &idClient);
 
-		start_tunnel(_sock, idClient);
+		startunnel(_sock, idClient);
+	}
+
+	else if(str_beginwith(command, ASKTUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
+	{
+		int clientAsking = 0;
+
+		sscanf(command, "asktunnel %d", &clientAsking);
+
+		acceptunnel(clientAsking);
 	}
 
 	else
