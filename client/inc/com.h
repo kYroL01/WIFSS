@@ -21,7 +21,8 @@
 #define DATACLIENT "dataclient"
 
 //ADDR
-#define LOCALHOST "127.0.0.1"
+#define LOCALHOST "localhost"
+#define ADDRLOCAL "127.0.0.1"
 
 //SIG
 #define ENDSIG  -1

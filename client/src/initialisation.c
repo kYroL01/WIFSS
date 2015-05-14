@@ -15,7 +15,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 	if(!strcmp(_buff, LOCALHOST))
 	{
 		memset(_buff, 0, BUFFER);
-		sprintf(_buff, "%s", LOCALHOST);
+		sprintf(_buff, "%s", ADDRLOCAl);
 	}
 
 	do
