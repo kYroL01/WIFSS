@@ -5,31 +5,21 @@
 int main(void)
 {
 	int sock;
-	bool connected;
-	char buff[BUFFER] = {0};
+	bool keepGoing;
 	struct sockaddr_in SERVER;
 
 	pthread_t sthread;
 
 
-	initialisation(&SERVER, &sock, &connected);
+	initialisation(&SERVER, &sock, &keepGoing);
 
 
 	pthread_create(&sthread, NULL, &scom, (void*)&sock);
-	
-	keepGoing = true;
-	tunnelOpened = false;
-	while(keepGoing && connected)
+
+
+	while(keepGoing && _sComOn_)
 	{
-		printf("|: ");
-
-		gets(buff);
-
-		str_lowerCase(buff);
-
-		handle_command(buff, sock, &connected);
-
-		memset(buff, 0, BUFFER);
+		communication(sock, &keepGoing, false);
 	}
 
 

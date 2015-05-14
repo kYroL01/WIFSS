@@ -1,89 +1,62 @@
 #include <client.h>
 
-void startunnel(int sockServ, int idClient)
+void startunnel(int sock, int idClient)
 {
 	char _buff[BUFFER] = {0};
 
-	printf("\nLet's create a tunnel with %d Client...\nGathering client data from server...", idClient);
+	printf("\nLet's create a tunnel with %d Client...", idClient);
 
-	sprintf(_buff, "%s %d", DATACLIENT, idClient);
+	sprintf(_buff, "%s %d", ASKTUNNEL, idClient);
 
-	send(sockServ, _buff, BUFFER, false); //We're asking Server for Client ID wanted
+	send(sock, _buff, BUFFER, false);
 	
 	memset(_buff, 0, BUFFER);
 
-	recv(sockServ, _buff, BUFFER, false);
+	recv(sock, _buff, BUFFER, false);
 
 
-	if(!str_beginwith(_buff, IDCLIENT))
+	if(!strcmp(_buff, OKFORTUN))
 	{
-		tunnelOpened = false;
-
-		printf("\n\033[31mCan't access to client data...\033[0m\n");
+		_tunnelOpened_ = true;
+		while(_tunnelOpened_)
+		{
+			communication(sock, &_tunnelOpened_, true);
+		}
 	}
-
 	else
 	{
-		tunnelOpened = true;
-
-		short int _port;
-		char _addr[16] = {0};
-		struct sockaddr_in _clientTunneled;
-
-		sscanf(_buff, "idclient: %s %hd", _addr, &_port);
-
-		_clientTunneled.sin_family      = AF_INET;
-		_clientTunneled.sin_port        = htons(_port);
-		_clientTunneled.sin_addr.s_addr = inet_addr(_addr);
-
-		int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
-
-		if(_result < 0)
-		{
-			printf("\n\033[31m [tthread] Can't connect to %d Client.\033[0m\n\n", idClient);
-		}
-
-		else
-		{
-			bool _keepTunnel = true;
-			while(_keepTunnel)
-			{
-				memset(_buff, 0, BUFFER);
-				printf("[tthread] |: ");
-				scanf("%s", _buff);
-
-				str_lowerCase(_buff);
-
-				handle_command(_buff, _sockClient, &_keepTunnel);
-			}
-		}
-
-		tunnelOpened = false;
-		close(_sockClient);
+		_tunnelOpened_ = false;
+		printf("Can't open a tunnel with %d Client.\n", idClient);
 	}
 }
 
-void acceptunnel(int clientAsking)
+void acceptunnel(int sock, int clientAsking)
 {
-	char _answer[8];
+	char _buff[BUFFER] = {0};
 
-	printf("Client %d is asking you to start a tunnel. Accept ? (Yes / No)\n", clientAsking);
+	printf("Client %d is asking you to start a tunnel. Accept ? (Yes / No)\n\n:| ", clientAsking);
 
-	scanf("%s", _answer);
+	scanf("%s", _buff);
 
-	str_lowerCase(_answer);
+	str_lowerCase(_buff);
 
-	if(!strcmp(_answer, "yes") || !strcmp(_answer, "y"))
+	if(!strcmp(_buff, "yes") || !strcmp(_buff, "y"))
 	{
-		/* */
+		memset(_buff, 0, BUFFER);
+		sprintf(_buff, "%s", OKFORTUN);
+		send(sock, _buff, BUFFER, false);
 
-
-		tunnelOpened = true;
+		_tunnelOpened_ = true;
+		while(_tunnelOpened_)
+		{
+			communication(sock, &_tunnelOpened_, true);
+		}
 	}
-
 	else
 	{
-		tunnelOpened = false;
+		memset(_buff, 0, BUFFER);
+		sprintf(_buff, "%s", KOFORTUN);
+		send(sock, _buff, BUFFER, false);
+		_tunnelOpened_ = false;
 	}
 }

@@ -1,6 +1,6 @@
-- Tunneling between clients (Client)
 - Port display bug (Server)
 - Recv problem (Server)
-- Download / Upload Threads (Client)
-
 (- Server force Clients deconnection ?)
+
+- Tunnel communication (Client) [adapt commands with prefix]
+- Download / Upload Threads (Client)

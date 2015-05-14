@@ -25,21 +25,23 @@
 typedef char bool;
 
 //BOOL
-bool keepGoing;
-bool tunnelOpened;
+bool _sComOn_;
+bool _tunnelOpened_;
 
 //FCT
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnect(int);
 void handle_command(const char*, int, bool*);
+void communication(int, bool*, bool);
 int upload(const char*, int);
 int download(const char*, int);
 void startunnel(int, int);
-void acceptunnel(int);
+void acceptunnel(int, int);
 
 int str_beginwith(const char*, const char*);
 int str_validation(const char*, short int);
 void str_lowerCase(char*);
+
 
 //THREAD
 void* scom(void*);

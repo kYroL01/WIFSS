@@ -7,20 +7,24 @@
 #define FAIL      "fail"
 #define ENDT      "ENDT"
 #define LIST      "list:"
-#define TUNNEL    "tunnel"
+#define ITSATUN   "itsatun"
 #define PRESENT   "present"
-#define IDCLIENT  "idclient:"
+#define OKFORTUN  "okfortun"
+#define KOFORTUN  "kofortun"
 #define FINISHED  "finished"
 #define ASKTUNNEL "asktunnel"
 
 //CMD
 #define EXIT       "exit"
 #define QUIT       "quit"
+#define SEND       "send"
+#define SENDP      "sendp"
 #define CLEAR      "clear"
+#define TUNNEL     "tunnel"
 #define UPLOAD     "upload"
 #define DOWNLOAD   "download"
 #define ISPRESENT  "ispresent"
-#define DATACLIENT "dataclient"
+#define DISCONNECT "disconnect"
 
 //ADDR
 #define LOCAL     "local"

@@ -62,20 +62,22 @@ void* scom(void *data)
 
 	_sock = *((int*)data);
 
-	bool _keepGoing = true;
-	while(_keepGoing)
+	_sComOn_ = true;
+	while(_sComOn_)
 	{
 		memset(_buff, 0, BUFFER);
 		_result = recv(_sock, _buff, BUFFER, 0);
 
 		if(_result <= 0)
 		{
-			_keepGoing = false;
+			_sComOn_ = false;
 		}
 
 		else
 		{			
-			if(str_beginwith(_buff, UPLOAD))
+			printf("\n\n[sthread] Received from server: %s\n", _buff);
+
+			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
 			{
 				char _path[BUFFER] = {0};
 				sscanf(_buff, "upload %s", _path);
@@ -83,19 +85,44 @@ void* scom(void *data)
 				upload(_path, _sock);
 			}
 
-			printf("\n\n[sthread] Received from server: %s\n", _buff);
+			else if(str_beginwith(_buff, ASKTUNNEL) && str_validation(_buff, ARGTUN))
+			{
+				if(!_tunnelOpened_)
+				{
+					int _clientAsking = 0;
+
+					sscanf(_buff, "asktunnel %d", &_clientAsking);
+
+					acceptunnel(_sock, _clientAsking);
+				}
+				else
+				{
+					printf("\n\n[sthread] Someone is asking you for a tunnel but you're already tunneled\n");
+				}
+			}
+
+			else if(!strcmp(_buff, DISCONNECT))
+			{
+				printf("\n\n[sthread] Server is demanding the Client disconnection. Stopping now.\n");
+				_sComOn_ = false;
+			}
+
+			else
+			{
+				printf("\n\n[sthread] Command unknown received from Server.\n");
+			}
 		}
 	}
 
 	return NULL;
 }
 
-void handle_command(const char *command, int _sock, bool *connected)
+void handle_command(const char *command, int _sock, bool *keepGoing)
 {
 	if(!strcmp(command, QUIT) || !strcmp(command, EXIT))
 	{
 		printf("\n\nLet's close this connection...");
-		*connected = false;
+		*keepGoing = false;
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
@@ -116,22 +143,25 @@ void handle_command(const char *command, int _sock, bool *connected)
 		}
 	}
 
-	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
+	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))
 	{
-		int _idClient = 0;
+		if(!_tunnelOpened_)
+		{
+			int _idClient = 0;
 
-		sscanf(command, "tunnel %d", &_idClient);
+			sscanf(command, "tunnel %d", &_idClient);
 
-		startunnel(_sock, _idClient);
+			startunnel(_sock, _idClient);
+		}
+		else
+		{
+			printf("You're already tunneled with someone.\n\n");
+		}
 	}
 
-	else if(str_beginwith(command, ASKTUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
+	else if(str_beginwith(command, SEND) || str_beginwith(command, SENDP))
 	{
-		int _clientAsking = 0;
-
-		sscanf(command, "asktunnel %d", &_clientAsking);
-
-		acceptunnel(_clientAsking);
+		send(sock, _buff, BUFFER, false);
 	}
 
 	else if(!strcmp(command, CLEAR))
@@ -147,5 +177,36 @@ void handle_command(const char *command, int _sock, bool *connected)
 	else
 	{
 		printf("Command unknown.\n\n");
+	}
+}
+
+void communication(int sock, bool *booleen, bool isTunnel)
+{
+	static char _buff[BUFFER];
+
+	memset(_buff, 0, BUFFER);
+	
+	if(!isTunnel)
+	{
+		printf("|: ");
+
+		gets(_buff);
+
+		str_lowerCase(_buff);
+
+		handle_command(_buff, sock, booleen);
+	}
+
+	else
+	{
+		printf("[Tunnel] |: ");
+
+		gets(_buff);
+
+		str_lowerCase(_buff);
+
+		sprintf(_buff, "%s: %s", ITSATUN, _buff);
+
+		handle_command(_buff, sock, booleen);
 	}
 }
