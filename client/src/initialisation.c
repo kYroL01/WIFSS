@@ -30,7 +30,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 	{
 		_result = connect(*sock, (struct sockaddr*)SERVER, sizeof(*SERVER));
 
-		if(_result <= 0)
+		if(_result < 0)
 		{
 			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (yes / no)\033[0m\n:| ", inet_ntoa(SERVER->sin_addr), _port);
 			scanf("%s", _buff);
@@ -51,7 +51,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(SERVER->sin_addr), ntohs(SERVER->sin_port));
 		}
 
-	} while(_result <= 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
+	} while(_result < 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
 
 	tunnelOpened = false;
 }

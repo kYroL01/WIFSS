@@ -39,7 +39,7 @@ void startunnel(int sockServ, int idClient)
 		int _sockClient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		int _result = connect(_sockClient, (struct sockaddr*)&_clientTunneled, sizeof(_clientTunneled));
 
-		if(_result <= 0)
+		if(_result < 0)
 		{
 			printf("\n\033[31m [tthread] Can't connect to %d Client.\033[0m\n\n", idClient);
 		}

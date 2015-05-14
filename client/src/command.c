@@ -34,7 +34,7 @@ int str_validation(const char *str, short int nbArgs)
 		return 0;
 	}
 
-	else if (_arg < nbArgs)
+	else if(_arg < nbArgs)
 	{
 		printf("\nToo few arguments for this command.\n\n");
 		return 0;
