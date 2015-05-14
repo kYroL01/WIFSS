@@ -31,7 +31,6 @@ int main(void)
 	}
 
 
-
 	disconnect(sock);
 
 	return 1;

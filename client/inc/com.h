@@ -20,6 +20,9 @@
 #define ISPRESENT  "ispresent "
 #define DATACLIENT "dataclient"
 
+//ADDR
+#define LOCALHOST "127.0.0.1"
+
 //SIG
 #define ENDSIG  -1
 #define ASKFILE  1

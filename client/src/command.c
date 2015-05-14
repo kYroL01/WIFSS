@@ -82,11 +82,11 @@ void* scom(void *data)
 			{
 				char _path[BUFFER] = {0};
 				sscanf(_buff, "upload %s", _path);
-				printf("Server is asking us to upload: %s\n", _path);
+				printf("\nServer is asking us to upload: %s\n", _path);
 				upload(_path, _sock);
 			}
 
-			printf("[sthread] received from server: %s\n", _buff);
+			printf("\n[sthread] received from server: %s\n", _buff);
 		}
 	}
 
@@ -104,8 +104,11 @@ void handle_command(const char *command, int _sock, bool *connected)
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
 		char _path[32] = {0};
+		int _idClient = 0;
 
-		sscanf(command, "download %s", _path);
+		send(_sock, command, BUFFER, false);
+
+		sscanf(command, "download %s %d", _path, &_idClient);
 
 		if(!download(command, _sock))
 		{
@@ -119,20 +122,20 @@ void handle_command(const char *command, int _sock, bool *connected)
 
 	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
 	{
-		int idClient = 0;
+		int _idClient = 0;
 
-		sscanf(command, "tunnel %d", &idClient);
+		sscanf(command, "tunnel %d", &_idClient);
 
-		startunnel(_sock, idClient);
+		startunnel(_sock, _idClient);
 	}
 
 	else if(str_beginwith(command, ASKTUNNEL) && str_validation(command, ARGTUN) && !tunnelOpened)
 	{
-		int clientAsking = 0;
+		int _clientAsking = 0;
 
-		sscanf(command, "asktunnel %d", &clientAsking);
+		sscanf(command, "asktunnel %d", &_clientAsking);
 
-		acceptunnel(clientAsking);
+		acceptunnel(_clientAsking);
 	}
 
 	else

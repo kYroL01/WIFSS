@@ -24,6 +24,7 @@
 #define false 0
 typedef char bool;
 
+//BOOL
 bool keepGoing;
 bool tunnelOpened;
 

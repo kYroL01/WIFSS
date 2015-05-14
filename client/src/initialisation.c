@@ -12,6 +12,12 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 	scanf("%s", _buff);
 	getchar();
 
+	if(!strcmp(_buff, LOCALHOST))
+	{
+		memset(_buff, 0, BUFFER);
+		sprintf(_buff, "%s", LOCALHOST);
+	}
+
 	do
 	{
 		printf("Port: ");
