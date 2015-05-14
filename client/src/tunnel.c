@@ -20,7 +20,7 @@ void startunnel(int sock, int idClient)
 		_tunnelOpened_ = true;
 		while(_tunnelOpened_)
 		{
-			communication(sock, &_tunnelOpened_, true);
+			communication(sock, NULL);
 		}
 	}
 	else
@@ -49,7 +49,7 @@ void acceptunnel(int sock, int clientAsking)
 		_tunnelOpened_ = true;
 		while(_tunnelOpened_)
 		{
-			communication(sock, &_tunnelOpened_, true);
+			communication(sock, NULL);
 		}
 	}
 	else

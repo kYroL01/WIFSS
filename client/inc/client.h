@@ -32,7 +32,7 @@ bool _tunnelOpened_;
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnect(int);
 void handle_command(const char*, int, bool*);
-void communication(int, bool*, bool);
+void communication(int, bool*);
 int upload(const char*, int);
 int download(const char*, int);
 void startunnel(int, int);

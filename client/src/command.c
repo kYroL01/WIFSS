@@ -119,21 +119,36 @@ void* scom(void *data)
 
 void handle_command(const char *command, int _sock, bool *keepGoing)
 {
-	if(!strcmp(command, QUIT) || !strcmp(command, EXIT))
+	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP))
 	{
-		printf("\n\nLet's close this connection...");
-		*keepGoing = false;
+		if(!_tunnelOpened_)
+		{
+			printf("\n\nLet's close connection with Server...\n");
+			*keepGoing = false;
+		}
+		else
+		{
+			printf("\n\nLet's close tunnel with the other Client...\n");
+			_tunnelOpened_ = false;
+		}
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
 		char _path[32] = {0};
-
+		
 		send(_sock, command, BUFFER, false);
+		
+		if(!_tunnelOpened_)
+		{
+			sscanf(command, "download %s", _path);
+		}
+		else
+		{
+			sscanf(command, "tunnel download %s", _path);
+		}
 
-		sscanf(command, "download %s", _path);
-
-		if(!download(command, _sock))
+		if(!download(_path, _sock))
 		{
 			printf("File couldn't be downloaded correctly.\n\n");
 		}
@@ -159,9 +174,21 @@ void handle_command(const char *command, int _sock, bool *keepGoing)
 		}
 	}
 
-	else if(str_beginwith(command, SEND) || str_beginwith(command, SENDP))
+	else if(str_beginwith(command, SEND))
 	{
-		send(sock, _buff, BUFFER, false);
+		send(_sock, command, BUFFER, false);
+	}
+
+	else if(str_beginwith(command, SENDP))
+	{
+		if(!_tunnelOpened_)
+		{
+			send(_sock, command, BUFFER, false);
+		}
+		else
+		{
+			printf("You're tunneling ! You don't have to inform the recipient.\n");
+		}
 	}
 
 	else if(!strcmp(command, CLEAR))
@@ -180,33 +207,25 @@ void handle_command(const char *command, int _sock, bool *keepGoing)
 	}
 }
 
-void communication(int sock, bool *booleen, bool isTunnel)
+void communication(int sock, bool *booleen)
 {
 	static char _buff[BUFFER];
 
 	memset(_buff, 0, BUFFER);
 	
-	if(!isTunnel)
+	if(!_tunnelOpened_)
 	{
 		printf("|: ");
-
 		gets(_buff);
-
 		str_lowerCase(_buff);
-
 		handle_command(_buff, sock, booleen);
 	}
 
 	else
 	{
 		printf("[Tunnel] |: ");
-
 		gets(_buff);
-
 		str_lowerCase(_buff);
-
-		sprintf(_buff, "%s: %s", ITSATUN, _buff);
-
-		handle_command(_buff, sock, booleen);
+		handle_command(_buff, sock, NULL);
 	}
 }

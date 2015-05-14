@@ -19,7 +19,7 @@ int main(void)
 
 	while(keepGoing && _sComOn_)
 	{
-		communication(sock, &keepGoing, false);
+		communication(sock, &keepGoing);
 	}
 
 
