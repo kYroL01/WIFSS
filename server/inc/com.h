@@ -1,5 +1,5 @@
-#ifndef __COM_H
-#define __COM_H
+#ifndef __COM__
+#define __COM__
 
 
 //ACK

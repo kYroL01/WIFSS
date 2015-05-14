@@ -1,5 +1,5 @@
-#ifndef __CLIENT_H
-#define __CLIENT_H
+#ifndef __CLIENT__
+#define __CLIENT__
 
 
 #include <stdio.h>
@@ -32,13 +32,14 @@ bool tunnelOpened;
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnect(int);
 void handle_command(const char*, int, bool*);
-int str_beginwith(const char*, const char*);
-int str_validation(const char*, short int);
-void str_lowerCase(char*);
 int upload(const char*, int);
 int download(const char*, int);
 void startunnel(int, int);
 void acceptunnel(int);
+
+int str_beginwith(const char*, const char*);
+int str_validation(const char*, short int);
+void str_lowerCase(char*);
 
 //THREAD
 void* scom(void*);

@@ -17,8 +17,8 @@ int main(void)
 
 	pthread_create(&sthread, NULL, &scom, (void*)&sock);
 	
-
 	keepGoing = true;
+	tunnelOpened = false;
 	while(keepGoing && connected)
 	{
 		printf("|: ");
@@ -37,6 +37,3 @@ int main(void)
 
 	return 1;
 }
-
-
-//gcc *.c -Wall -W -lpthread -I\../inc -o client_WIFFS && ./client_WIFFS

@@ -13,7 +13,7 @@ int upload(const char *path, int sock)
 	{
 		printf("%s file asked is unreachable.\n", path);
 		send(sock, FAIL, strlen(FAIL), false);
-		return -1;
+		return 0;
 	}
 
 	fseek(_file, 0, SEEK_END);

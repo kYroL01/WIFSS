@@ -1,5 +1,5 @@
-#ifndef __COM_H
-#define __COM_H
+#ifndef __COM__
+#define __COM__
 
 
 //ACK
@@ -14,13 +14,16 @@
 #define ASKTUNNEL "asktunnel"
 
 //CMD
+#define EXIT       "exit"
 #define QUIT       "quit"
+#define CLEAR      "clear"
 #define UPLOAD     "upload"
 #define DOWNLOAD   "download"
 #define ISPRESENT  "ispresent"
 #define DATACLIENT "dataclient"
 
 //ADDR
+#define LOCAL     "local"
 #define LOCALHOST "localhost"
 #define ADDRLOCAL "127.0.0.1"
 

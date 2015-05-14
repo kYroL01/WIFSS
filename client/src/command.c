@@ -30,27 +30,27 @@ int str_validation(const char *str, short int nbArgs)
 
 	if(_arg > nbArgs)
 	{
-		printf("\nToo many arguments for this command.\n\n");
+		printf("Too many arguments for this command.\n\n");
 		return 0;
 	}
 
 	else if(_arg < nbArgs)
 	{
-		printf("\nToo few arguments for this command.\n\n");
+		printf("Too few arguments for this command.\n\n");
 		return 0;
 	}
 
 	return 1;
 }
 
-void str_lowerCase(char *_buff)
+void str_lowerCase(char *buff)
 {
 	short int _i;
-	short int _length = (short int)strlen(_buff);
+	short int _length = (short int)strlen(buff);
 
-	for(_i = 0; _i < _length; _i++)
+	for(_i = 0; _i < _length && buff[_i] != ' '; _i++) //Tolower only first word !
 	{
-		_buff[_i] = tolower(_buff[_i]);
+		buff[_i] = tolower(buff[_i]);
 	}
 }
 
@@ -79,11 +79,11 @@ void* scom(void *data)
 			{
 				char _path[BUFFER] = {0};
 				sscanf(_buff, "upload %s", _path);
-				printf("\nServer is asking us to upload: %s\n", _path);
+				printf("\n\n[sthread] Server is asking us to upload: %s\n", _path);
 				upload(_path, _sock);
 			}
 
-			printf("\n[sthread] received from server: %s\n", _buff);
+			printf("\n\n[sthread] Received from server: %s\n", _buff);
 		}
 	}
 
@@ -92,7 +92,7 @@ void* scom(void *data)
 
 void handle_command(const char *command, int _sock, bool *connected)
 {
-	if(!strcmp(command, QUIT))
+	if(!strcmp(command, QUIT) || !strcmp(command, EXIT))
 	{
 		printf("\n\nLet's close this connection...");
 		*connected = false;
@@ -134,8 +134,18 @@ void handle_command(const char *command, int _sock, bool *connected)
 		acceptunnel(_clientAsking);
 	}
 
+	else if(!strcmp(command, CLEAR))
+	{
+		system("clear");
+	}
+
+	else if(!strcmp(command, "\0") || !strcmp(command, " "))
+	{
+		//Do nothing...
+	}
+
 	else
 	{
-		printf("\nCommand unknown.\n");
+		printf("Command unknown.\n\n");
 	}
 }

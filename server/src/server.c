@@ -120,7 +120,7 @@ void* on_connection(void *data)
 		process_command(buffer, client.id);
 	}
 
-	printf("[Client %d] Deconnection..\n", client.id);
+	printf("[Client %d] Deconnection...\n", client.id);
 	sprintf(buffer, "(Client %d is deconnecting.)\n", client.id);
 	broadcast(client.id, buffer);;
 	close(client.sock);

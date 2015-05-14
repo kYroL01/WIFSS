@@ -16,7 +16,7 @@ int download(const char *path, int sock)
 		return 0;
 	}
 
-	printf("Reception of %s file started.\n", path);
+	printf("\nReception of %s file started !\n", path);
 
 	char _buff[BUFFER];
 
