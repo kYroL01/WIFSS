@@ -6,7 +6,7 @@ int main(void)
 {
 	int sock;
 	bool connected;
-	char buff[BUFFER];
+	char buff[BUFFER] = {0};
 	struct sockaddr_in SERVER;
 
 	pthread_t sthread;
@@ -21,13 +21,15 @@ int main(void)
 	keepGoing = true;
 	while(keepGoing && connected)
 	{
-		memset(buff, 0, BUFFER);
 		printf("|: ");
-		scanf("%s", buff);
+
+		gets(buff);
 
 		str_lowerCase(buff);
 
 		handle_command(buff, sock, &connected);
+
+		memset(buff, 0, BUFFER);
 	}
 
 

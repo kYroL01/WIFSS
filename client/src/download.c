@@ -12,8 +12,8 @@ int download(const char *path, int sock)
 
 	if(_file == NULL)
 	{
-		printf("%s file cannot be created.\n", path);
-		return -1;
+		printf("\n%s file cannot be created.\n", path);
+		return 0;
 	}
 
 	printf("Reception of %s file started.\n", path);

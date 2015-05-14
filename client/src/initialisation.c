@@ -24,6 +24,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 	{
 		printf("Port: ");
 		scanf("%hd", &_port);
+		getchar();
 
 	} while(_port < 1024);
 
@@ -40,7 +41,7 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *connected)
 
 		if(_result < 0)
 		{
-			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (yes / no)\033[0m\n:| ", inet_ntoa(SERVER->sin_addr), _port);
+			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (yes / no)\033[0m\n\n:| ", inet_ntoa(SERVER->sin_addr), _port);
 			scanf("%s", _buff);
 			getchar();
 

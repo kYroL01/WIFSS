@@ -46,9 +46,9 @@ int str_validation(const char *str, short int nbArgs)
 void str_lowerCase(char *_buff)
 {
 	short int _i;
-	short int length = (short int)strlen(_buff);
+	short int _length = (short int)strlen(_buff);
 
-	for(_i = 0; _i < length; _i++)
+	for(_i = 0; _i < _length; _i++)
 	{
 		_buff[_i] = tolower(_buff[_i]);
 	}
@@ -92,8 +92,6 @@ void* scom(void *data)
 
 void handle_command(const char *command, int _sock, bool *connected)
 {
-	printf("%s\n", command);
-
 	if(!strcmp(command, QUIT))
 	{
 		printf("\n\nLet's close this connection...");
@@ -103,11 +101,10 @@ void handle_command(const char *command, int _sock, bool *connected)
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
 		char _path[32] = {0};
-		int _idClient = 0;
 
 		send(_sock, command, BUFFER, false);
 
-		sscanf(command, "download %s %d", _path, &_idClient);
+		sscanf(command, "download %s", _path);
 
 		if(!download(command, _sock))
 		{
