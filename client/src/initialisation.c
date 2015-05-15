@@ -65,8 +65,6 @@ bool init(struct sockaddr_in *SERVER, int *sock)
 
 	} while(_result < 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
 
-	_tunnelOpened_ = false;
-
 	return true;
 }
 

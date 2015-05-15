@@ -1,6 +1,6 @@
 #include <client.h>
 
-void startunnel(int sock, int idClient)
+void startunnel(MUTEX *data, int idClient)
 {
 	char _buff[BUFFER] = {0};
 
@@ -8,29 +8,29 @@ void startunnel(int sock, int idClient)
 
 	sprintf(_buff, "%s %d", ASKTUNNEL, idClient);
 
-	send(sock, _buff, BUFFER, false);
+	send(data->sock, _buff, BUFFER, false);
 	
 	memset(_buff, 0, BUFFER);
 
-	recv(sock, _buff, BUFFER, false);
+	recv(data->sock, _buff, BUFFER, false);
 
 
 	if(!strcmp(_buff, OKFORTUN))
 	{
-		_tunnelOpened_ = true;
-		while(_tunnelOpened_)
+		data->tunnelOpened = true;
+		while(data->tunnelOpened)
 		{
-			communication(sock, NULL);
+			communication(data);
 		}
 	}
 	else
 	{
-		_tunnelOpened_ = false;
+		data->tunnelOpened = false;
 		printf("Can't open a tunnel with %d Client.\n", idClient);
 	}
 }
 
-void acceptunnel(int sock, int clientAsking)
+void acceptunnel(MUTEX *data, int clientAsking)
 {
 	char _buff[BUFFER] = {0};
 
@@ -44,19 +44,19 @@ void acceptunnel(int sock, int clientAsking)
 	{
 		memset(_buff, 0, BUFFER);
 		sprintf(_buff, "%s", OKFORTUN);
-		send(sock, _buff, BUFFER, false);
+		send(data->sock, _buff, BUFFER, false);
 
-		_tunnelOpened_ = true;
-		while(_tunnelOpened_)
+		data->tunnelOpened = true;
+		while(data->tunnelOpened)
 		{
-			communication(sock, NULL);
+			communication(data);
 		}
 	}
 	else
 	{
 		memset(_buff, 0, BUFFER);
 		sprintf(_buff, "%s", KOFORTUN);
-		send(sock, _buff, BUFFER, false);
-		_tunnelOpened_ = false;
+		send(data->sock, _buff, BUFFER, false);
+		data->tunnelOpened = false;
 	}
 }

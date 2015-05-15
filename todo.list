@@ -1,5 +1,3 @@
 - Port display bug (Server)
-- Recv problem (Server)
+- Recv problem due to Thread (Server)
 (- Server force Clients deconnection ?)
-
-- Download / Upload Threads (Client)

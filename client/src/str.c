@@ -1,22 +1,22 @@
 #include <client.h>
 
-int str_beginwith(const char *w, const char *s)
+bool str_beginwith(const char *w, const char *s)
 {
 	while(*s)
 	{
 		if(*s != *w)
 		{
-			return 0;
+			return false;
 		}
 
 		w++;
 		s++;
 	}
 
-	return 1;
+	return true;
 }
 
-int str_validation(const char *str, short int nbArgs)
+bool str_validation(const char *str, short int nbArgs)
 {
 	short int _i, _arg;
 
@@ -31,16 +31,16 @@ int str_validation(const char *str, short int nbArgs)
 	if(_arg > nbArgs)
 	{
 		printf("Too many arguments for this command.\n\n");
-		return 0;
+		return false;
 	}
 
 	else if(_arg < nbArgs)
 	{
 		printf("Too few arguments for this command.\n\n");
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 void str_lowerCase(char *buff)

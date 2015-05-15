@@ -12,9 +12,6 @@
 #include <ctype.h>
 #include <pthread.h>
 
-#include <com.h>
-#include <str.h>
-
 
 #define BUFFER 256
 
@@ -22,28 +19,42 @@
 #define false 0
 typedef char bool;
 
-//BOOL
-//bool _sComOn_;
-bool _tunnelOpened_;
 
-//FCT
+#include <com.h>
+#include <str.h>
+
+
+//DATA_MUTEXED
+typedef struct
+{
+	int sock;
+	bool keepGoing;
+	bool tunnelOpened;
+
+	pthread_mutex_t mutex;
+
+} MUTEX;
+
+
+//START_STOP
 bool init(struct sockaddr_in*, int*);
 void disconnect(int);
 
-void handle_command(const char*, int, bool*);
-void communication(int, bool*);
+//COMMUNICATION
+void handle_command(const char*, MUTEX*);
+void communication(MUTEX*);
 
+//TRANSFER
 int upload(const char*, int);
 int download(const char*, int);
 
-void startunnel(int, int);
-void acceptunnel(int, int);
+//TUNNEL
+void startunnel(MUTEX*, int);
+void acceptunnel(MUTEX*, int);
 
-//THREAD
-void* scom(void*);
-void* clientCommand(void*);
-
-//STRUCT
+//THREAD_COMMUNICATION
+void* serverCommunication(void*);
+void* clientCommunication(void*);
 
 
 #endif
