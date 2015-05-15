@@ -23,11 +23,11 @@
 typedef char bool;
 
 //BOOL
-bool _sComOn_;
+//bool _sComOn_;
 bool _tunnelOpened_;
 
 //FCT
-void initialisation(struct sockaddr_in*, int*, bool*);
+bool init(struct sockaddr_in*, int*);
 void disconnect(int);
 
 void handle_command(const char*, int, bool*);
@@ -41,6 +41,7 @@ void acceptunnel(int, int);
 
 //THREAD
 void* scom(void*);
+void* clientCommand(void*);
 
 //STRUCT
 

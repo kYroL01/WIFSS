@@ -8,15 +8,15 @@ void* scom(void *data)
 
 	_sock = *((int*)data);
 
-	_sComOn_ = true;
-	while(_sComOn_)
+	while(1)
 	{
+		printf("test1\n");
 		memset(_buff, 0, BUFFER);
-		_result = recv(_sock, _buff, BUFFER, 0);
+		_result = recv(_sock, _buff, BUFFER, false);
 
 		if(_result <= 0)
 		{
-			_sComOn_ = false;
+			pthread_exit(NULL);
 		}
 
 		else
@@ -50,7 +50,7 @@ void* scom(void *data)
 			else if(!strcmp(_buff, DISCONNECT))
 			{
 				printf("\n\n[sthread] Server is demanding the Client disconnection. Stopping now.\n");
-				_sComOn_ = false;
+				pthread_exit(NULL);
 			}
 
 			else
@@ -61,6 +61,22 @@ void* scom(void *data)
 	}
 
 	return NULL;
+}
+
+void* clientCommand(void *data)
+{
+	bool _keepGoing = true;
+
+	int _sock;
+
+	_sock = *((int*)data);
+
+	while(_keepGoing)
+	{
+		communication(_sock, &_keepGoing);
+	}
+
+	pthread_exit(NULL);
 }
 
 void handle_command(const char *command, int _sock, bool *keepGoing)
@@ -87,14 +103,7 @@ void handle_command(const char *command, int _sock, bool *keepGoing)
 		
 		sscanf(command, "download %s", _path);		
 
-		if(!download(_path, _sock))
-		{
-			printf("File couldn't be downloaded correctly.\n\n");
-		}
-		else
-		{
-			printf("File downloaded !\n\n");
-		}
+		download(_path, _sock);
 	}
 
 	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))

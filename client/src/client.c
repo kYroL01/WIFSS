@@ -5,23 +5,19 @@
 int main(void)
 {
 	int sock;
-	bool keepGoing;
 	struct sockaddr_in SERVER;
 
-	pthread_t sthread;
+	pthread_t sthread, cthread;
 
-
-	initialisation(&SERVER, &sock, &keepGoing);
-
-
-	pthread_create(&sthread, NULL, &scom, (void*)&sock);
-
-
-	while(keepGoing && _sComOn_)
-	{
-		communication(sock, &keepGoing);
+	if(init(&SERVER, &sock) == true)
+	{		
+		pthread_create(&sthread, NULL, &scom, (void*)&sock);
+		
+		pthread_create(&cthread, NULL, &clientCommand, (void*)&sock);
 	}
 
+	pthread_join(sthread, NULL);
+	pthread_join(cthread, NULL);
 
 	disconnect(sock);
 

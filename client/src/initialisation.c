@@ -1,6 +1,6 @@
 #include <client.h>
 
-void initialisation(struct sockaddr_in *SERVER, int *sock, bool *keepGoing)
+bool init(struct sockaddr_in *SERVER, int *sock)
 {
 	char _buff[BUFFER] = {0};
 	short int _port;
@@ -54,20 +54,20 @@ void initialisation(struct sockaddr_in *SERVER, int *sock, bool *keepGoing)
 
 			if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
 			{
-				*keepGoing = false;
-				return;
+				return false;
 			}
 		}
 
 		else
 		{
-			*keepGoing = true;
 			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(SERVER->sin_addr), ntohs(SERVER->sin_port));
 		}
 
 	} while(_result < 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
 
 	_tunnelOpened_ = false;
+
+	return true;
 }
 
 

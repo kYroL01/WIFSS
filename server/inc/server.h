@@ -12,7 +12,7 @@
 
 #include <com.h>
 
-#define PORT 		12444
+#define PORT 		12445
 #define BSIZE		512
 #define MAX_CLIENTS	4
 #define FREE 		1
