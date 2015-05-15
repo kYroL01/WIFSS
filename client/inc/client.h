@@ -2,9 +2,6 @@
 #define __CLIENT__
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -16,6 +13,7 @@
 #include <pthread.h>
 
 #include <com.h>
+#include <str.h>
 
 
 #define BUFFER 256
@@ -31,17 +29,15 @@ bool _tunnelOpened_;
 //FCT
 void initialisation(struct sockaddr_in*, int*, bool*);
 void disconnect(int);
+
 void handle_command(const char*, int, bool*);
 void communication(int, bool*);
+
 int upload(const char*, int);
 int download(const char*, int);
+
 void startunnel(int, int);
 void acceptunnel(int, int);
-
-int str_beginwith(const char*, const char*);
-int str_validation(const char*, short int);
-void str_lowerCase(char*);
-
 
 //THREAD
 void* scom(void*);

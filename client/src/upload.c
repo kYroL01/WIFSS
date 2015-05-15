@@ -21,9 +21,9 @@ int upload(const char *path, int sock)
 	fseek(_file, 0, 0);
 
 	printf("Sending: %ld bytes of %s\n", _fsize, path);
-	
-	/* On dit la taille du fichier au serveur */
+
 	sprintf(_buff, "size: %ld", _fsize);
+
 	send(sock, _buff, BUFFER, false);
 
 
