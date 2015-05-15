@@ -10,7 +10,6 @@ void* scom(void *data)
 
 	while(1)
 	{
-		printf("test1\n");
 		memset(_buff, 0, BUFFER);
 		_result = recv(_sock, _buff, BUFFER, false);
 
