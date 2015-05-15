@@ -18,12 +18,11 @@ int upload(const char *path, int sock)
 
 	fseek(_file, 0, SEEK_END);
 	_fsize = ftell(_file);
-	fseek(_file, 0, 0);
+	fseek(_file, 0, SEEK_SET);
 
 	printf("Sending: %ld bytes of %s\n", _fsize, path);
 
 	sprintf(_buff, "size: %ld", _fsize);
-
 	send(sock, _buff, BUFFER, false);
 
 

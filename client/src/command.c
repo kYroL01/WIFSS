@@ -20,7 +20,7 @@ void* scom(void *data)
 
 		else
 		{			
-			printf("\n\n[sthread] Received from server: %s\n", _buff);
+			/* printf("\n\n[sthread] Received from server: %s\n", _buff); */
 
 			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
 			{
