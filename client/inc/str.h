@@ -7,8 +7,8 @@
 #include <string.h>
 
 
-bool str_beginwith(const char*, const char*);
-bool str_validation(const char*, short int);
+_Bool str_beginwith(const char*, const char*);
+_Bool str_validation(const char*, short int);
 void str_lowerCase(char*);
 
 

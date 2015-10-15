@@ -1,6 +1,6 @@
 #include <client.h>
 
-bool init(struct sockaddr_in *SERVER, int *sock)
+_Bool init(struct sockaddr_in *server, int *sock)
 {
 	char _buff[BUFFER] = {0};
 	short int _port;
@@ -33,20 +33,20 @@ bool init(struct sockaddr_in *SERVER, int *sock)
 
 	} while(_port < 1024);
 
-	SERVER->sin_family      = AF_INET;
-	SERVER->sin_port        = htons(_port);
-	SERVER->sin_addr.s_addr = inet_addr(_buff);
+	server->sin_family      = AF_INET;
+	server->sin_port        = htons(_port);
+	server->sin_addr.s_addr = inet_addr(_buff);
 
 	*sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	int _result;
 	do
 	{
-		_result = connect(*sock, (struct sockaddr*)SERVER, sizeof(*SERVER));
+		_result = connect(*sock, (struct sockaddr*)server, sizeof(*server));
 
 		if(_result < 0)
 		{
-			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (Yes / No)\033[0m\n\n:| ", inet_ntoa(SERVER->sin_addr), _port);
+			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (Yes / No)\033[0m\n\n:| ", inet_ntoa(server->sin_addr), _port);
 			scanf("%s", _buff);
 			getchar();
 
@@ -60,7 +60,7 @@ bool init(struct sockaddr_in *SERVER, int *sock)
 
 		else
 		{
-			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(SERVER->sin_addr), ntohs(SERVER->sin_port));
+			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
 		}
 
 	} while(_result < 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));

@@ -1,6 +1,6 @@
 #include <client.h>
 
-bool str_beginwith(const char *w, const char *s)
+_Bool str_beginwith(const char *w, const char *s)
 {
 	while(*s)
 	{
@@ -16,7 +16,7 @@ bool str_beginwith(const char *w, const char *s)
 	return true;
 }
 
-bool str_validation(const char *str, short int nbArgs)
+_Bool str_validation(const char *str, short int nbArgs)
 {
 	short int _i, _arg;
 

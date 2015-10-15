@@ -34,7 +34,7 @@ void close_all_connections()
 		close(g_clients[i].sock);
 	}
 
-	printf("Done.\n");
+	printf("[WIFFS] ... done.\n");
 }
 
 int process_command(const char *command, int sender_id)
@@ -54,14 +54,14 @@ int process_command(const char *command, int sender_id)
 		printf("[Client %d] File: \"%s\" of %d\n", sender_id, filename, remote_id);
 		
 		if((remote_id > (MAX_CLIENTS - 1)) || (remote_id < 0) || (remote_id == sender_id)) {
-			send(g_clients[sender_id].sock, "Error: Client wanted is invalid..\n",
+			send(g_clients[sender_id].sock, "[WIFFS] Error: Client wanted is invalid...\n",
 										 		52, 0);
 			return 0;
 		}
 			
 		
 		if(g_clients[remote_id].sock <= 0) {
-			send(g_clients[sender_id].sock, "Erreur: Client asked is not connected..\n",
+			send(g_clients[sender_id].sock, "[WIFFS] Error: Client asked is not connected...\n",
 										 		52, 0);
 			return 0;
 		}
@@ -71,9 +71,9 @@ int process_command(const char *command, int sender_id)
 		
 		recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
 		sscanf(buffer, "size: %d", &fsize);
-		printf("File size: %d\n", fsize);
+		printf("[WIFFS] File size: %d.\n", fsize);
 		
-		while(strcmp(buffer, ENDT)) {
+		while(strcmp(buffer, ENDT)){
 			recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
 			printf("%s", buffer);
 		}	
@@ -122,7 +122,7 @@ void* on_connection(void *data)
 
 	printf("[Client %d] Deconnection...\n", client.id);
 	sprintf(buffer, "(Client %d is deconnecting.)\n", client.id);
-	broadcast(client.id, buffer);;
+	broadcast(client.id, buffer);
 	close(client.sock);
 	
 	g_clients[client.id].status = FREE; 
@@ -152,7 +152,7 @@ int start_server(void)
 	listen(listen_socket, MAX_CLIENTS);
 
 	
-	printf("[WIFSS] Initialisation of Clients list..\n");
+	printf("\n[WIFSS] Initialisation of Clients list..\n");
 	for(i=0;i<MAX_CLIENTS;i++) {
 		g_clients[i].status = FREE;
 	}
@@ -174,7 +174,7 @@ int start_server(void)
 			}
 		}
 		
-		printf("[WIFSS] Connection received %s:%d -> Number given: %d \n", inet_ntoa(client.sin_addr), (unsigned int)ntohs(client.sin_port),
+		printf("[WIFSS] Connection received %s:%hd -> Number given: %d.\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port),
 																   current_id);
 		
 		new_client.id 		= current_id;
@@ -186,7 +186,7 @@ int start_server(void)
 		res = pthread_create(&threads[current_id], NULL, &on_connection, (void*)&new_client);
 		
 		if(res != 0) {
-			printf("Error during Thread creation %d: Error %d \n", current_id, res);
+			printf("[WIFFS] Error during Thread creation %d: Error %d.\n", current_id, res);
 			broadcast(SID, "Server fatal error, stopping now.\n");
 			close_all_connections();
 			return res;

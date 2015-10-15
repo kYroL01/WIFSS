@@ -21,7 +21,7 @@ int download(const char *path, int sock)
 	char _buff[BUFFER];
 
 
-	bool keepGoing = true;
+	_Bool keepGoing = true;
 	while(keepGoing)
 	{
 		memset(_buff, 0, BUFFER);

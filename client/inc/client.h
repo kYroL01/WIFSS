@@ -17,7 +17,6 @@
 
 #define true  1
 #define false 0
-typedef char bool;
 
 
 #include <com.h>
@@ -28,8 +27,8 @@ typedef char bool;
 typedef struct
 {
 	int sock;
-	bool keepGoing;
-	bool tunnelOpened;
+	_Bool keepGoing;
+	_Bool tunnelOpened;
 
 	pthread_mutex_t mutex;
 
@@ -37,7 +36,7 @@ typedef struct
 
 
 //START_STOP
-bool init(struct sockaddr_in*, int*);
+_Bool init(struct sockaddr_in*, int*);
 void disconnect(int);
 
 //COMMUNICATION
