@@ -15,17 +15,20 @@
 #define ASKTUNNEL "asktunnel"
 
 //CMD
+#define HELP       "help"
 #define EXIT       "exit"
 #define QUIT       "quit"
 #define STOP       "stop"
 #define SEND       "send"
 #define SENDP      "sendp"
 #define CLEAR      "clear"
+#define LOGOUT     "logout"
 #define TUNNEL     "tunnel"
 #define UPLOAD     "upload"
 #define DOWNLOAD   "download"
 #define ISPRESENT  "ispresent"
 #define DISCONNECT "disconnect"
+#define INTERROGATIONPOINT "?"
 
 //ADDR
 #define LOCAL     "local"

@@ -5,15 +5,16 @@ _Bool init(struct sockaddr_in *server, int *sock)
 	char _buff[BUFFER] = {0};
 	short int _port;
 
-	printf("\n\033[32mStarting client...\033[0m\n\n");
+	printf("\n\033[32m[WIFFS] Starting client...\033[0m\n\n");
 	sleep(1);
 
 	do
 	{
 		printf("Server IP: ");
-		gets(_buff);
-		
-	} while(!strcmp(_buff, "\0"));
+		fgets(_buff, FGETSBUFF, stdin);
+		str_removeSlashN(_buff);
+
+	} while(!strcmp(_buff, "\0") || str_infiniteSpaces(_buff));
 
 	str_lowerCase(_buff);
 
@@ -46,7 +47,7 @@ _Bool init(struct sockaddr_in *server, int *sock)
 
 		if(_result < 0)
 		{
-			printf("\n\n\033[31mError while connecting to %s:%hd.\nDo you want retry ? (Yes / No)\033[0m\n\n:| ", inet_ntoa(server->sin_addr), _port);
+			printf("\n\n\033[31m[WIFFS] Error while connecting to %s:%hd.\nDo you want retry ? (Yes / No)\033[0m\n\n:| ", inet_ntoa(server->sin_addr), _port);
 			scanf("%s", _buff);
 			getchar();
 
@@ -60,7 +61,7 @@ _Bool init(struct sockaddr_in *server, int *sock)
 
 		else
 		{
-			printf("\nConnected to %s:%hd.\n\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
+			printf("\n[WIFFS] Connected to %s:%hd.\n\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
 		}
 
 	} while(_result < 0 && (!strcmp(_buff, "yes") || !strcmp(_buff, "y")));
@@ -75,11 +76,11 @@ void disconnect(int sock)
 
 	if(close(sock) == -1)
 	{
-		printf("\n\033[35mSocket couldn't be successfully closed.\033[0m\n");
+		printf("\n\033[35m[WIFFS] Socket couldn't be successfully closed.\033[0m\n");
 	}
 
-	printf("\n\n\033[35mSocket successfully closed.\033[0m\n\n");
+	printf("\n\n\033[35m[WIFFS] Socket successfully closed.\033[0m\n\n");
 	sleep(1);
-	printf("WIFFS Client is shutting down for now !\n\n\n");
+	printf("[WIFFS] Client is shutting down for now !\n\n\n");
 	sleep(1);
 }

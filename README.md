@@ -6,17 +6,20 @@ _WIFSS Is not a File Sharing System_
 Compile with:  
 ```gcc client/src/*.c -lpthread -Iclient/inc/ -o client.out && gcc server/src/*.c -lpthread -Iserver/inc/ -o server.out```  
 Run with:  
-``` ./client.out && ./server.out``` 
+``` ./client.out```  and ```./server.out``` 
 
 ## Commands  
 
 List of functions available:  
-```send [message] ```  
-```sendp [idClient] [message] ```  
+```? ``` 
+```help ``` 
+```send <message> ```  
+```sendp <idClient> <message> ```  
 ```quit ```  
 ```exit ```  
+```logout ```  
 ```clear ```  
-```download [file] [idClient] ```  
+```download <file> <idClient> ```  
 
 ### Additionnal content  
 

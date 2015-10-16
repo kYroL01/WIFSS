@@ -10,7 +10,7 @@ int main(void)
 	pthread_t sthread, cthread;
 
 
-	if(init(&SERVER, &sock) == true)
+	if(init(&SERVER, &sock))
 	{
 		MUTEX data;
 		data.mutex        = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
@@ -29,5 +29,5 @@ int main(void)
 
 	disconnect(sock);
 
-	return 1;
+	return 0;
 }

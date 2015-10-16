@@ -5,14 +5,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h> 
+#include <unistd.h>
 #include <netdb.h>
 #include <pthread.h>
 #include <str.h>
 
 #include <com.h>
 
-#define PORT 		12445
+#define PORT 		12446
 #define BSIZE		512
 #define MAX_CLIENTS	4
 #define FREE 		1
@@ -40,12 +40,12 @@ unsigned int count;
 pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;
 
-int 	isvalid(const char*);
-void 	broadcast(int, const char*);
-void 	close_all_connections();
-int 	process_command(const char*, int);
-void* 	command_handler(void* data);
-void* 	on_connection(void* data);
-int		start_server(void);
+int isvalid(const char*);
+void broadcast(int, const char*);
+void close_all_connections();
+int process_command(const char*, int);
+void* command_handler(void* data);
+void* on_connection(void* data);
+int	start_server(void);
 
 #endif

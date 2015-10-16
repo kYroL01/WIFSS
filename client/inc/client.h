@@ -13,7 +13,10 @@
 #include <pthread.h>
 
 
-#define BUFFER 256
+#define BUFFER    256
+#define FGETSBUFF 256
+#define TALLERCMD  30
+#define PATHSIZE   32
 
 #define true  1
 #define false 0
@@ -54,6 +57,7 @@ void acceptunnel(MUTEX*, int);
 //THREAD_COMMUNICATION
 void* serverCommunication(void*);
 void* clientCommunication(void*);
+
 
 
 #endif

@@ -27,7 +27,7 @@ void* serverCommunication(void *param)
 
 			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
 			{
-				char _path[BUFFER] = {0};
+				char _path[PATHSIZE] = {0};
 				sscanf(_buff, "upload %s", _path);
 				printf("\n\n[sthread] Server is asking us to upload: %s\n\n:|", _path);
 				upload(_path, data.sock);
@@ -93,23 +93,25 @@ void* clientCommunication(void *param)
 
 void handle_command(const char *command, MUTEX *data)
 {
-	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP))
+	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT))
 	{
 		if(!data->tunnelOpened)
 		{
-			printf("\n\nLet's close connection with Server...\n");
+			printf("\n\n[WIFFS] Let's close connection with Server...");
 			data->keepGoing = false;
 		}
 		else
 		{
-			printf("\n\nLet's close tunnel with the other Client...\n");
+			printf("\n\n[WIFFS] Let's close tunnel with the other Client...\n");
 			data->tunnelOpened = false;
 		}
+
+		sleep(1);
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
-		char _path[32] = {0};
+		char _path[PATHSIZE] = {0};
 		
 		send(data->sock, command, BUFFER, false);
 		
@@ -130,7 +132,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("You're already tunneled with someone.\n\n");
+			printf("[WIFFS] You're already tunneled with someone.\n\n");
 		}
 	}
 
@@ -147,7 +149,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("You're tunneling ! You don't have to inform the recipient.\n");
+			printf("[WIFFS] You're tunneling ! You don't have to inform the recipient.\n");
 		}
 	}
 
@@ -156,9 +158,33 @@ void handle_command(const char *command, MUTEX *data)
 		system("clear");
 	}
 
-	else if(!strcmp(command, "\0") || !strcmp(command, " "))
+	else if(str_infiniteSpaces(command))
 	{
 		//Do nothing...
+	}
+
+	else if(!strcmp(command, HELP) || !strcmp(command, INTERROGATIONPOINT))
+	{
+		static const char *helpMenu[TALLERCMD] =
+		{
+			"?",
+			"help",
+			"send <message>",
+			"sendp <idClient> <message>",
+			"quit",
+			"exit",
+			"logout",
+			"clear",
+			"download <file> <idClient>"
+		};
+
+		//short int _size = (short int)sizeof(helpMenu) / (TALLERCMD * sizeof(**helpMenu)) + 1;
+		
+		for(short int _i = 0; helpMenu[_i] != NULL; _i++)
+		{
+			printf("\t");
+			puts(helpMenu[_i]);
+		}
 	}
 
 	else
@@ -176,16 +202,15 @@ void communication(MUTEX *data)
 	if(!data->tunnelOpened)
 	{
 		printf("|: ");
-		gets(_buff);
-		str_lowerCase(_buff);
-		handle_command(_buff, data);
 	}
 
 	else
 	{
 		printf("[Tunnel] |: ");
-		gets(_buff);
-		str_lowerCase(_buff);
-		handle_command(_buff, data);
 	}
+
+	fgets(_buff, FGETSBUFF, stdin);
+	str_removeSlashN(_buff);
+	str_lowerCase(_buff);
+	handle_command(_buff, data);
 }

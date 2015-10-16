@@ -174,7 +174,7 @@ int start_server(void)
 			}
 		}
 		
-		printf("[WIFSS] Connection received %s:%hd -> Number given: %d.\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port),
+		printf("[WIFSS] Connection received %s:%hu -> Number given: %hd.\n", inet_ntoa(client.sin_addr), (unsigned short int)ntohs(client.sin_port),
 																   current_id);
 		
 		new_client.id 		= current_id;

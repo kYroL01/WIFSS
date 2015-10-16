@@ -43,6 +43,22 @@ _Bool str_validation(const char *str, short int nbArgs)
 	return true;
 }
 
+_Bool str_infiniteSpaces(const char *buff)
+{
+	short int _i;
+	short int _length = (short int)strlen(buff);
+
+	for(_i = 0; _i < _length; _i++)
+	{
+		if(buff[_i] != ' ')
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void str_lowerCase(char *buff)
 {
 	short int _i;
@@ -52,4 +68,14 @@ void str_lowerCase(char *buff)
 	{
 		buff[_i] = tolower(buff[_i]);
 	}
+}
+
+void str_removeSlashN(char *buff)
+{
+	char *_slashNPosition = strchr(buff, '\n');
+
+    if(_slashNPosition != NULL)
+    {
+		*_slashNPosition = '\0';
+    }
 }

@@ -9,7 +9,9 @@
 
 _Bool str_beginwith(const char*, const char*);
 _Bool str_validation(const char*, short int);
+_Bool str_infiniteSpaces(const char*);
 void str_lowerCase(char*);
+void str_removeSlashN(char*);
 
 
 #endif

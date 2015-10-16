@@ -4,7 +4,7 @@ void startunnel(MUTEX *data, int idClient)
 {
 	char _buff[BUFFER] = {0};
 
-	printf("\nLet's create a tunnel with %d Client...", idClient);
+	printf("\n[WIFFS] Let's create a tunnel with %d Client...", idClient);
 
 	sprintf(_buff, "%s %d", ASKTUNNEL, idClient);
 
@@ -26,7 +26,7 @@ void startunnel(MUTEX *data, int idClient)
 	else
 	{
 		data->tunnelOpened = false;
-		printf("Can't open a tunnel with %d Client.\n", idClient);
+		printf("[WIFFS] Can't open a tunnel with %d Client.\n", idClient);
 	}
 }
 
