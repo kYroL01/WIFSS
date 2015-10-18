@@ -27,14 +27,19 @@ void close_all_connections()
 {
 	int i;
 
-	printf("[WIFSS] Closing all connections...");
+	printf("\n[WIFSS] Closing all connections");
 	
 	for(i = 0; i < MAX_CLIENTS; i++)
 	{
-		close(g_clients[i].sock);
+		if(g_clients[i].status == TAKEN)
+		{
+			send(g_clients[i].sock, DISCONNECT, strlen(DISCONNECT), false);
+			close(g_clients[i].sock);
+		}
+		printf(".");
 	}
 
-	printf("[WIFFS] ... done.\n");
+	printf(" done.\n");
 }
 
 int process_command(const char *command, int sender_id)
@@ -54,15 +59,13 @@ int process_command(const char *command, int sender_id)
 		printf("[Client %d] File: \"%s\" of %d\n", sender_id, filename, remote_id);
 		
 		if((remote_id > (MAX_CLIENTS - 1)) || (remote_id < 0) || (remote_id == sender_id)) {
-			send(g_clients[sender_id].sock, "[WIFFS] Error: Client wanted is invalid...\n",
-										 		52, 0);
+			send(g_clients[sender_id].sock, "Error: Client wanted is invalid...\n", 52, 0);
 			return 0;
 		}
 			
 		
 		if(g_clients[remote_id].sock <= 0) {
-			send(g_clients[sender_id].sock, "[WIFFS] Error: Client asked is not connected...\n",
-										 		52, 0);
+			send(g_clients[sender_id].sock, "Error: Client asked is not connected...\n", 52, 0);
 			return 0;
 		}
 		
@@ -71,7 +74,7 @@ int process_command(const char *command, int sender_id)
 		
 		recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
 		sscanf(buffer, "size: %d", &fsize);
-		printf("[WIFFS] File size: %d.\n", fsize);
+		printf("[WIFSS] File size: %d.\n", fsize);
 		
 		while(strcmp(buffer, ENDT)){
 			recv(g_clients[remote_id].sock, buffer, BSIZE, 0);
@@ -152,7 +155,7 @@ int start_server(void)
 	listen(listen_socket, MAX_CLIENTS);
 
 	
-	printf("\n[WIFSS] Initialisation of Clients list..\n");
+	printf("\n[WIFSS] Initialisation of Clients list...\n");
 	for(i=0;i<MAX_CLIENTS;i++) {
 		g_clients[i].status = FREE;
 	}
@@ -186,7 +189,7 @@ int start_server(void)
 		res = pthread_create(&threads[current_id], NULL, &on_connection, (void*)&new_client);
 		
 		if(res != 0) {
-			printf("[WIFFS] Error during Thread creation %d: Error %d.\n", current_id, res);
+			printf("[WIFSS] Error during Thread creation %d: Error %d.\n", current_id, res);
 			broadcast(SID, "Server fatal error, stopping now.\n");
 			close_all_connections();
 			return res;
@@ -199,6 +202,9 @@ int start_server(void)
 				count++;
 			}
 		}
+		if(count == 2)
+			close_all_connections();
+
 		printf("[WIFSS] There is %d client(s) connected.\n", count);
 	}
 	

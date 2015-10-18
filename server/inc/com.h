@@ -18,6 +18,7 @@
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DATACLIENT "dataclient"
+#define DISCONNECT "disconnect"
 
 //SIG
 #define ENDSIG  -1

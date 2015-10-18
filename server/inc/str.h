@@ -7,6 +7,7 @@
 
 
 int str_beginwith(const char *w, const char *s);
+void str_removeSlashN(char*);
 
 
 #endif

@@ -14,6 +14,7 @@ void* serverCommunication(void *param)
 		memset(_buff, 0, BUFFER);
 
 		_result = recv(data.sock, _buff, BUFFER, false);
+
 		if(_result <= 0 || !data.keepGoing)
 		{
 			data.keepGoing = false;
@@ -23,30 +24,33 @@ void* serverCommunication(void *param)
 
 		else
 		{
-			/* printf("\n\n[sthread] Received from server: %s\n", _buff); */
+			static _Bool _someThingWritten;
+			_someThingWritten = false;
 
 			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
 			{
 				char _path[PATHSIZE] = {0};
 				sscanf(_buff, "upload %s", _path);
-				printf("\n\n[sthread] Server is asking us to upload: %s\n\n:|", _path);
+				printf("\n\n[sthread] Server is asking us to upload: \"%s\".", _path);
+				_someThingWritten = true;
 				upload(_path, data.sock);
 			}
 
 			else if(str_beginwith(_buff, ASKTUNNEL) && str_validation(_buff, ARGTUN))
 			{
+				int _clientAsking = 0;
+				sscanf(_buff, "asktunnel %d", &_clientAsking);
+
 				if(!data.tunnelOpened)
 				{
-					int _clientAsking = 0;
-
-					sscanf(_buff, "asktunnel %d", &_clientAsking);
-
 					acceptunnel(&data, _clientAsking);
 				}
 				else
 				{
-					printf("\n\n[sthread] Someone is asking you for a tunnel but you're already tunneled.\n\n:|");
+					printf("\n\n[sthread] Client %d is asking you for a tunnel but you're already tunneled.", _clientAsking);
 				}
+
+				_someThingWritten = true;
 			}
 
 			else if(!strcmp(_buff, DISCONNECT))
@@ -59,7 +63,15 @@ void* serverCommunication(void *param)
 
 			else
 			{
-				printf("\n\n[sthread] Command unknown received from Server.\n\n:|");
+				if(strcmp(_buff, ""))
+				{
+					printf("\n\n[sthread] Received from server: \"%s\".\n", _buff);
+				}
+			}
+
+			if(_someThingWritten)
+			{
+				printf("\n\n|: ");
 			}
 		}
 
@@ -97,16 +109,14 @@ void handle_command(const char *command, MUTEX *data)
 	{
 		if(!data->tunnelOpened)
 		{
-			printf("\n\n[WIFFS] Let's close connection with Server...");
+			printf("\n\n[WIFSS] Let's close connection with Server...");
 			data->keepGoing = false;
 		}
 		else
 		{
-			printf("\n\n[WIFFS] Let's close tunnel with the other Client...\n");
+			printf("\n\n[WIFSS] Let's close tunnel with the other Client...\n");
 			data->tunnelOpened = false;
 		}
-
-		sleep(1);
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
@@ -132,7 +142,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("[WIFFS] You're already tunneled with someone.\n\n");
+			printf("[WIFSS] You're already tunneled with someone. {TIPS} Type \"logout\" to stop the tunnel.\n\n");
 		}
 	}
 
@@ -149,7 +159,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("[WIFFS] You're tunneling ! You don't have to inform the recipient.\n");
+			printf("[WIFSS] {TIPS} You're tunneling ! You don't have to inform the recipient.\n");
 		}
 	}
 
@@ -175,10 +185,9 @@ void handle_command(const char *command, MUTEX *data)
 			"exit",
 			"logout",
 			"clear",
+			"tunnel <idClient>",
 			"download <file> <idClient>"
 		};
-
-		//short int _size = (short int)sizeof(helpMenu) / (TALLERCMD * sizeof(**helpMenu)) + 1;
 		
 		for(short int _i = 0; helpMenu[_i] != NULL; _i++)
 		{
@@ -212,5 +221,6 @@ void communication(MUTEX *data)
 	fgets(_buff, FGETSBUFF, stdin);
 	str_removeSlashN(_buff);
 	str_lowerCase(_buff);
+
 	handle_command(_buff, data);
 }

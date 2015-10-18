@@ -5,12 +5,12 @@
 int main(void)
 {
 	int sock;
-	struct sockaddr_in SERVER;
+	struct sockaddr_in server;
 
 	pthread_t sthread, cthread;
 
 
-	if(init(&SERVER, &sock))
+	if(init(&server, &sock))
 	{
 		MUTEX data;
 		data.mutex        = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;

@@ -15,3 +15,13 @@ int str_beginwith(const char *w, const char *s)
 
 	return 1;
 }
+
+void str_removeSlashN(char *buff)
+{
+	char *_slashNPosition = strchr(buff, '\n');
+
+    if(_slashNPosition != NULL)
+    {
+		*_slashNPosition = '\0';
+    }
+}

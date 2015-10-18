@@ -11,14 +11,15 @@ Run with:
 ## Commands  
 
 List of functions available:  
-```? ``` 
-```help ``` 
+```? ```  
+```help ```  
 ```send <message> ```  
 ```sendp <idClient> <message> ```  
 ```quit ```  
 ```exit ```  
 ```logout ```  
 ```clear ```  
+```tunnel <idClient> ```  
 ```download <file> <idClient> ```  
 
 ### Additionnal content  

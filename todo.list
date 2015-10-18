@@ -1,3 +1,2 @@
-- Recv problem due to Thread (Server)
-- Implement tunneling
-(- Server force Clients deconnection ?)
+- Recv problem due to Thread (Server side)
+- Implement tunneling (Server side)
