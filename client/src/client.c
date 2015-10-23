@@ -1,14 +1,12 @@
 #include <client.h>
 
 
-
 int main(void)
 {
 	int sock;
 	struct sockaddr_in server;
 
-	pthread_t sthread, cthread;
-
+	pthread_t sthread, cthread, ithread;
 
 	if(init(&server, &sock))
 	{
@@ -20,12 +18,15 @@ int main(void)
 
 		pthread_create(&sthread, NULL, &serverCommunication, (void*)&data);
 		pthread_create(&cthread, NULL, &clientCommunication, (void*)&data);
-		
-		pthread_join(cthread, NULL);
-	
+		pthread_create(&ithread, NULL, &infiniteWaitingFnct, (void*)&data);
+
+		pthread_join(ithread, NULL);
+
+		pthread_cancel(cthread);
+		pthread_cancel(sthread);
+
 		pthread_mutex_destroy(&(data.mutex));
 	}
-
 
 	disconnect(sock);
 

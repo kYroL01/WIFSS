@@ -79,3 +79,10 @@ void str_removeSlashN(char *buff)
 		*_slashNPosition = '\0';
     }
 }
+
+void promptKeyboard(char *buff)
+{
+	fgets(buff, FGETSBUFF, stdin);
+	str_removeSlashN(buff);
+	str_lowerCase(buff);
+}

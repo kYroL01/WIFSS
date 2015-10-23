@@ -7,17 +7,19 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <ctype.h>
 #include <pthread.h>
-#include <str.h>
 
-#include <com.h>
 
-#define PORT 		12447
-#define BSIZE		512
+#define PORT 	12445
+#define BUFFER	  512
+#define FGETSBUFF 256
+#define TALLERCMD  34
+#define PATHSIZE   32
 #define MAX_CLIENTS	4
 #define FREE 		1
 #define TAKEN		2
-#define SID			-1
+#define SID		   -1
 
 #define RUNNING		1
 #define	STOPPING	2
@@ -25,6 +27,11 @@
 #define true  1
 #define false 0
 typedef char bool;
+
+
+#include <com.h>
+#include <str.h>
+
 
 struct client_t
 {
@@ -40,6 +47,7 @@ unsigned int count;
 pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;
 
+
 int isvalid(const char*);
 void broadcast(int, const char*);
 void close_all_connections();
@@ -47,5 +55,6 @@ int process_command(const char*, int);
 void* command_handler(void* data);
 void* on_connection(void* data);
 int	start_server(void);
+
 
 #endif

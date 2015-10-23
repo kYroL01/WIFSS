@@ -14,11 +14,20 @@
 
 //CMD
 #define QUIT       "quit"
+#define STOP       "stop"
+#define HALT       "halt"
+#define EXIT       "exit"
+#define HELP       "help"
+#define SEND       "send"
+#define SENDP      "sendp"
+#define CLOSE      "close"
+#define CLEAR      "clear"
 #define UPLOAD     "upload "
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DATACLIENT "dataclient"
 #define DISCONNECT "disconnect"
+#define INTERROGATIONPOINT "?"
 
 //SIG
 #define ENDSIG  -1
@@ -30,6 +39,7 @@
 #define ARGTUN 2
 #define ARGDWL 2
 #define ARGUPL 3
+#define ARGDCL 2
 
 
 #endif

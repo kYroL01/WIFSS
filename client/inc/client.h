@@ -11,9 +11,10 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <pthread.h>
+#include <signal.h>
 
 
-#define BUFFER    256
+#define BUFFER    512
 #define FGETSBUFF 256
 #define TALLERCMD  30
 #define PATHSIZE   32
@@ -44,7 +45,6 @@ void disconnect(int);
 
 //COMMUNICATION
 void handle_command(const char*, MUTEX*);
-void communication(MUTEX*);
 
 //TRANSFER
 int upload(const char*, int);
@@ -54,9 +54,10 @@ int download(const char*, int);
 void startunnel(MUTEX*, int);
 void acceptunnel(MUTEX*, int);
 
-//THREAD_COMMUNICATION
+//THREADS
 void* serverCommunication(void*);
 void* clientCommunication(void*);
+void* infiniteWaitingFnct(void*);
 
 
 

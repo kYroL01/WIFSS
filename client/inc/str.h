@@ -12,6 +12,7 @@ _Bool str_validation(const char*, short int);
 _Bool str_infiniteSpaces(const char*);
 void str_lowerCase(char*);
 void str_removeSlashN(char*);
+void promptKeyboard(char*);
 
 
 #endif

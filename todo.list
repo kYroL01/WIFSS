@@ -1,2 +1,6 @@
 - Recv problem due to Thread (Server side)
-- Implement tunneling (Server side)
+- Implement tunneling (Client between Client)
+
+-> Problem sent strings (Server)
+-> Mutex problem ?
+-> sendp() client ??

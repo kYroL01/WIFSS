@@ -5,23 +5,14 @@ void startunnel(MUTEX *data, int idClient)
 	char _buff[BUFFER] = {0};
 
 	printf("\n[WIFFS] Let's create a tunnel with %d Client...", idClient);
-
 	sprintf(_buff, "%s %d", ASKTUNNEL, idClient);
-
 	send(data->sock, _buff, BUFFER, false);
-	
 	memset(_buff, 0, BUFFER);
-
 	recv(data->sock, _buff, BUFFER, false);
-
 
 	if(!strcmp(_buff, OKFORTUN))
 	{
 		data->tunnelOpened = true;
-		while(data->tunnelOpened)
-		{
-			communication(data);
-		}
 	}
 	else
 	{
@@ -36,9 +27,7 @@ void acceptunnel(MUTEX *data, int clientAsking)
 
 	printf("Client %d is asking you to start a tunnel. Accept ? (Yes / No)\n\n:| ", clientAsking);
 
-	scanf("%s", _buff);
-
-	str_lowerCase(_buff);
+	promptKeyboard(_buff);
 
 	if(!strcmp(_buff, "yes") || !strcmp(_buff, "y"))
 	{
@@ -47,10 +36,6 @@ void acceptunnel(MUTEX *data, int clientAsking)
 		send(data->sock, _buff, BUFFER, false);
 
 		data->tunnelOpened = true;
-		while(data->tunnelOpened)
-		{
-			communication(data);
-		}
 	}
 	else
 	{
