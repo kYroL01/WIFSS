@@ -62,7 +62,7 @@ void* serverCommunication(void *param)
 			{
 				if(strcmp(_buff, ""))
 				{
-					printf("\n\n[sthread] Received from server: \"%s\".", _buff);
+					printf("\n\n[sthread] \"%s\"", _buff);
 				}
 				else
 				{

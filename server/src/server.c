@@ -43,7 +43,7 @@ int process_command(const char *command, int sender_id)
 		int remote_id         = -1;
 		char filename[BUFFER] = "";
 
-		printf("\n[Client %d] Asking for upload !\n", sender_id);
+		printf("\n\n[Client %d] Asking for upload !\n", sender_id);
 
 		sscanf(command, "download %s %d", filename, &remote_id);
 		printf("[Client %d] File: \"%s\" of %d\n", sender_id, filename, remote_id);
@@ -73,7 +73,6 @@ int process_command(const char *command, int sender_id)
 			recv(g_clients[remote_id].sock, _buffer, BUFFER, false);
 			printf("%s", _buffer);
 		}
-
 		return 0;
 	}
 
@@ -86,25 +85,27 @@ int process_command(const char *command, int sender_id)
 	else if(str_beginwith(command, SENDP))
 	{
 		memset(_cpy, 0, BUFFER);
+		memset(_buffer, 0, BUFFER);
 		short int _idTemp = -1;
-		sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
-		send(g_clients[_idTemp].sock, _cpy, BUFFER, false);
-		printf("\n[Client %d] says to [Client %d]: \"%s\".\n", sender_id, _idTemp, _cpy);
+		sscanf(command, "sendp %hd %[^\n]", &_idTemp, _cpy);
+		sprintf(_buffer, "[Client %d] whispers: \"%s\".", sender_id, _cpy);
+		send(g_clients[_idTemp].sock, _buffer, BUFFER, false);
+		printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n", sender_id, _idTemp, _cpy);
 	}
 
 	else if(str_beginwith(command, SEND))
 	{
 		memset(_cpy, 0, BUFFER);
 		memset(_buffer, 0, BUFFER);
-		sprintf(_cpy, "[Client %d] : \"%s\".", sender_id, command);
-		broadcast(sender_id, _cpy);
 		sscanf(command, "send %[^\n]", _buffer);
-		printf("\n[Client %d] says: \"%s\".\n", sender_id, _buffer);
+		sprintf(_cpy, "[Client %d] : \"%s\".", sender_id, _buffer);
+		broadcast(sender_id, _cpy);
+		printf("\n\n[Client %d] says: \"%s\".\n", sender_id, _buffer);
 	}
 
 	else
 	{
-		printf("\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n", sender_id, command);
+		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n", sender_id, command);
 	}
 
 	printf("\n|: ");
@@ -163,7 +164,7 @@ int start_server(void)
 	res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
 	if(res < 0)
 	{
-		printf("\033[31mError bind (%d).\033[0m\n", res);
+		printf("\033[31m\n\n[WIFSS] Error bind (%d).\033[0m\n\n\n", res);
 		return res;
 	}
 

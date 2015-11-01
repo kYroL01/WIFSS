@@ -11,7 +11,7 @@
 #include <pthread.h>
 
 
-#define PORT 	12445
+#define PORT 	12443
 #define BUFFER	  512
 #define FGETSBUFF 256
 #define TALLERCMD  34
