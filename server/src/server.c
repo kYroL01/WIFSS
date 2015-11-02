@@ -3,12 +3,14 @@
 void broadcast(int sender, const char *msg)
 {
 	int i;
+	char _buffer[BUFFER] = "";
+	sprintf(_buffer, "%s", msg);
 	
 	for(i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(i != sender)
 		{
-			send(g_clients[i].sock, msg, BUFFER, false);
+			send(g_clients[i].sock, _buffer, BUFFER, false);
 		}
 	}
 }
@@ -16,12 +18,14 @@ void broadcast(int sender, const char *msg)
 void close_all_connections()
 {
 	printf("\n[WIFSS] Closing all connections");
+	char _buffer[BUFFER] = "";
+	sprintf(_buffer, "%s", DISCONNECT);
 
 	for(short int i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(g_clients[i].status == TAKEN)
 		{
-			send(g_clients[i].sock, DISCONNECT, BUFFER, false);
+			send(g_clients[i].sock, _buffer, BUFFER, false);
 			close(g_clients[i].sock);
 		}
 
@@ -88,9 +92,17 @@ int process_command(const char *command, int sender_id)
 		memset(_buffer, 0, BUFFER);
 		short int _idTemp = -1;
 		sscanf(command, "sendp %hd %[^\n]", &_idTemp, _cpy);
-		sprintf(_buffer, "[Client %d] whispers: \"%s\".", sender_id, _cpy);
-		send(g_clients[_idTemp].sock, _buffer, BUFFER, false);
-		printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n", sender_id, _idTemp, _cpy);
+		if(g_clients[_idTemp].status == TAKEN)
+		{
+			sprintf(_buffer, "[Client %d] whispers: \"%s\".", sender_id, _cpy);
+			send(g_clients[_idTemp].sock, _buffer, BUFFER, false);
+			printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n", sender_id, _idTemp, _cpy);
+		}
+		else
+		{
+			send(g_clients[sender_id].sock, "ERROR: Client not connected.", BUFFER, false);
+			printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n", sender_id, _idTemp, _cpy);
+		}
 	}
 
 	else if(str_beginwith(command, SEND))
@@ -164,7 +176,7 @@ int start_server(void)
 	res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
 	if(res < 0)
 	{
-		printf("\033[31m\n\n[WIFSS] Error bind (%d).\033[0m\n\n\n", res);
+		printf("\n\n\033[31m[WIFSS] Error bind (%d).\033[0m\n\n\n", res);
 		return res;
 	}
 
@@ -206,7 +218,7 @@ int start_server(void)
 		res = pthread_create(&threads[current_id], NULL, &on_connection, (void*)&new_client);
 		if(res != 0)
 		{
-			printf("\033[31m[WIFSS] Error during Thread creation %d: Error %d.\033[0m\n", current_id, res);
+			printf("\033[31m[WIFSS] Error during Thread creation %d: Error (%d).\033[0m\n", current_id, res);
 			broadcast(SID, "Server fatal error, stopping now.\n");
 			close_all_connections();
 			return res;

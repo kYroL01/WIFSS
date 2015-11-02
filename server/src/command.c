@@ -14,7 +14,7 @@ void* command_handler(void* data)
 
 		if(!strcmp(_buffer, QUIT) || !strcmp(_buffer, STOP)|| !strcmp(_buffer, HALT) || !strcmp(_buffer, EXIT) || !strcmp(_buffer, CLOSE))
 		{
-			broadcast(SID, "Server is going to shutdown.");
+			broadcast(SID, "[Server] is going to shutdown !");
 			close_all_connections();
 			for(short int _i = 0; _i < MAX_CLIENTS; _i++)
 			{
@@ -28,7 +28,7 @@ void* command_handler(void* data)
 			char _buffTemp[BUFFER] = "";
 			short int _idTemp = -1;
 			sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
-			sprintf(_buffTemp, "[Server] says to you: \"%s\".", _cpy);
+			sprintf(_buffTemp, "[Server] whispers to you: \"%s\".", _cpy);
 			send(g_clients[_idTemp].sock, _buffTemp, BUFFER, false);
 		}
 
@@ -105,7 +105,7 @@ void* command_handler(void* data)
 
 		else
 		{
-			printf("Command unknown. Try \"?\" or \"help\" for further information.\n\n");
+			printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
 		}
 	}
 	

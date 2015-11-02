@@ -229,6 +229,6 @@ void handle_command(const char *command, MUTEX *data)
 
 	else
 	{
-		printf("Command unknown. Try \"?\" or \"help\" for further information.\n\n");
+		printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
 	}
 }
