@@ -10,7 +10,7 @@ Run with:
 
 ## Commands  
 
-List of functions available:  
+### List of commands currently available for Client:  
 ```? ```  
 ```help ```  
 ```send <message> ```  
@@ -21,6 +21,19 @@ List of functions available:
 ```clear ```  
 ```tunnel <idClient> ```  
 ```download <file> <idClient> ```  
+
+### List of commands currently available for Server:  
+```? ```  
+```help ```  
+```send <message> ```  
+```sendp <idClient> <message> ```  
+```disconnect <idClient> ['-1' = all] ```  
+```quit ```  
+```exit ```  
+```halt ```  
+```stop ```  
+```close ```  
+```clear ```  
 
 ### Additionnal content  
 
