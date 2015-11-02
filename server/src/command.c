@@ -2,20 +2,24 @@
 
 void* command_handler(void* data)
 {
+	int *listen_socket = (int*)data;
+
 	char _buffer[BUFFER];
 	char _cpy[BUFFER];
 
 	while(1)
 	{
-		memset(_buffer, 0, BUFFER);
-
-		printf("|: ");
+		commandCursor();
 		promptKeyboard(_buffer);
 
 		if(!strcmp(_buffer, QUIT) || !strcmp(_buffer, STOP)|| !strcmp(_buffer, HALT) || !strcmp(_buffer, EXIT) || !strcmp(_buffer, CLOSE))
 		{
 			broadcast(SID, "[Server] is going to shutdown !");
 			close_all_connections();
+			if(close(*listen_socket) == -1)
+			{
+				printf("\n\033[35m[WIFSS] Socket of server couldn't be successfully closed.\033[0m\n");
+			}
 			for(short int _i = 0; _i < MAX_CLIENTS; _i++)
 			{
 				pthread_cancel(threads[_i]);
@@ -95,7 +99,7 @@ void* command_handler(void* data)
 				"close",
 				"clear"
 			};
-			
+
 			for(short int _j = 0; helpMenu[_j] != NULL; _j++)
 			{
 				printf("\t");
@@ -108,13 +112,8 @@ void* command_handler(void* data)
 			printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
 		}
 	}
-	
-	printf("[WIFSS] Server stopped.\n");
-	for(short int _k = 0; _k < 60; _k++)
-	{
-		printf("=");
-	}
-	printf("\n\n");
+
+	closeServer();
+
 	exit(false);
-	return data;
 }

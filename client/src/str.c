@@ -82,6 +82,7 @@ void str_removeSlashN(char *buff)
 
 void promptKeyboard(char *buff)
 {
+	memset(buff, 0, BUFFER);
 	fgets(buff, FGETSBUFF, stdin);
 	str_removeSlashN(buff);
 	str_lowerCase(buff);

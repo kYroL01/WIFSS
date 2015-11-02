@@ -2,7 +2,7 @@
 
 _Bool init(struct sockaddr_in *server, int *sock)
 {
-	char _buff[BUFFER] = {0};
+	char _buff[BUFFER] = "";
 	short int _port;
 
 	printf("\n\033[32m[WIFSS] Starting client...\033[0m\n\n");
@@ -43,7 +43,7 @@ _Bool init(struct sockaddr_in *server, int *sock)
 		if(_result < 0)
 		{
 			printf("\n\033[31m[WIFSS] Error while connecting to %s:%hd.\033[0m\n", inet_ntoa(server->sin_addr), _port);
-			printf("\nWould you like to retry now ? (Yes / No)\n");
+			printf("\nWould you like to retry now ? (Yes / No)\n\n");
 
 			do
 			{
@@ -76,7 +76,7 @@ void disconnect(int sock)
 		printf("\n\033[35m[WIFSS] Socket couldn't be successfully closed.\033[0m\n");
 	}
 	
-	printf("\n[WIFSS] Socket successfully closed.\n");
+	printf("\n\n[WIFSS] Socket successfully closed.\n");
 	printf("[WIFSS] Client is shutting down for now !\n");
 	for(short int _i = 0; _i < 60; _i++)
 	{

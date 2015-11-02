@@ -93,8 +93,6 @@ void* clientCommunication(void *param)
 
 	while(1)
 	{
-		memset(_buff, 0, BUFFER);
-
 		//pthread_mutex_lock(&(data->mutex));
 
 		if(!data->keepGoing)

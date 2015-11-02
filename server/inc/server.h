@@ -54,7 +54,9 @@ void close_all_connections();
 int process_command(const char*, int);
 void* command_handler(void* data);
 void* on_connection(void* data);
-int	start_server(void);
+void commandCursor(void);
+int	startServer(void);
+void closeServer(void);
 
 
 #endif

@@ -35,11 +35,27 @@ void close_all_connections()
 	printf(" done.\n");
 }
 
+void closeServer()
+{
+	printf("[WIFSS] Server stopped.\n");
+	for(short int _k = 0; _k < 60; _k++)
+	{
+		printf("=");
+	}
+	printf("\n\n");
+}
+
+inline void commandCursor()
+{
+	printf("\n|: ");
+	fflush(stdout);
+}
+
 int process_command(const char *command, int sender_id)
 {
+	int _fsize;
 	char _cpy[BUFFER]    = "";
 	char _buffer[BUFFER] = "";
-	int _fsize;
 	bool _smthWritten    = true;
 
 	if(str_beginwith(command, DOWNLOAD))
@@ -120,8 +136,7 @@ int process_command(const char *command, int sender_id)
 		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n", sender_id, command);
 	}
 
-	printf("\n|: ");
-	fflush(stdout);
+	commandCursor();
 
 	return 1;
 }
@@ -152,14 +167,13 @@ void* on_connection(void *data)
 	broadcast(client.id, _buffer);
 	close(client.sock);
 	
-	printf("\n|: ");
-	fflush(stdout);
+	commandCursor();
 
 	g_clients[client.id].status = FREE;
 	return NULL;
 }
 
-int start_server(void)
+int startServer(void)
 {
 	int res = 0, i;
 	struct sockaddr_in client;
@@ -167,18 +181,42 @@ int start_server(void)
 	int listen_socket, sock;
 	unsigned int current_id = 0, asize;
 
-	server.sin_port 		= htons(PORT);
+	listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
 	server.sin_family 		= AF_INET;
 	server.sin_addr.s_addr 	= INADDR_ANY;
 
-	listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	printf("\n\033[32m[WIFSS] Starting Server...\033[0m");
 
-	res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
-	if(res < 0)
+	do
 	{
-		printf("\n\n\033[31m[WIFSS] Error bind (%d).\033[0m\n\n\n", res);
-		return res;
-	}
+		printf("\n\n-> Listening Port: ");
+		scanf("%d", &i);
+		getchar();
+
+		server.sin_port = htons(i);
+
+		res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
+		if(res < 0)
+		{
+			char _buff[BUFFER];
+			printf("\n\n\033[31m[WIFSS] Error during creation of listening socket [bind (%d)].\033[0m\n", res);
+			printf("\nWould you like to retry now ? (Yes / No)\n\n");
+
+			do
+			{
+				printf("|: ");
+				promptKeyboard(_buff);
+
+				if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
+				{
+					return res;
+				}
+
+			} while(strcmp(_buff, "yes") && strcmp(_buff, "y"));
+		}
+
+	} while(res < 0);
 
 	listen(listen_socket, MAX_CLIENTS);
 
@@ -189,11 +227,22 @@ int start_server(void)
 	}
 	printf("[WIFSS] Server opened, waiting for Clients...\033[0m\n\n");
 
-	pthread_create(&command_thread, NULL, &command_handler, NULL);
+	pthread_create(&command_thread, NULL, &command_handler, (void*)&listen_socket);
 
 	asize = sizeof(struct sockaddr_in);
 	while((sock = accept(listen_socket, (struct sockaddr*)&client, &asize)) && (count < MAX_CLIENTS))
 	{
+		if(count + 1 >= MAX_CLIENTS)
+		{
+			char _buffer[BUFFER] = "";
+			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s:%hu)\n", inet_ntoa(client.sin_addr), (unsigned short int)ntohs(client.sin_port));
+			sprintf(_buffer, "%s", "Maximum capacity reached, no more slot available for you yet.");
+			send(sock, _buffer, BUFFER, false);
+			close(sock);
+			commandCursor();
+			continue;
+		}
+
 		struct client_t new_client;
 
 		for(i = 0; i < MAX_CLIENTS; i++)
@@ -236,13 +285,7 @@ int start_server(void)
 
 		printf("[WIFSS] There is %d client(s) connected.\n", count);
 
-		printf("\n|: ");
-		fflush(stdout);
-	}
-
-	if(count >= MAX_CLIENTS)
-	{
-		broadcast(SID, "Maximum capacity reached, stopping now.\n");
+		commandCursor();
 	}
 
 	close_all_connections();
@@ -252,12 +295,14 @@ int start_server(void)
 		printf("\n\033[35m[WIFSS] Socket of server couldn't be successfully closed.\033[0m\n");
 	}
 
+	closeServer();
+
 	return 0;
 }
 
 int main(void)
 {
-	start_server();
+	startServer();
 
 	return 0;
 }
