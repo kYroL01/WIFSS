@@ -30,13 +30,13 @@ _Bool str_validation(const char *str, short int nbArgs)
 
 	if(_arg > nbArgs)
 	{
-		printf("Too many arguments for this command.\n\n");
+		printf("\nToo many arguments for this command.\n");
 		return false;
 	}
 
 	else if(_arg < nbArgs)
 	{
-		printf("Too few arguments for this command.\n\n");
+		printf("\nToo few arguments for this command.\n");
 		return false;
 	}
 

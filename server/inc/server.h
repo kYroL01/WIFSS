@@ -42,7 +42,6 @@ struct client_t
 };
 
 struct client_t g_clients[MAX_CLIENTS];
-unsigned int count;
 
 pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;

@@ -2,17 +2,18 @@
 
 int upload(const char *path, int sock)
 {
-	FILE *_file = NULL;
-	char _buff[BUFFER];
-	long _fsize = 0;
+	long _fsize        = 0;
+	char _buff[BUFFER] = "";
+	FILE *_file        = NULL;
 
-	printf("Trying to upload %s to Server...\n", path);
+	printf("\n[WIFSS] Trying to upload %s to Server...\n", path);
 	_file = fopen(path, "rb");
 
 	if(_file == NULL)
 	{
-		printf("%s file asked is unreachable.\n", path);
-		send(sock, FAIL, strlen(FAIL), false);
+		printf("\n[WIFSS] %s file asked is unreachable.\n", path);
+		sprintf(_buff, "%s", FAIL)
+		send(sock, _buff, BUFFER, false);
 		return 0;
 	}
 
@@ -20,19 +21,17 @@ int upload(const char *path, int sock)
 	_fsize = ftell(_file);
 	fseek(_file, 0, SEEK_SET);
 
-	printf("Sending: %ld bytes of %s\n", _fsize, path);
+	printf("\n[WIFSS] Sending: %ld bytes of \"%s\".\n", _fsize, path);
 
 	sprintf(_buff, "size: %ld", _fsize);
 	send(sock, _buff, BUFFER, false);
 
-
 	while(ftell(_file) != SEEK_END)
 	{
 		memset(_buff, 0, BUFFER);
-
 		fread(_buff, sizeof(char), BUFFER, _file);
 
-		while(send(sock, _buff, strlen(_buff), false) != (int)strlen(_buff));
+		while(send(sock, _buff, BUFFER, false) != BUFFER);
 	}
 	
 	send(sock, ENDT, strlen(ENDT), false);

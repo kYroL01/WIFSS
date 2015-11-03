@@ -1,31 +1,40 @@
 #include <client.h>
 
-int download(const char *path, int sock)
+int download(const char *command, int sock)
 {
-	FILE *_file = NULL;
+	send(data->sock, command, BUFFER, false);
 
-	if(!access(path, F_OK))
+	char _path[PATHSIZE] = "";
+
+	/* Research of file name + extension */
+	for(short int _k = strlen(command); _k > 0; _k++)
 	{
-		_file = fopen(path, "wb");
+		if(command[_k] == '/')
+		{
+			strcpy(_path, command + _k + 1); //We just copy the last chars of the string
+			break;
+		}
 	}
 
+	FILE *_file = NULL;
+
+	if(!access(_path, F_OK))
+	{
+		_file = fopen(_path, "wb");
+	}
 
 	if(_file == NULL)
 	{
-		printf("\n%s file cannot be created.\n", path);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" file cannot be created.\033[0m\n\n", _path);
 		return 0;
 	}
 
-	printf("\nReception of %s file started !\n", path);
+	printf("\n\033[32m[WFISS] Reception of \"%s\" file started !\033[0m\n", _path);
 
-	char _buff[BUFFER];
-
-
+	char _buff[BUFFER] = "";
 	_Bool keepGoing = true;
-	while(keepGoing)
+	do
 	{
-		memset(_buff, 0, BUFFER);
-		
 		while(recv(sock, _buff, BUFFER, false) != BUFFER);
 
 		if(!strcmp(_buff, FINISHED))
@@ -34,11 +43,14 @@ int download(const char *path, int sock)
 		}
 		else
 		{
-			fwrite(_buff, BUFFER, BUFFER, _file);
+			fwrite(_buff, BUFFER, 1, _file);
 		}
 
 		fseek(_file, SEEK_CUR, SEEK_CUR + BUFFER);
-	}
+
+		memset(_buff, 0, BUFFER);
+
+	} while(keepGoing);
 
 	fclose(_file);
 

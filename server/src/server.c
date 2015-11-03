@@ -2,36 +2,34 @@
 
 void broadcast(int sender, const char *msg)
 {
-	int i;
 	char _buffer[BUFFER] = "";
 	sprintf(_buffer, "%s", msg);
 	
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
 	{
-		if(i != sender)
+		if(_i != sender)
 		{
-			send(g_clients[i].sock, _buffer, BUFFER, false);
+			send(g_clients[_i].sock, _buffer, BUFFER, false);
 		}
 	}
 }
 
 void close_all_connections()
 {
-	printf("\n[WIFSS] Closing all connections");
+	printf("\n[WIFSS] Closing all connections...");
+
 	char _buffer[BUFFER] = "";
 	sprintf(_buffer, "%s", DISCONNECT);
 
-	for(short int i = 0; i < MAX_CLIENTS; i++)
+	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
 	{
-		if(g_clients[i].status == TAKEN)
+		if(g_clients[_i].status == TAKEN)
 		{
-			send(g_clients[i].sock, _buffer, BUFFER, false);
-			close(g_clients[i].sock);
+			send(g_clients[_i].sock, _buffer, BUFFER, false);
+			close(g_clients[_i].sock);
 		}
-
 		printf(".");
 	}
-
 	printf(" done.\n");
 }
 
@@ -53,37 +51,38 @@ inline void commandCursor()
 
 int process_command(const char *command, int sender_id)
 {
-	int _fsize;
 	char _cpy[BUFFER]    = "";
 	char _buffer[BUFFER] = "";
 	bool _smthWritten    = true;
 
 	if(str_beginwith(command, DOWNLOAD))
 	{
+		int _fsize            =  0;
 		int remote_id         = -1;
 		char filename[BUFFER] = "";
 
-		printf("\n\n[Client %d] Asking for upload !\n", sender_id);
-
-		sscanf(command, "download %s %d", filename, &remote_id);
-		printf("[Client %d] File: \"%s\" of %d\n", sender_id, filename, remote_id);
+		sscanf(command, "download %d %[^\n]", filename, &remote_id);
+		printf("\n[Client %d] is asking the uploading of \"%s\"  %d.\n", sender_id, filename, remote_id);
 
 		if((remote_id > (MAX_CLIENTS - 1)) || (remote_id < 0) || (remote_id == sender_id))
 		{
-			send(g_clients[sender_id].sock, "Error: Client wanted is invalid...", BUFFER, false);
+			memset(filename, 0, BUFFER);
+			sprintf(filename, "%s", "Error: Client wanted is invalid...");
+			send(g_clients[sender_id].sock, filename, BUFFER, false);
 			return 0;
 		}
 
-
 		if(g_clients[remote_id].sock <= 0)
 		{
-			send(g_clients[sender_id].sock, "Error: Client asked is not connected...", BUFFER, false);
+			memset(filename, 0, BUFFER);
+			sprintf(filename, "%s", "Error: Client asked is not connected...");
+			send(g_clients[sender_id].sock, filename, BUFFER, false);
 			return 0;
 		}
 
 		sprintf(_cpy, "upload %s", filename);
 		send(g_clients[remote_id].sock, _cpy, BUFFER, false);
-
+		/* ... */
 		recv(g_clients[remote_id].sock, _buffer, BUFFER, false);
 		sscanf(_buffer, "size: %d", &_fsize);
 		printf("[WIFSS] File size: %d.\n", _fsize);
@@ -116,7 +115,8 @@ int process_command(const char *command, int sender_id)
 		}
 		else
 		{
-			send(g_clients[sender_id].sock, "ERROR: Client not connected.", BUFFER, false);
+			sprintf(_buffer, "%s", "ERROR: Client not connected.");
+			send(g_clients[sender_id].sock, _buffer, BUFFER, false);
 			printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n", sender_id, _idTemp, _cpy);
 		}
 	}
@@ -179,7 +179,7 @@ int startServer(void)
 	struct sockaddr_in client;
 	struct sockaddr_in server;
 	int listen_socket, sock;
-	unsigned int current_id = 0, asize;
+	unsigned int current_id = 0, asize, count = 0;
 
 	listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -230,7 +230,7 @@ int startServer(void)
 	pthread_create(&command_thread, NULL, &command_handler, (void*)&listen_socket);
 
 	asize = sizeof(struct sockaddr_in);
-	while((sock = accept(listen_socket, (struct sockaddr*)&client, &asize)) && (count < MAX_CLIENTS))
+	while(sock = accept(listen_socket, (struct sockaddr*)&client, &asize))
 	{
 		if(count + 1 >= MAX_CLIENTS)
 		{

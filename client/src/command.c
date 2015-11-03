@@ -73,10 +73,9 @@ void* serverCommunication(void *param)
 			if(_someThingWritten)
 			{
 				printf("\n\n|: ");
+				fflush(stdout);
 			}
 		}
-
-		fflush(stdout);
 
 		//pthread_mutex_unlock(&(data->mutex));
 	}
@@ -154,10 +153,7 @@ void handle_command(const char *command, MUTEX *data)
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
 	{
-		char _path[PATHSIZE] = {0};
-		send(data->sock, command, BUFFER, false);
-		sscanf(command, "download %s", _path);		
-		download(_path, data->sock);
+		download(command, data->sock);
 	}
 
 	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))
@@ -215,7 +211,7 @@ void handle_command(const char *command, MUTEX *data)
 			"logout",
 			"clear",
 			"tunnel <idClient>",
-			"download <file> <idClient>"
+			"download <idClient> <file>"
 		};
 		
 		for(short int _i = 0; helpMenu[_i] != NULL; _i++)

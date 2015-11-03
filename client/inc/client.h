@@ -16,8 +16,8 @@
 
 #define BUFFER    512
 #define FGETSBUFF 256
-#define TALLERCMD  30
-#define PATHSIZE   32
+#define TALLERCMD  32
+#define PATHSIZE   64
 
 #define true  1
 #define false 0

@@ -20,7 +20,7 @@ Run with:
 ```logout ```  
 ```clear ```  
 ```tunnel <idClient> ```  
-```download <file> <idClient> ```  
+```download <idClient> <file> ```  
 
 ### List of commands currently available for Server:  
 ```? ```  
