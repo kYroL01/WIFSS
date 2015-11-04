@@ -29,10 +29,7 @@ void* serverCommunication(void *param)
 
 			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
 			{
-				char _path[PATHSIZE] = {0};
-				sscanf(_buff, "upload %s", _path);
-				printf("\n\n[sthread] Server is asking us to upload: \"%s\".", _path);
-				upload(_path, data->sock);
+				upload(_buff, data->sock);
 			}
 
 			else if(str_beginwith(_buff, ASKTUNNEL) && str_validation(_buff, ARGTUN))
@@ -46,14 +43,14 @@ void* serverCommunication(void *param)
 				}
 				else
 				{
-					printf("\n\n[sthread] Client %d is asking you for a tunnel but you're already tunneled.", _clientAsking);
+					printf("\n\n[sthread] [Client %d] is asking you for a tunnel but you're already tunneled.", _clientAsking);
 				}
 
 			}
 
 			else if(!strcmp(_buff, DISCONNECT))
 			{
-				printf("\n\n[sthread] Server is demanding the Client disconnection. Stopping now.");
+				printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
 				data->keepGoing = false;
 				break;
 			}
@@ -137,7 +134,7 @@ void* infiniteWaitingFnct(void *param)
 
 void handle_command(const char *command, MUTEX *data)
 {
-	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT))
+	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT) || !strcmp(command, CLOSE))
 	{
 		if(!data->tunnelOpened)
 		{
@@ -166,7 +163,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("[WIFSS] You're already tunneled with someone. {TIPS} Type \"logout\" to stop the tunnel.\n\n");
+			printf("\n\n[WIFSS] You're already tunneled with someone. {TIPS} Type \"logout\" to stop the tunnel.\n\n");
 		}
 	}
 
@@ -178,7 +175,7 @@ void handle_command(const char *command, MUTEX *data)
 		}
 		else
 		{
-			printf("[WIFSS] {TIPS} You're tunneling ! You don't have to inform the recipient.\n");
+			printf("\n\n[WIFSS] {TIPS} You're tunneling ! You don't have to inform the recipient.\n");
 		}
 	}
 
@@ -210,6 +207,7 @@ void handle_command(const char *command, MUTEX *data)
 			"exit",
 			"logout",
 			"clear",
+			"close",
 			"tunnel <idClient>",
 			"download <idClient> <file>"
 		};

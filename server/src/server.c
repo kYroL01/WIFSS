@@ -2,14 +2,11 @@
 
 void broadcast(int sender, const char *msg)
 {
-	char _buffer[BUFFER] = "";
-	sprintf(_buffer, "%s", msg);
-	
 	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
 	{
 		if(_i != sender)
 		{
-			send(g_clients[_i].sock, _buffer, BUFFER, false);
+			send(g_clients[_i].sock, msg, BUFFER, false);
 		}
 	}
 }
@@ -45,11 +42,11 @@ void closeServer()
 
 inline void commandCursor()
 {
-	printf("\n|: ");
+	printf("|: ");
 	fflush(stdout);
 }
 
-int process_command(const char *command, int sender_id)
+void process_command(const char *command, int sender_id)
 {
 	char _cpy[BUFFER]    = "";
 	char _buffer[BUFFER] = "";
@@ -57,95 +54,39 @@ int process_command(const char *command, int sender_id)
 
 	if(str_beginwith(command, DOWNLOAD))
 	{
-		int _fsize            =  0;
-		int remote_id         = -1;
-		char filename[BUFFER] = "";
-
-		sscanf(command, "download %d %[^\n]", filename, &remote_id);
-		printf("\n[Client %d] is asking the uploading of \"%s\"  %d.\n", sender_id, filename, remote_id);
-
-		if((remote_id > (MAX_CLIENTS - 1)) || (remote_id < 0) || (remote_id == sender_id))
-		{
-			memset(filename, 0, BUFFER);
-			sprintf(filename, "%s", "Error: Client wanted is invalid...");
-			send(g_clients[sender_id].sock, filename, BUFFER, false);
-			return 0;
-		}
-
-		if(g_clients[remote_id].sock <= 0)
-		{
-			memset(filename, 0, BUFFER);
-			sprintf(filename, "%s", "Error: Client asked is not connected...");
-			send(g_clients[sender_id].sock, filename, BUFFER, false);
-			return 0;
-		}
-
-		sprintf(_cpy, "upload %s", filename);
-		send(g_clients[remote_id].sock, _cpy, BUFFER, false);
-		/* ... */
-		recv(g_clients[remote_id].sock, _buffer, BUFFER, false);
-		sscanf(_buffer, "size: %d", &_fsize);
-		printf("[WIFSS] File size: %d.\n", _fsize);
-
-		while(strcmp(_buffer, ENDT))
-		{
-			recv(g_clients[remote_id].sock, _buffer, BUFFER, false);
-			printf("%s", _buffer);
-		}
-		return 0;
+		download(command, sender_id);
 	}
 
 	else if(str_beginwith(command, QUIT))
 	{
 		close(g_clients[sender_id].sock);
-		return 1;
+		return;
 	}
 
 	else if(str_beginwith(command, SENDP))
 	{
-		memset(_cpy, 0, BUFFER);
-		memset(_buffer, 0, BUFFER);
-		short int _idTemp = -1;
-		sscanf(command, "sendp %hd %[^\n]", &_idTemp, _cpy);
-		if(g_clients[_idTemp].status == TAKEN)
-		{
-			sprintf(_buffer, "[Client %d] whispers: \"%s\".", sender_id, _cpy);
-			send(g_clients[_idTemp].sock, _buffer, BUFFER, false);
-			printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n", sender_id, _idTemp, _cpy);
-		}
-		else
-		{
-			sprintf(_buffer, "%s", "ERROR: Client not connected.");
-			send(g_clients[sender_id].sock, _buffer, BUFFER, false);
-			printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n", sender_id, _idTemp, _cpy);
-		}
+		messagep(command, sender_id);
 	}
 
 	else if(str_beginwith(command, SEND))
 	{
-		memset(_cpy, 0, BUFFER);
-		memset(_buffer, 0, BUFFER);
-		sscanf(command, "send %[^\n]", _buffer);
-		sprintf(_cpy, "[Client %d] : \"%s\".", sender_id, _buffer);
-		broadcast(sender_id, _cpy);
-		printf("\n\n[Client %d] says: \"%s\".\n", sender_id, _buffer);
+		message(command, sender_id);
 	}
 
 	else
 	{
-		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n", sender_id, command);
+		printf("\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n\n", sender_id, command);
 	}
 
 	commandCursor();
-
-	return 1;
 }
 
 void* on_connection(void *data)
 {
+	struct client_t client = *((struct client_t*)data);
+
 	int res;
 	char _buffer[BUFFER] = "";
-	struct client_t client = *((struct client_t*)data);
 
 	sprintf(_buffer, "[Client %d] is connecting...", client.id);
 	broadcast(client.id, _buffer);
@@ -153,6 +94,7 @@ void* on_connection(void *data)
 	while(client.sock > 0)
 	{
 		memset(_buffer, 0, BUFFER);
+
 		res = recv(client.sock, _buffer, BUFFER, false);
 		if(res <= 0)
 		{
@@ -162,7 +104,7 @@ void* on_connection(void *data)
 		process_command(_buffer, client.id);
 	}
 
-	printf("\n\n[Client %d] Deconnection...\n", client.id);
+	printf("\n\n[Client %d] Deconnection...\n\n", client.id);
 	sprintf(_buffer, "[Client %d] is deconnecting...", client.id);
 	broadcast(client.id, _buffer);
 	close(client.sock);
@@ -173,7 +115,7 @@ void* on_connection(void *data)
 	return NULL;
 }
 
-int startServer(void)
+void startServer(void)
 {
 	int res = 0, i;
 	struct sockaddr_in client;
@@ -201,7 +143,7 @@ int startServer(void)
 		{
 			char _buff[BUFFER];
 			printf("\n\n\033[31m[WIFSS] Error during creation of listening socket [bind (%d)].\033[0m\n", res);
-			printf("\nWould you like to retry now ? (Yes / No)\n\n");
+			printf("\nWould you like to retry on another port ? (Yes / No)\n\n");
 
 			do
 			{
@@ -210,7 +152,8 @@ int startServer(void)
 
 				if(!strcmp(_buff, "no") || !strcmp(_buff, "n"))
 				{
-					return res;
+					printf("\n\n");
+					return;
 				}
 
 			} while(strcmp(_buff, "yes") && strcmp(_buff, "y"));
@@ -225,7 +168,7 @@ int startServer(void)
 	{
 		g_clients[i].status = FREE;
 	}
-	printf("[WIFSS] Server opened, waiting for Clients...\033[0m\n\n");
+	printf("[WIFSS] Server opened, waiting for Clients on port %hu...\033[0m\n\n", (unsigned short int)ntohs(server.sin_port));
 
 	pthread_create(&command_thread, NULL, &command_handler, (void*)&listen_socket);
 
@@ -270,7 +213,7 @@ int startServer(void)
 			printf("\033[31m[WIFSS] Error during Thread creation %d: Error (%d).\033[0m\n", current_id, res);
 			broadcast(SID, "Server fatal error, stopping now.\n");
 			close_all_connections();
-			return res;
+			return;
 		}
 
 		/* Let's count clients online */
@@ -283,7 +226,7 @@ int startServer(void)
 			}
 		}
 
-		printf("[WIFSS] There is %d client(s) connected.\n", count);
+		printf("[WIFSS] There is %d client(s) connected.\n\n", count);
 
 		commandCursor();
 	}
@@ -296,8 +239,6 @@ int startServer(void)
 	}
 
 	closeServer();
-
-	return 0;
 }
 
 int main(void)
@@ -306,4 +247,3 @@ int main(void)
 
 	return 0;
 }
-

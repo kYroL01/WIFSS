@@ -29,6 +29,7 @@ void* command_handler(void* data)
 
 		else if(str_beginwith(_buffer, SENDP))
 		{
+			memset(_cpy, 0, BUFFER);
 			char _buffTemp[BUFFER] = "";
 			short int _idTemp = -1;
 			sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
@@ -45,32 +46,9 @@ void* command_handler(void* data)
 			broadcast(SID, _buffTemp);
 		}
 
-		else if(str_beginwith(_buffer, DISCONNECT))
+		else if(str_beginwith(_buffer, DISCONNECT) && str_validation(_buffer, ARGDCL))
 		{
-			short int _idTemp = -2;
-			sscanf(_buffer, "disconnect %hd", &_idTemp);
-			if(_idTemp == -1)
-			{
-				close_all_connections(); 
-				printf("\n");
-			}
-			else if(_idTemp >= 0 && _idTemp < MAX_CLIENTS)
-			{
-				if(g_clients[_idTemp].status == TAKEN)
-				{
-					send(g_clients[_idTemp].sock, "Server wants your disconnection.", BUFFER, false);
-					send(g_clients[_idTemp].sock, DISCONNECT, BUFFER, false);
-					close(g_clients[_idTemp].sock);
-				}
-				else
-				{
-					printf("This client is offline yet. Can't disconnect him.\n");
-				}
-			}
-			else
-			{
-				printf("Client id is invalid.\n");
-			}
+			disconnect(_buffer);
 		}
 
 		else if(!strcmp(_buffer, CLEAR))
@@ -85,13 +63,13 @@ void* command_handler(void* data)
 
 		else if(!strcmp(_buffer, HELP) || !strcmp(_buffer, INTERROGATIONPOINT))
 		{
-			static const char *helpMenu[TALLERCMD] =
+			static const char *helpMenu[MAXCMD] =
 			{
 				"?",
 				"help",
 				"send <message>",
 				"sendp <idClient> <message>",
-				"disconnect <idClient> ['-1' = all]",
+				"disconnect <idClient> ['-1' for all]",
 				"quit",
 				"exit",
 				"halt",

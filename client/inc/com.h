@@ -22,6 +22,7 @@
 #define SEND       "send"
 #define SENDP      "sendp"
 #define CLEAR      "clear"
+#define CLOSE      "close"
 #define LOGOUT     "logout"
 #define TUNNEL     "tunnel"
 #define UPLOAD     "upload"

@@ -10,7 +10,6 @@ _Bool init(struct sockaddr_in *server, int *sock)
 	do
 	{
 		printf("-> Server IP: ");
-
 		promptKeyboard(_buff);
 
 	} while(!strcmp(_buff, "\0") || str_infiniteSpaces(_buff));

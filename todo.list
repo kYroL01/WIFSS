@@ -1,8 +1,10 @@
 - Implement tunneling (Client between Client)
+- Mutex problem (Client)
+- Implement isfile() ?
 
--> Mutex problem (Client)
 
+-> Continue ".part" file ?
+-> DL threaded ? (with user stop ?)
+-> percent DL ? Client / Server
 
--> Emplacement fichier téléchargé
--> Revoir protocole DL / UL
--> Revoir upload()
+-> close socket server problem ?

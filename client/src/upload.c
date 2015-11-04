@@ -1,42 +1,70 @@
 #include <client.h>
 
-int upload(const char *path, int sock)
+void upload(const char *command, int sock)
 {
-	long _fsize        = 0;
-	char _buff[BUFFER] = "";
-	FILE *_file        = NULL;
+	long _fsize              = 0;
+	char _buff[BUFFER]       = "";
+	char _fileName[PATHSIZE] = "";
+	char _destFile[PATHSIZE] = "";
+	const char *_path        = "/Downloads/WIFSS/";
 
-	printf("\n[WIFSS] Trying to upload %s to Server...\n", path);
-	_file = fopen(path, "rb");
+	sscanf(command, "upload %[^\n]", _fileName);
+	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...", _fileName);
+
+	strcpy(_destFile, getenv("HOME"));
+	strcat(_destFile, _path);
+	strcat(_destFile, _fileName);
+
+	FILE *_file = NULL;
+
+	if(!access(_destFile, F_OK))
+	{
+		_file = fopen(_destFile, "rb");
+	}
 
 	if(_file == NULL)
 	{
-		printf("\n[WIFSS] %s file asked is unreachable.\n", path);
-		sprintf(_buff, "%s", FAIL)
+		printf("\n\n\033[31m[WIFSS] \"%s\" asked is unreachable.\033[0m\n", _fileName);
+		sprintf(_buff, "%s", FAIL);
 		send(sock, _buff, BUFFER, false);
-		return 0;
+		return;
+	}
+	else
+	{
+		memset(_buff, 0, BUFFER);
+
+		fseek(_file, 0, SEEK_END);
+		_fsize = ftell(_file);
+		fseek(_file, 0, SEEK_SET);
+
+		sprintf(_buff, "size: %ld", _fsize);
+		send(sock, _buff, BUFFER, false);
+		printf("\n[WIFSS] Sending: \"%s\" (%ld bytes).\n", _fileName, _fsize);
 	}
 
-	fseek(_file, 0, SEEK_END);
-	_fsize = ftell(_file);
-	fseek(_file, 0, SEEK_SET);
+	recv(sock, _buff, BUFFER, false); //Receive "OK", cue-role
 
-	printf("\n[WIFSS] Sending: %ld bytes of \"%s\".\n", _fsize, path);
-
-	sprintf(_buff, "size: %ld", _fsize);
-	send(sock, _buff, BUFFER, false);
-
+	int res;
 	while(ftell(_file) != SEEK_END)
 	{
 		memset(_buff, 0, BUFFER);
 		fread(_buff, sizeof(char), BUFFER, _file);
 
-		while(send(sock, _buff, BUFFER, false) != BUFFER);
+		do
+		{
+			res = send(sock, _buff, BUFFER, false);
+			if(res <= 0)
+			{
+				printf("\n\n[WIFSS] File could not be uploaded completely.\n");
+				break;
+			}
+
+		} while(res != BUFFER);
 	}
-	
-	send(sock, ENDT, strlen(ENDT), false);
 
-	fclose(_file);
+	memset(_buff, 0, BUFFER);
+	sprintf(_buff, "%s", ENDT);
+	send(sock, _buff, BUFFER, false);
 
-	return 1;
+	closeFile(_file, _fileName);
 }

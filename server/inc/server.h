@@ -11,10 +11,9 @@
 #include <pthread.h>
 
 
-#define PORT 	12443
 #define BUFFER	  512
 #define FGETSBUFF 256
-#define TALLERCMD  34
+#define MAXCMD     32
 #define PATHSIZE   32
 #define MAX_CLIENTS	4
 #define FREE 		1
@@ -50,11 +49,15 @@ pthread_t command_thread;
 int isvalid(const char*);
 void broadcast(int, const char*);
 void close_all_connections();
-int process_command(const char*, int);
+void process_command(const char*, int);
 void* command_handler(void* data);
 void* on_connection(void* data);
+void message(const char*, int);
+void messagep(const char*, int);
+void download(const char*, int);
+void disconnect(const char*);
 void commandCursor(void);
-int	startServer(void);
+void startServer(void);
 void closeServer(void);
 
 

@@ -50,7 +50,7 @@ _Bool str_infiniteSpaces(const char *buff)
 
 	for(_i = 0; _i < _length; _i++)
 	{
-		if(buff[_i] != ' ')
+		if(buff[_i] != ' ' && buff[_i] != '\t')
 		{
 			return false;
 		}

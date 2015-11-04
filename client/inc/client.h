@@ -16,8 +16,8 @@
 
 #define BUFFER    512
 #define FGETSBUFF 256
-#define TALLERCMD  32
 #define PATHSIZE   64
+#define TALLERCMD  32
 
 #define true  1
 #define false 0
@@ -47,8 +47,9 @@ void disconnect(int);
 void handle_command(const char*, MUTEX*);
 
 //TRANSFER
-int upload(const char*, int);
-int download(const char*, int);
+void upload(const char*, int);
+void download(const char*, int);
+void closeFile(FILE*, const char*);
 
 //TUNNEL
 void startunnel(MUTEX*, int);

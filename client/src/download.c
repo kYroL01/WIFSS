@@ -1,58 +1,102 @@
 #include <client.h>
 
-int download(const char *command, int sock)
+void download(const char *command, int sock)
 {
-	send(data->sock, command, BUFFER, false);
+	char _fileName[PATHSIZE / 4] = "";
+	char _destFile[PATHSIZE]     = "";
+	char _temp[PATHSIZE]         = "";
+	const char *_dotPart         = ".part";
+	const char *_path            = "/Downloads/WIFSS/";
 
-	char _path[PATHSIZE] = "";
+	short int _foo = -1;
+	sscanf(command, "download %hd %[^\n]", &_foo, _fileName);
 
-	/* Research of file name + extension */
-	for(short int _k = strlen(command); _k > 0; _k++)
-	{
-		if(command[_k] == '/')
-		{
-			strcpy(_path, command + _k + 1); //We just copy the last chars of the string
-			break;
-		}
-	}
+	strcpy(_destFile, getenv("HOME")); //_destFile = "$HOME"
+	strcat(_destFile, _path);          //_destFile = "$HOME/Downloads/WIFSS/"
+	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
 
 	FILE *_file = NULL;
 
-	if(!access(_path, F_OK))
+	if(access(_destFile, F_OK))
 	{
-		_file = fopen(_path, "wb");
+		_file = fopen(_destFile, "wb");
 	}
 
 	if(_file == NULL)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" file cannot be created.\033[0m\n\n", _path);
-		return 0;
+		printf("\n\033[31m[WIFSS] Error: \"%s\" cannot be created. Already exist ?\033[0m\n\n", _fileName);
+		return;
+	}
+	else
+	{
+		strcpy(_temp, _destFile);
+		strcat(_temp, _dotPart); //We append ".part" at the end of the file name during download
+
+		if(rename(_destFile, _temp) == -1)
+		{
+			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _path);
+			closeFile(_file, _fileName);
+			return;
+		}
 	}
 
-	printf("\n\033[32m[WFISS] Reception of \"%s\" file started !\033[0m\n", _path);
-
 	char _buff[BUFFER] = "";
-	_Bool keepGoing = true;
-	do
+
+	send(sock, command, BUFFER, false); //Wake up the server with the command
+	/* Waiting for ACK... */
+	recv(sock, _buff, BUFFER, false);
+	if(!strcmp(_buff, FAIL))
 	{
-		while(recv(sock, _buff, BUFFER, false) != BUFFER);
+		closeFile(_file, _fileName);
+		if(remove(_destFile) == -1)
+		{
+			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n", _fileName);
+		}
+
+		return;
+	}
+
+	printf("\n\033[32m[WIFSS] Reception of \"%s\" started in \"~%s/\" !\033[0m\n\n", _fileName, _path);
+
+	int res;
+	while(1)
+	{
+		do
+		{
+			res = recv(sock, _buff, BUFFER, false);
+			if(res <= 0)
+			{
+				printf("\n\033[31m[WIFSS] Error: \"%s\" could not be downloaded completely.\033[0m\n", _fileName);
+				closeFile(_file, _fileName);
+				return;
+			}
+
+		} while(res != BUFFER);
 
 		if(!strcmp(_buff, FINISHED))
 		{
-			keepGoing = false;
+			break;
 		}
 		else
 		{
-			fwrite(_buff, BUFFER, 1, _file);
+			fwrite(_buff, sizeof(char), BUFFER, _file);
+			fseek(_file, SEEK_CUR, SEEK_CUR + BUFFER);
+			memset(_buff, 0, BUFFER);
 		}
+	}
 
-		fseek(_file, SEEK_CUR, SEEK_CUR + BUFFER);
+	if(rename(_temp, _destFile) == -1)
+	{
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _fileName);
+	}
 
-		memset(_buff, 0, BUFFER);
+	closeFile(_file, _fileName);
+}
 
-	} while(keepGoing);
-
-	fclose(_file);
-
-	return 1;
+void closeFile(FILE *file, const char *fileName)
+{
+	if(fclose(file) == EOF)
+	{
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be closed as well.\033[0m\n\n", fileName);
+	}
 }

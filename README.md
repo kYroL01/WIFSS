@@ -19,6 +19,7 @@ Run with:
 ```exit ```  
 ```logout ```  
 ```clear ```  
+```close ```  
 ```tunnel <idClient> ```  
 ```download <idClient> <file> ```  
 
