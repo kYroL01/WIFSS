@@ -34,7 +34,7 @@ void download(const char *command, int sock)
 
 		if(rename(_destFile, _temp) == -1)
 		{
-			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _path);
+			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _fileName);
 			closeFile(_file, _fileName);
 			return;
 		}
@@ -47,31 +47,35 @@ void download(const char *command, int sock)
 	recv(sock, _buff, BUFFER, false);
 	if(!strcmp(_buff, FAIL))
 	{
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be uploaded by remote [Client %hd].\033[0m\n", _fileName, _foo);
 		closeFile(_file, _fileName);
 		if(remove(_destFile) == -1)
 		{
 			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n", _fileName);
 		}
-
 		return;
 	}
+	else
+	{
+		long int _fsize = 0;
+		sscanf(_buff, "size: %ld", &_fsize);
+		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"~%s/\" !\033[0m\n\n", _fileName, _path);
+	}
 
-	printf("\n\033[32m[WIFSS] Reception of \"%s\" started in \"~%s/\" !\033[0m\n\n", _fileName, _path);
-
-	int res;
+	int _res;
 	while(1)
 	{
 		do
 		{
-			res = recv(sock, _buff, BUFFER, false);
-			if(res <= 0)
+			_res = recv(sock, _buff, BUFFER, false);
+			if(_res <= 0)
 			{
 				printf("\n\033[31m[WIFSS] Error: \"%s\" could not be downloaded completely.\033[0m\n", _fileName);
 				closeFile(_file, _fileName);
 				return;
 			}
 
-		} while(res != BUFFER);
+		} while(_res != BUFFER);
 
 		if(!strcmp(_buff, FINISHED))
 		{

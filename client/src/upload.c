@@ -6,14 +6,14 @@ void upload(const char *command, int sock)
 	char _buff[BUFFER]       = "";
 	char _fileName[PATHSIZE] = "";
 	char _destFile[PATHSIZE] = "";
-	const char *_path        = "/Downloads/WIFSS/";
+	const char *_path        = "/Downloads/WIFSS/client0/"; /* /!\ REMOVE "CLIENT0/" BEFORE FINISH /!\ */
 
 	sscanf(command, "upload %[^\n]", _fileName);
-	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...", _fileName);
+	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", _fileName);
 
-	strcpy(_destFile, getenv("HOME"));
-	strcat(_destFile, _path);
-	strcat(_destFile, _fileName);
+	strcpy(_destFile, getenv("HOME")); //_destFile = "$HOME"
+	strcat(_destFile, _path);          //_destFile = "$HOME/Downloads/WIFSS/"
+	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
 
 	FILE *_file = NULL;
 
@@ -24,7 +24,7 @@ void upload(const char *command, int sock)
 
 	if(_file == NULL)
 	{
-		printf("\n\n\033[31m[WIFSS] \"%s\" asked is unreachable.\033[0m\n", _fileName);
+		printf("\n\033[31m[WIFSS] \"%s\" asked is unreachable.\033[0m\n", _fileName);
 		sprintf(_buff, "%s", FAIL);
 		send(sock, _buff, BUFFER, false);
 		return;
@@ -44,7 +44,7 @@ void upload(const char *command, int sock)
 
 	recv(sock, _buff, BUFFER, false); //Receive "OK", cue-role
 
-	int res;
+	int _res;
 	while(ftell(_file) != SEEK_END)
 	{
 		memset(_buff, 0, BUFFER);
@@ -52,14 +52,14 @@ void upload(const char *command, int sock)
 
 		do
 		{
-			res = send(sock, _buff, BUFFER, false);
-			if(res <= 0)
+			_res = send(sock, _buff, BUFFER, false);
+			if(_res <= 0)
 			{
 				printf("\n\n[WIFSS] File could not be uploaded completely.\n");
 				break;
 			}
 
-		} while(res != BUFFER);
+		} while(_res != BUFFER);
 	}
 
 	memset(_buff, 0, BUFFER);

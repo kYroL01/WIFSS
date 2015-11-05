@@ -1,10 +1,8 @@
 - Implement tunneling (Client between Client)
 - Mutex problem (Client)
-- Implement isfile() ?
+- Implement isPresent() ?
 
 
--> Continue ".part" file ?
--> DL threaded ? (with user stop ?)
--> percent DL ? Client / Server
-
--> close socket server problem ?
+-> (1) Finish DL / UL (recv() problem in download(), thread...)
+-> (2) Continue ".part" file ?
+-> (3) Percent DL ? Clients / Server

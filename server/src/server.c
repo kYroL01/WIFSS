@@ -1,45 +1,5 @@
 #include <server.h>
 
-void broadcast(int sender, const char *msg)
-{
-	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
-	{
-		if(_i != sender)
-		{
-			send(g_clients[_i].sock, msg, BUFFER, false);
-		}
-	}
-}
-
-void close_all_connections()
-{
-	printf("\n[WIFSS] Closing all connections...");
-
-	char _buffer[BUFFER] = "";
-	sprintf(_buffer, "%s", DISCONNECT);
-
-	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
-	{
-		if(g_clients[_i].status == TAKEN)
-		{
-			send(g_clients[_i].sock, _buffer, BUFFER, false);
-			close(g_clients[_i].sock);
-		}
-		printf(".");
-	}
-	printf(" done.\n");
-}
-
-void closeServer()
-{
-	printf("[WIFSS] Server stopped.\n");
-	for(short int _k = 0; _k < 60; _k++)
-	{
-		printf("=");
-	}
-	printf("\n\n");
-}
-
 inline void commandCursor()
 {
 	printf("|: ");
@@ -63,19 +23,19 @@ void process_command(const char *command, int sender_id)
 		return;
 	}
 
-	else if(str_beginwith(command, SENDP))
-	{
-		messagep(command, sender_id);
-	}
-
 	else if(str_beginwith(command, SEND))
 	{
 		message(command, sender_id);
 	}
 
+	else if(str_beginwith(command, SENDP))
+	{
+		messagep(command, sender_id);
+	}
+
 	else
 	{
-		printf("\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n\n", sender_id, command);
+		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n\n", sender_id, command);
 	}
 
 	commandCursor();
@@ -86,27 +46,27 @@ void* on_connection(void *data)
 	struct client_t client = *((struct client_t*)data);
 
 	int res;
-	char _buffer[BUFFER] = "";
+	char buffer[BUFFER] = "";
 
-	sprintf(_buffer, "[Client %d] is connecting...", client.id);
-	broadcast(client.id, _buffer);
+	sprintf(buffer, "[Client %d] is connecting...", client.id);
+	broadcast(client.id, buffer);
 	
 	while(client.sock > 0)
 	{
-		memset(_buffer, 0, BUFFER);
+		memset(buffer, 0, BUFFER);
 
-		res = recv(client.sock, _buffer, BUFFER, false);
+		res = recv(client.sock, buffer, BUFFER, false);
 		if(res <= 0)
 		{
 			break; //Client is offline
 		}
 
-		process_command(_buffer, client.id);
+		process_command(buffer, client.id);
 	}
 
 	printf("\n\n[Client %d] Deconnection...\n\n", client.id);
-	sprintf(_buffer, "[Client %d] is deconnecting...", client.id);
-	broadcast(client.id, _buffer);
+	sprintf(buffer, "[Client %d] is deconnecting...", client.id);
+	broadcast(client.id, buffer);
 	close(client.sock);
 	
 	commandCursor();
@@ -231,14 +191,7 @@ void startServer(void)
 		commandCursor();
 	}
 
-	close_all_connections();
-
-	if(close(listen_socket) == -1)
-	{
-		printf("\n\033[35m[WIFSS] Socket of server couldn't be successfully closed.\033[0m\n");
-	}
-
-	closeServer();
+	closeServer(listen_socket);
 }
 
 int main(void)

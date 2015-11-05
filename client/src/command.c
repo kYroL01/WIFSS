@@ -45,7 +45,6 @@ void* serverCommunication(void *param)
 				{
 					printf("\n\n[sthread] [Client %d] is asking you for a tunnel but you're already tunneled.", _clientAsking);
 				}
-
 			}
 
 			else if(!strcmp(_buff, DISCONNECT))

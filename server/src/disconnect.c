@@ -13,7 +13,6 @@ void disconnect(const char *buffer)
 	{
 		if(g_clients[_idTemp].status == TAKEN)
 		{
-			send(g_clients[_idTemp].sock, "Server wants your disconnection.", BUFFER, false);
 			send(g_clients[_idTemp].sock, DISCONNECT, BUFFER, false);
 			close(g_clients[_idTemp].sock);
 		}

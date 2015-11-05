@@ -58,7 +58,7 @@ void download(const char*, int);
 void disconnect(const char*);
 void commandCursor(void);
 void startServer(void);
-void closeServer(void);
+void closeServer(int);
 
 
 #endif
