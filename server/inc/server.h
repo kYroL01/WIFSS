@@ -25,7 +25,6 @@
 
 #define true  1
 #define false 0
-typedef char bool;
 
 
 #include <com.h>
@@ -46,19 +45,25 @@ pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;
 
 
-int isvalid(const char*);
-void broadcast(int, const char*);
-void close_all_connections();
-void process_command(const char*, int);
-void* command_handler(void* data);
-void* on_connection(void* data);
-void message(const char*, int);
-void messagep(const char*, int);
-void download(const char*, int);
-void disconnect(const char*);
-void commandCursor(void);
+//START / STOP
 void startServer(void);
 void closeServer(int);
+
+//FUNCTION MANAGEMENT
+void broadcast(int, const char*);
+void close_all_connections();
+
+//COMMANDS
+void process_command(const char*, int);
+void commandCursor(void);
+void download(const char*, int);
+void message(const char*, int);
+void whisper(const char*, int);
+void disconnect(const char*);
+
+//THREADS
+void* command_handler(void* data);
+void* on_connection(void* data);
 
 
 #endif

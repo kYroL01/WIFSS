@@ -14,20 +14,19 @@ Run with:
 ```? ```  
 ```help ```  
 ```send <message> ```  
-```sendp <idClient> <message> ```  
+```whisper <idClient> <message> ```  
 ```quit ```  
 ```exit ```  
 ```logout ```  
 ```clear ```  
 ```close ```  
-```tunnel <idClient> ```  
 ```download <idClient> <file> ```  
 
 ### List of commands currently available for Server:  
 ```? ```  
 ```help ```  
 ```send <message> ```  
-```sendp <idClient> <message> ```  
+```whisper <idClient> <message> ```  
 ```disconnect <idClient> ['-1' = all] ```  
 ```quit ```  
 ```exit ```  

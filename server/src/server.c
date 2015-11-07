@@ -10,7 +10,7 @@ void process_command(const char *command, int sender_id)
 {
 	char _cpy[BUFFER]    = "";
 	char _buffer[BUFFER] = "";
-	bool _smthWritten    = true;
+	_Bool _smthWritten   = true;
 
 	if(str_beginwith(command, DOWNLOAD))
 	{
@@ -28,9 +28,9 @@ void process_command(const char *command, int sender_id)
 		message(command, sender_id);
 	}
 
-	else if(str_beginwith(command, SENDP))
+	else if(str_beginwith(command, WHISPER))
 	{
-		messagep(command, sender_id);
+		whisper(command, sender_id);
 	}
 
 	else
@@ -48,7 +48,7 @@ void* on_connection(void *data)
 	int res;
 	char buffer[BUFFER] = "";
 
-	sprintf(buffer, "[Client %d] is connecting...", client.id);
+	sprintf(buffer, "[Client %d] is connected.", client.id);
 	broadcast(client.id, buffer);
 	
 	while(client.sock > 0)
@@ -64,8 +64,9 @@ void* on_connection(void *data)
 		process_command(buffer, client.id);
 	}
 
-	printf("\n\n[Client %d] Deconnection...\n\n", client.id);
-	sprintf(buffer, "[Client %d] is deconnecting...", client.id);
+	printf("\n\n[Client %d] is deconnected.\n\n", client.id);
+	memset(buffer, 0, BUFFER);
+	sprintf(buffer, "[Client %d] is deconnected.", client.id);
 	broadcast(client.id, buffer);
 	close(client.sock);
 	
@@ -193,6 +194,33 @@ void startServer(void)
 
 	closeServer(listen_socket);
 }
+
+void closeServer(int listen_socket)
+{
+	close_all_connections();
+
+	if(close(listen_socket) == -1)
+	{
+		printf("\n\033[35m[WIFSS] Socket of server couldn't be successfully closed.\033[0m\n");
+	}
+	else
+	{
+		printf("\n\033[32m[WIFSS] Socket of server successfully closed.\033[0m\n");
+	}
+
+	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
+	{
+		pthread_cancel(threads[_i]);
+	}
+
+	printf("[WIFSS] Server stopped.\n");
+	for(short int _k = 0; _k < 60; _k++)
+	{
+		printf("=");
+	}
+	printf("\n\n");
+}
+
 
 int main(void)
 {

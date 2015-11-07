@@ -32,14 +32,13 @@ typedef struct
 {
 	int sock;
 	_Bool keepGoing;
-	_Bool tunnelOpened;
 
 	pthread_mutex_t mutex;
 
 } MUTEX;
 
 
-//START_STOP
+//START / STOP
 _Bool init(struct sockaddr_in*, int*);
 void disconnect(int);
 
@@ -51,15 +50,10 @@ void upload(const char*, int);
 void download(const char*, int);
 void closeFile(FILE*, const char*);
 
-//TUNNEL
-void startunnel(MUTEX*, int);
-void acceptunnel(MUTEX*, int);
-
 //THREADS
 void* serverCommunication(void*);
 void* clientCommunication(void*);
 void* infiniteWaitingFnct(void*);
-
 
 
 #endif

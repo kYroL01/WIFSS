@@ -6,13 +6,8 @@
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
-#define LIST      "list:"
-#define ITSATUN   "itsatun"
 #define PRESENT   "present"
-#define OKFORTUN  "okfortun"
-#define KOFORTUN  "kofortun"
 #define FINISHED  "finished"
-#define ASKTUNNEL "asktunnel"
 
 //CMD
 #define HELP       "help"
@@ -20,12 +15,11 @@
 #define QUIT       "quit"
 #define STOP       "stop"
 #define SEND       "send "
-#define SENDP      "sendp "
 #define CLEAR      "clear"
 #define CLOSE      "close"
 #define LOGOUT     "logout"
-#define TUNNEL     "tunnel "
 #define UPLOAD     "upload "
+#define WHISPER    "whisper "
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DISCONNECT "disconnect"
@@ -43,9 +37,8 @@
 #define ASKLIST  3
 
 //ARG
-#define ARGTUN 2
 #define ARGDWL 3
-#define ARGUPL 2
+#define ARGWHI 3
 
 
 #endif

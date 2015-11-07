@@ -11,7 +11,7 @@ void message(const char *command, int sender_id)
 	printf("\n\n[Client %d] says: \"%s\".\n\n", sender_id, _buffer);
 }
 
-void messagep(const char *command, int sender_id)
+void whisper(const char *command, int sender_id)
 {
 	char _cpy[BUFFER]     = "";
 	char _buffer[BUFFER]  = "";

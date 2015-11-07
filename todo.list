@@ -1,6 +1,6 @@
-- Implement tunneling (Client between Client)
 - Mutex problem (Client)
-- Implement isPresent() ?
+- Implement isPresent()
+- User defines MAX_CLIENTS
 
 
 -> (1) Finish DL / UL (recv() problem in download(), thread...)

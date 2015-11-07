@@ -27,24 +27,9 @@ void* serverCommunication(void *param)
 			static _Bool _someThingWritten;
 			_someThingWritten = true;
 
-			if(str_beginwith(_buff, UPLOAD) && str_validation(_buff, ARGUPL))
+			if(str_beginwith(_buff, UPLOAD))
 			{
 				upload(_buff, data->sock);
-			}
-
-			else if(str_beginwith(_buff, ASKTUNNEL) && str_validation(_buff, ARGTUN))
-			{
-				int _clientAsking = 0;
-				sscanf(_buff, "asktunnel %d", &_clientAsking);
-
-				if(!data->tunnelOpened)
-				{
-					acceptunnel(data, _clientAsking);
-				}
-				else
-				{
-					printf("\n\n[sthread] [Client %d] is asking you for a tunnel but you're already tunneled.", _clientAsking);
-				}
 			}
 
 			else if(!strcmp(_buff, DISCONNECT))
@@ -95,11 +80,6 @@ void* clientCommunication(void *param)
 			break;
 		}
 
-		if(data->tunnelOpened)
-		{
-			printf("[Tunnel] ");
-		}
-
 		printf("|: ");
 		promptKeyboard(_buff);
 		handle_command(_buff, data);
@@ -135,16 +115,7 @@ void handle_command(const char *command, MUTEX *data)
 {
 	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT) || !strcmp(command, CLOSE))
 	{
-		if(!data->tunnelOpened)
-		{
-			printf("\n\n[WIFSS] Let's close connection with Server...");
-			data->keepGoing = false;
-		}
-		else
-		{
-			printf("\n\n[WIFSS] Let's close tunnel with the other Client...\n");
-			data->tunnelOpened = false;
-		}
+		data->keepGoing = false;
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
@@ -152,37 +123,15 @@ void handle_command(const char *command, MUTEX *data)
 		download(command, data->sock);
 	}
 
-	else if(str_beginwith(command, TUNNEL) && str_validation(command, ARGTUN))
-	{
-		if(!data->tunnelOpened)
-		{
-			int _idClient = 0;
-			sscanf(command, "tunnel %d", &_idClient);
-			startunnel(data, _idClient);
-		}
-		else
-		{
-			printf("\n\n[WIFSS] You're already tunneled with someone. {TIPS} Type \"logout\" to stop the tunnel.\n\n");
-		}
-	}
-
-	else if(str_beginwith(command, SENDP))
-	{
-		if(!data->tunnelOpened)
-		{
-			send(data->sock, command, BUFFER, false);
-		}
-		else
-		{
-			printf("\n\n[WIFSS] {TIPS} You're tunneling ! You don't have to inform the recipient.\n");
-		}
-	}
-
 	else if(str_beginwith(command, SEND))
 	{
 		send(data->sock, command, BUFFER, false);
 	}
 
+	else if(str_beginwith(command, WHISPER) && str_validation(command, ARGWHI))
+	{
+		send(data->sock, command, BUFFER, false);
+	}
 
 	else if(!strcmp(command, CLEAR))
 	{
@@ -201,13 +150,12 @@ void handle_command(const char *command, MUTEX *data)
 			"?",
 			"help",
 			"send <message>",
-			"sendp <idClient> <message>",
+			"whisper <idClient> <message>",
 			"quit",
 			"exit",
 			"logout",
 			"clear",
 			"close",
-			"tunnel <idClient>",
 			"download <idClient> <file>"
 		};
 		

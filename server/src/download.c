@@ -2,27 +2,19 @@
 
 void download(const char *command, int sender_id)
 {
-	char _cpy[BUFFER]     = "";
-	char _buffer[BUFFER]  = "";
+	char _cpy[BUFFER]      = "";
+	char _buffer[BUFFER]   = "";
 	char _filename[BUFFER] = "";
-	long int _fsize       =  0;
+	long int _fsize        =  0;
 	short int _remote_id   = -1;
 
 	sscanf(command, "download %hd %[^\n]", &_remote_id, _filename);
 	printf("\n\n[Client %d] is asking the uploading of [Client %d]'s \"%s\".\n", sender_id, _remote_id, _filename);
 
-	if((_remote_id > (MAX_CLIENTS - 1)) || (_remote_id < 0) || (_remote_id == sender_id))
+	if((_remote_id >= MAX_CLIENTS) || (_remote_id < 0) || (_remote_id == sender_id) || (g_clients[_remote_id].sock <= 0))
 	{
 		memset(_filename, 0, BUFFER);
-		sprintf(_filename, "%s", "Error: Client wanted is invalid...");
-		send(g_clients[sender_id].sock, _filename, BUFFER, false);
-		return;
-	}
-
-	if(g_clients[_remote_id].sock <= 0)
-	{
-		memset(_filename, 0, BUFFER);
-		sprintf(_filename, "%s", "Error: Client asked is not connected...");
+		sprintf(_filename, "%s", "Error: Client wanted is invalid ot not conected...");
 		send(g_clients[sender_id].sock, _filename, BUFFER, false);
 		return;
 	}
@@ -47,7 +39,7 @@ void download(const char *command, int sender_id)
 		/* Waiting for ACK... */
 		memset(_buffer, 0, BUFFER);
 		recv(g_clients[sender_id].sock, _buffer, BUFFER, false);
-		//Receive and Send "OK" (cue-role) from sender, to remote
+		//Receive and Send "OK" (cue-role), from sender, to remote
 		send(g_clients[_remote_id].sock, _buffer, BUFFER, false);
 	}
 

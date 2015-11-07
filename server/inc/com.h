@@ -6,23 +6,20 @@
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
-#define LIST      "list: "
-#define TUNNEL    "tunnel "
 #define PRESENT   "present"
-#define IDCLIENT  "idclient: "
 #define FINISHED  "finished"
 
 //CMD
+#define HELP       "help"
+#define EXIT       "exit"
 #define QUIT       "quit"
 #define STOP       "stop"
 #define HALT       "halt"
-#define EXIT       "exit"
-#define HELP       "help"
 #define SEND       "send "
-#define SENDP      "sendp "
-#define CLOSE      "close"
 #define CLEAR      "clear"
+#define CLOSE      "close"
 #define UPLOAD     "upload "
+#define WHISPER    "whisper "
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DISCONNECT "disconnect"
@@ -35,7 +32,6 @@
 #define ASKLIST  3
 
 //ARG
-#define ARGTUN 2
 #define ARGDWL 2
 #define ARGUPL 3
 #define ARGDCL 2

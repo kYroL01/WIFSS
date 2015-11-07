@@ -27,11 +27,11 @@ void* command_handler(void* data)
 			broadcast(SID, _buffTemp);
 		}
 
-		else if(str_beginwith(_buffer, SENDP))
+		else if(str_beginwith(_buffer, WHISPER))
 		{
 			memset(_cpy, 0, BUFFER);
 			char _buffTemp[BUFFER] = "";
-			short int _idTemp = -1;
+			short int _idTemp      = -1;
 			sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
 			if(g_clients[_idTemp].status == TAKEN &&_idTemp >= 0 && _idTemp < MAX_CLIENTS)
 			{
@@ -66,7 +66,7 @@ void* command_handler(void* data)
 				"?",
 				"help",
 				"send <message>",
-				"sendp <idClient> <message>",
+				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",
 				"quit",
 				"exit",

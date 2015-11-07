@@ -15,7 +15,15 @@ void download(const char *command, int sock)
 	strcat(_destFile, _path);          //_destFile = "$HOME/Downloads/WIFSS/"
 	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
 
+	strcpy(_temp, _destFile);
+	strcat(_temp, _dotPart); //We append ".part" at the end of the file name during download
+
 	FILE *_file = NULL;
+
+	if(access(_temp, F_OK))
+	{
+		/* Continue interrupted download of last time ? */
+	}
 
 	if(access(_destFile, F_OK))
 	{
@@ -29,9 +37,6 @@ void download(const char *command, int sock)
 	}
 	else
 	{
-		strcpy(_temp, _destFile);
-		strcat(_temp, _dotPart); //We append ".part" at the end of the file name during download
-
 		if(rename(_destFile, _temp) == -1)
 		{
 			printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _fileName);
@@ -59,7 +64,7 @@ void download(const char *command, int sock)
 	{
 		long int _fsize = 0;
 		sscanf(_buff, "size: %ld", &_fsize);
-		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"~%s/\" !\033[0m\n\n", _fileName, _path);
+		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"%s/%s/\" !\033[0m\n\n", _fileName, getenv("HOME"), _path);
 	}
 
 	int _res;
