@@ -59,6 +59,7 @@ void commandCursor(void);
 void download(const char*, int);
 void message(const char*, int);
 void whisper(const char*, int);
+void asklist(const char*, int);
 void disconnect(const char*);
 
 //THREADS

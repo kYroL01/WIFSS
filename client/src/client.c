@@ -10,7 +10,7 @@ int main(void)
 
 	if(init(&server, &sock))
 	{
-		MUTEX data;
+		DATA data;
 		data.sock         = sock;
 		data.keepGoing    = true;
 		data.mutex        = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;

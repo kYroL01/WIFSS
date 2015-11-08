@@ -15,6 +15,11 @@ Run with:
 ```help ```  
 ```send <message> ```  
 ```whisper <idClient> <message> ```  
+```list ```  
+```rename <file> <newFileName> ```  
+```remove <file> ```  
+```ispresent <idClient> <file> ```  
+```asklist <idClient> ```  
 ```quit ```  
 ```exit ```  
 ```logout ```  

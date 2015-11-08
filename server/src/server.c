@@ -33,6 +33,11 @@ void process_command(const char *command, int sender_id)
 		whisper(command, sender_id);
 	}
 
+	else if(str_beginwith(command, ASKLIST))
+	{
+		asklist(command, sender_id);
+	}
+
 	else
 	{
 		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n\n", sender_id, command);

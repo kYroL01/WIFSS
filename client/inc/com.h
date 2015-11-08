@@ -15,10 +15,14 @@
 #define QUIT       "quit"
 #define STOP       "stop"
 #define SEND       "send "
+#define LIST       "list"
 #define CLEAR      "clear"
 #define CLOSE      "close"
 #define LOGOUT     "logout"
+#define REMOVE     "remove "
+#define RENAME     "rename "
 #define UPLOAD     "upload "
+#define ASKLIST    "asklist "
 #define WHISPER    "whisper "
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
@@ -32,13 +36,14 @@
 
 //SIG
 #define ENDSIG  -1
-#define ASKFILE  1
-#define FILEDWL  2
-#define ASKLIST  3
 
 //ARG
 #define ARGDWL 3
 #define ARGWHI 3
+#define ARGISP 3
+#define ARGASK 2
+#define ARGRNA 3
+#define ARGRMV 2
 
 
 #endif

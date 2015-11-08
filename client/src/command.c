@@ -5,7 +5,7 @@ void* serverCommunication(void *param)
 	int _result;
 	char _buff[BUFFER];
 
-	MUTEX *data = (MUTEX*)param;
+	DATA *data = (DATA*)param;
 
 	while(1)
 	{
@@ -39,6 +39,18 @@ void* serverCommunication(void *param)
 				break;
 			}
 
+			else if(!strcmp(_buff, ASKLIST))
+			{
+				char _buff[BUFFER] = "";
+				listFiles(_buff);
+				send(data->sock, _buff, BUFFER, false);
+			}
+
+			else if(str_beginwith(_buff, ISPRESENT))
+			{
+				isPresent(_buff, data->sock);
+			}
+
 			else
 			{
 				if(strcmp(_buff, ""))
@@ -67,7 +79,7 @@ void* serverCommunication(void *param)
 
 void* clientCommunication(void *param)
 {
-	MUTEX *data = (MUTEX*)param;
+	DATA *data = (DATA*)param;
 
 	char _buff[BUFFER];
 
@@ -94,7 +106,7 @@ void* clientCommunication(void *param)
 
 void* infiniteWaitingFnct(void *param)
 {
-	MUTEX *data = (MUTEX*)param;
+	DATA *data = (DATA*)param;
 
 	for(; ; sleep(1))
 	{
@@ -111,7 +123,7 @@ void* infiniteWaitingFnct(void *param)
 }
 
 
-void handle_command(const char *command, MUTEX *data)
+void handle_command(const char *command, DATA *data)
 {
 	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT) || !strcmp(command, CLOSE))
 	{
@@ -133,6 +145,31 @@ void handle_command(const char *command, MUTEX *data)
 		send(data->sock, command, BUFFER, false);
 	}
 
+	else if(str_beginwith(command, ISPRESENT) && str_validation(command, ARGISP))
+	{
+		send(data->sock, command, BUFFER, false);
+	}
+
+	else if(str_beginwith(command, ASKLIST) && str_validation(command, ARGASK))
+	{
+		asklist(command, data->sock);
+	}
+
+	else if(str_beginwith(command, REMOVE) && str_validation(command, ARGRMV))
+	{
+		removeFile(command);
+	}
+
+	else if(str_beginwith(command, RENAME) && str_validation(command, ARGRNA))
+	{
+		renameFile(command);
+	}
+
+	else if(!strcmp(command, LIST))
+	{
+		listFiles();
+	}
+
 	else if(!strcmp(command, CLEAR))
 	{
 		system("clear");
@@ -151,6 +188,11 @@ void handle_command(const char *command, MUTEX *data)
 			"help",
 			"send <message>",
 			"whisper <idClient> <message>",
+			"list",
+			"rename <file> <newFileName>"
+			"remove <file>"
+			"ispresent <idClient> <file>"
+			"asklist <idClient>"
 			"quit",
 			"exit",
 			"logout",

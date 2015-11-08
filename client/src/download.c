@@ -20,7 +20,7 @@ void download(const char *command, int sock)
 
 	FILE *_file = NULL;
 
-	if(access(_temp, F_OK))
+	if(!access(_temp, F_OK))
 	{
 		/* Continue interrupted download of last time ? */
 	}

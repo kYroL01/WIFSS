@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <signal.h>
+#include <dirent.h>
 
 
 #define BUFFER    512
@@ -35,7 +36,7 @@ typedef struct
 
 	pthread_mutex_t mutex;
 
-} MUTEX;
+} DATA;
 
 
 //START / STOP
@@ -43,12 +44,19 @@ _Bool init(struct sockaddr_in*, int*);
 void disconnect(int);
 
 //COMMUNICATION
-void handle_command(const char*, MUTEX*);
+void handle_command(const char*, DATA*);
 
 //TRANSFER
 void upload(const char*, int);
 void download(const char*, int);
 void closeFile(FILE*, const char*);
+
+//FILE MANAGEMENT
+void listFiles();
+void removeFile(const char*);
+void renameFile(const char*);
+void isPresent(const char*, int);
+void asklist(const char*, int);
 
 //THREADS
 void* serverCommunication(void*);
