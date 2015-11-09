@@ -13,3 +13,4 @@
 /!\ To implement /!\
 
 - Check too many files at startup (+ file name lenght)
+- Check sub-directory present ?

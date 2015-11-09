@@ -52,7 +52,7 @@ void download(const char*, int);
 void closeFile(FILE*, const char*);
 
 //FILE MANAGEMENT
-void listFiles();
+void listFiles(char*);
 void removeFile(const char*);
 void renameFile(const char*);
 void isPresent(const char*, int);

@@ -13,7 +13,6 @@
 #define HELP       "help"
 #define EXIT       "exit"
 #define QUIT       "quit"
-#define STOP       "stop"
 #define SEND       "send "
 #define LIST       "list"
 #define CLEAR      "clear"

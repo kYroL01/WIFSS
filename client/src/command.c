@@ -125,7 +125,7 @@ void* infiniteWaitingFnct(void *param)
 
 void handle_command(const char *command, DATA *data)
 {
-	if(!strcmp(command, QUIT) || !strcmp(command, EXIT) || !strcmp(command, STOP) || !strcmp(command, LOGOUT) || !strcmp(command, CLOSE))
+	if((str_beginwith(command, QUIT) && str_infiniteSpaces(command + strlen(QUIT))) || (str_beginwith(command, EXIT) && str_infiniteSpaces(command + strlen(EXIT))) || (str_beginwith(command, LOGOUT) && str_infiniteSpaces(command + strlen(LOGOUT))) || (str_beginwith(command, CLOSE) && str_infiniteSpaces(command + strlen(CLOSE))))
 	{
 		data->keepGoing = false;
 	}
@@ -165,12 +165,12 @@ void handle_command(const char *command, DATA *data)
 		renameFile(command);
 	}
 
-	else if(!strcmp(command, LIST))
+	else if(str_beginwith(command, LIST) && str_infiniteSpaces(command + strlen(LIST)))
 	{
-		listFiles();
+		listFiles(NULL);
 	}
 
-	else if(!strcmp(command, CLEAR))
+	else if(str_beginwith(command, CLEAR) && str_infiniteSpaces(command + strlen(CLEAR)))
 	{
 		system("clear");
 	}

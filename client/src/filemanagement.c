@@ -39,11 +39,11 @@ void removeFile(const char *command)
 
 	if(remove(_destFile) == -1)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n", _fileName);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n\n", _fileName);
 	}
 	else
 	{
-		printf("\n\033[32m[WIFSS] \"%s\" has been removed.\033[0m\n", _fileName);
+		printf("\n\033[32m[WIFSS] \"%s\" has been removed.\033[0m\n\n", _fileName);
 	}
 }
 
@@ -66,11 +66,11 @@ void renameFile(const char *command)
 
 	if(rename(_destFile, _newDestFile) == -1)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n", _fileName);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _fileName);
 	}
 	else
 	{
-		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n", _fileName, _newFileName);
+		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n\n", _fileName, _newFileName);
 	}
 }
 
@@ -86,15 +86,29 @@ void listFiles(char *_buff)
 
 	if(directory != NULL)
 	{
-		memset(_buff, 0, BUFFER);
-		strcpy(_buff, "list: ");
+		if(_buff != NULL)
+		{
+			memset(_buff, 0, BUFFER);
+			strcpy(_buff, "list: ");
+		}
 
 		struct dirent *ep;
 
-		while(ep = readdir(directory))
+		while((ep = readdir(directory)))
 		{
-			strcat(_buff, ep->d_name);
-			strcat(_buff, "/");
+			if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) //All bar currentDir + parentDir
+			{
+				if(_buff != NULL) //If function called with a buff, non-verbose list
+				{
+					strcat(_buff, ep->d_name);
+					strcat(_buff, "/");
+				}
+				else
+				{
+					printf("\t");
+					puts(ep->d_name);
+				}
+			}
 		}
 
 		closedir(directory);
@@ -102,7 +116,7 @@ void listFiles(char *_buff)
 
 	else
 	{
-		printf("\n\033[31m[WIFSS] Error: Couldn't open the directory.\033[0m\n");
+		printf("\n\033[31m[WIFSS] Error: Couldn't open the target directory: \"%s\".\033[0m\n", _destDir);
 	}
 }
 

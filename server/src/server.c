@@ -8,10 +8,6 @@ inline void commandCursor()
 
 void process_command(const char *command, int sender_id)
 {
-	char _cpy[BUFFER]    = "";
-	char _buffer[BUFFER] = "";
-	_Bool _smthWritten   = true;
-
 	if(str_beginwith(command, DOWNLOAD))
 	{
 		download(command, sender_id);
@@ -139,7 +135,7 @@ void startServer(void)
 	pthread_create(&command_thread, NULL, &command_handler, (void*)&listen_socket);
 
 	asize = sizeof(struct sockaddr_in);
-	while(sock = accept(listen_socket, (struct sockaddr*)&client, &asize))
+	while((sock = accept(listen_socket, (struct sockaddr*)&client, &asize)))
 	{
 		if(count + 1 >= MAX_CLIENTS)
 		{

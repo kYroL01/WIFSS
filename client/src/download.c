@@ -64,7 +64,7 @@ void download(const char *command, int sock)
 	{
 		long int _fsize = 0;
 		sscanf(_buff, "size: %ld", &_fsize);
-		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"%s/%s/\" !\033[0m\n\n", _fileName, getenv("HOME"), _path);
+		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"%s/%s/\" !\033[0m\n\n", _fileName, _fsize, getenv("HOME"), _path);
 	}
 
 	int _res;

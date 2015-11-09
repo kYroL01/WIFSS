@@ -5,14 +5,13 @@ void* command_handler(void* data)
 	int *listen_socket = (int*)data;
 
 	char _buffer[BUFFER];
-	char _cpy[BUFFER];
 
 	while(1)
 	{
 		commandCursor();
 		promptKeyboard(_buffer);
 
-		if(!strcmp(_buffer, QUIT) || !strcmp(_buffer, STOP)|| !strcmp(_buffer, HALT) || !strcmp(_buffer, EXIT) || !strcmp(_buffer, CLOSE))
+		if((str_beginwith(_buffer, QUIT) && str_infiniteSpaces(_buffer + strlen(QUIT))) || (str_beginwith(_buffer, EXIT) && str_infiniteSpaces(_buffer + strlen(EXIT))) || (str_beginwith(_buffer, STOP) && str_infiniteSpaces(_buffer + strlen(STOP))) || (str_beginwith(_buffer, HALT) && str_infiniteSpaces(_buffer + strlen(HALT))) || (str_beginwith(_buffer, CLOSE) && str_infiniteSpaces(_buffer + strlen(CLOSE))))
 		{
 			broadcast(SID, "[Server] is going to shutdown !");
 			break;
@@ -20,7 +19,7 @@ void* command_handler(void* data)
 
 		else if(str_beginwith(_buffer, SEND))
 		{
-			memset(_cpy, 0, BUFFER);
+			char _cpy[BUFFER] = "";
 			char _buffTemp[BUFFER] = "";
 			sscanf(_buffer, "send %[^\n]", _cpy);
 			sprintf(_buffTemp, "[Server] says: \"%s\".", _cpy);
@@ -29,11 +28,11 @@ void* command_handler(void* data)
 
 		else if(str_beginwith(_buffer, WHISPER))
 		{
-			memset(_cpy, 0, BUFFER);
+			char _cpy[BUFFER] = "";
 			char _buffTemp[BUFFER] = "";
 			short int _idTemp      = -1;
 			sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
-			if(g_clients[_idTemp].status == TAKEN &&_idTemp >= 0 && _idTemp < MAX_CLIENTS)
+			if(g_clients[_idTemp].status == TAKEN && _idTemp >= 0 && _idTemp < MAX_CLIENTS)
 			{
 				sprintf(_buffTemp, "[Server] whispers to you: \"%s\".", _cpy);
 				send(g_clients[_idTemp].sock, _buffTemp, BUFFER, false);
