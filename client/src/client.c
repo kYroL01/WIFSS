@@ -3,12 +3,12 @@
 
 int main(void)
 {
-	int sock;
+	int sock = -1;
 	struct sockaddr_in server;
 
 	pthread_t sthread, cthread, ithread;
 
-	if(checkDownloadFolder() && init(&server, &sock))
+	if(checkDownloadFolder() && start(&server, &sock))
 	{
 		DATA data;
 		data.sock         = sock;
@@ -27,7 +27,7 @@ int main(void)
 		pthread_mutex_destroy(&(data.mutex));
 	}
 
-	disconnect(sock);
+	stop(sock);
 
 	return 0;
 }

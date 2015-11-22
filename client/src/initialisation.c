@@ -1,6 +1,6 @@
 #include <client.h>
 
-_Bool init(struct sockaddr_in *server, int *sock)
+_Bool start(struct sockaddr_in *server, int *sock)
 {
 	char _buff[BUFFER] = "";
 	short int _port;
@@ -68,14 +68,20 @@ _Bool init(struct sockaddr_in *server, int *sock)
 }
 
 
-void disconnect(int sock)
+void stop(int sock)
 {
-	if(close(sock) == -1)
+	if(sock > 0)
 	{
-		printf("\n\033[35m[WIFSS] Socket couldn't be successfully closed.\033[0m\n");
+		if(close(sock) == -1)
+		{
+			printf("\n\033[35m[WIFSS] Socket couldn't be successfully closed.\033[0m\n");
+		}
+		else
+		{
+			printf("\n\n[WIFSS] Socket successfully closed.\n");
+		}
 	}
 	
-	printf("\n\n[WIFSS] Socket successfully closed.\n");
 	printf("[WIFSS] Client is shutting down for now !\n");
 	for(short int _i = 0; _i < 60; _i++)
 	{

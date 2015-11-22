@@ -42,8 +42,8 @@ typedef struct
 
 
 //START / STOP
-_Bool init(struct sockaddr_in*, int*);
-void disconnect(int);
+_Bool start(struct sockaddr_in*, int*);
+void stop(int);
 
 //COMMUNICATION
 void handle_command(const char*, DATA*);
