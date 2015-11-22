@@ -12,5 +12,6 @@
 
 /!\ To implement /!\
 
-- Check too many files at startup (+ file name lenght)
+- Check too many files on startup (+ file name lenght)
 - Check sub-directory present ?
+- mkdir WIFSS if not present ?

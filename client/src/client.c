@@ -8,7 +8,7 @@ int main(void)
 
 	pthread_t sthread, cthread, ithread;
 
-	if(init(&server, &sock))
+	if(checkDownloadFolder() && init(&server, &sock))
 	{
 		DATA data;
 		data.sock         = sock;

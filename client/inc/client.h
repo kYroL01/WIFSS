@@ -13,12 +13,14 @@
 #include <pthread.h>
 #include <signal.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 
 #define BUFFER    512
 #define FGETSBUFF 256
 #define PATHSIZE   64
 #define TALLERCMD  32
+#define MAXFILEDIR 16
 
 #define true  1
 #define false 0
@@ -57,6 +59,7 @@ void removeFile(const char*);
 void renameFile(const char*);
 void isPresent(const char*, int);
 void asklist(const char*, int);
+_Bool checkDownloadFolder();
 
 //THREADS
 void* serverCommunication(void*);

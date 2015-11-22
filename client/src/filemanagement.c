@@ -153,3 +153,53 @@ void asklist(const char *command, int sock)
 		printf("\n\n\033[33m[WIFSS] Error: List of client asked could not be retrieved as well.\033[0m\n\t");
 	}
 }
+
+
+_Bool checkDownloadFolder()
+{
+	char _destDir[PATHSIZE]    = "";
+	const char _path[PATHSIZE] = "/Downloads/WIFSS/";
+	short int _count = 0;
+
+	strcpy(_destDir, getenv("HOME"));
+	strcat(_destDir, _path);
+
+	DIR *directory = opendir(_destDir);
+
+	if(directory == NULL)
+	{
+		printf("\n\033[31m[WIFSS] Error: Target directory doesn\'t exist, we attempt to create it.\033[0m\n");
+		mkdir(_destDir, S_IRWXU);
+		directory = opendir(_destDir);
+
+		if(directory == NULL)
+		{
+			printf("\n\033[31m[WIFSS] Error: Target directory couldn\'t be created. Stopping now.\033[0m\n");
+			return false;
+		}
+		else
+		{
+			printf("\n\033[32m[WIFSS] Target directory: \"%s\" successfully created.\033[0m\n", _destDir);
+		}
+	}
+
+	struct dirent *ep;
+
+	while((ep = readdir(directory)))
+	{
+		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) //All bar currentDir + parentDir
+		{
+			_count++;
+		}
+	}
+
+	closedir(directory);
+	
+	if(_count > MAXFILEDIR)
+	{
+		printf("\n\033[32m[WIFSS] Error: You've got so many files in: \"%s\" directory. Stopping now.\033[0m\n", _destDir);
+		return false;
+	}
+
+	return true;
+}
