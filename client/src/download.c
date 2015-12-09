@@ -6,13 +6,11 @@ void download(const char *command, int sock)
 	char _destFile[PATHSIZE]     = "";
 	char _temp[PATHSIZE]         = "";
 	const char *_dotPart         = ".part";
-	const char *_path            = "/Downloads/WIFSS/";
 
 	short int _foo = -1;
 	sscanf(command, "download %hd %[^\n]", &_foo, _fileName);
 
-	strcpy(_destFile, getenv("HOME")); //_destFile = "$HOME"
-	strcat(_destFile, _path);          //_destFile = "$HOME/Downloads/WIFSS/"
+	strcpy(_destFile, getenv("WORKDIR")); //_destFile = "$HOME/Downloads/WIFSS/"
 	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
 
 	strcpy(_temp, _destFile);
@@ -64,7 +62,7 @@ void download(const char *command, int sock)
 	{
 		long int _fsize = 0;
 		sscanf(_buff, "size: %ld", &_fsize);
-		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"%s/%s/\" !\033[0m\n\n", _fileName, _fsize, getenv("HOME"), _path);
+		printf("\n\033[32m[WIFSS] Reception of \"%s\" (%ld bytes) started in \"%s\" !\033[0m\n\n", _fileName, _fsize, getenv("WORKDIR"));
 	}
 
 	int _res;

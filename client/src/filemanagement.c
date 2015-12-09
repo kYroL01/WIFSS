@@ -1,16 +1,35 @@
 #include <client.h>
 
+_Bool setWorkDir(void)
+{
+	system("clear");
+
+	char *_temp = NULL;
+
+	_temp = (char*)malloc((strlen("WORKDIR=") + strlen(getenv("HOME")) + strlen(PATHWORKINGDIR)) * sizeof(*_temp));
+	sprintf(_temp, "WORKDIR=%s%s", getenv("HOME"), PATHWORKINGDIR);
+
+	if(putenv(_temp) != 0)
+	{
+		free(_temp);
+		printf("\n\033[31m[WIFSS] Error: Working directory couldn\'t be set as environment variable.\033[0m\n\n");
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 void isPresent(const char *command, int sock)
 {
 	char _buff[BUFFER]           = "";
 	char _destFile[PATHSIZE]     = ""; 
 	char _fileName[PATHSIZE / 4] = "";
-	const char _path[PATHSIZE]   = "/Downloads/WIFSS/";
 
 	sscanf(command, "ispresent %[^\n]", _fileName);
 
-	strcpy(_destFile, getenv("HOME"));
-	strcat(_destFile, _path);
+	strcpy(_destFile, getenv("WORKDIR"));
 	strcat(_destFile, _fileName);
 
 	if(!access(_destFile, F_OK))
@@ -29,12 +48,10 @@ void removeFile(const char *command)
 {
 	char _fileName[PATHSIZE / 4] = "";
 	char _destFile[PATHSIZE]     = ""; 
-	const char _path[PATHSIZE]   = "/Downloads/WIFSS/";
 
 	sscanf(command, "remove %[^\n]", _fileName);
 
-	strcpy(_destFile, getenv("HOME"));
-	strcat(_destFile, _path);
+	strcpy(_destFile, getenv("WORKDIR"));
 	strcat(_destFile, _fileName);
 
 	if(remove(_destFile) == -1)
@@ -53,15 +70,12 @@ void renameFile(const char *command)
 	char _newFileName[PATHSIZE / 4] = "";
 	char _destFile[BUFFER]          = "";
 	char _newDestFile[BUFFER]       = "";
-	const char _path[PATHSIZE]      = "/Downloads/WIFSS/";
 
 	sscanf(command, "rename %s %[^\n]", _fileName, _newFileName);
 
-	strcpy(_destFile, getenv("HOME"));
-	strcpy(_newDestFile, getenv("HOME"));
-	strcat(_destFile, _path);
-	strcat(_newDestFile, _path);
+	strcpy(_destFile, getenv("WORKDIR"));
 	strcat(_destFile, _fileName);
+	strcpy(_newDestFile, getenv("WORKDIR"));
 	strcat(_newDestFile, _newFileName);
 
 	if(rename(_destFile, _newDestFile) == -1)
@@ -76,11 +90,9 @@ void renameFile(const char *command)
 
 void listFiles(char *_buff)
 {
-	char _destDir[PATHSIZE]    = "";
-	const char _path[PATHSIZE] = "/Downloads/WIFSS/";
+	char _destDir[PATHSIZE] = "";
 
-	strcpy(_destDir, getenv("HOME"));
-	strcat(_destDir, _path);
+	strcpy(_destDir, getenv("WORKDIR"));
 
 	DIR *directory = opendir(_destDir);
 
@@ -157,13 +169,10 @@ void asklist(const char *command, int sock)
 
 _Bool checkDownloadFolder()
 {
-	char _destDir[PATHSIZE]    = "";
-	const char _path[PATHSIZE] = "/Downloads/WIFSS/";
+	char _destDir[2 * PATHSIZE] = "";
 	short int _count = 0;
 
-	strcpy(_destDir, getenv("HOME"));
-	strcat(_destDir, _path);
-
+	strcpy(_destDir, getenv("WORKDIR"));
 	DIR *directory = opendir(_destDir);
 
 	if(directory == NULL)
@@ -174,7 +183,7 @@ _Bool checkDownloadFolder()
 
 		if(directory == NULL)
 		{
-			printf("\n\033[31m[WIFSS] Error: Target directory couldn\'t be created. Stopping now.\033[0m\n");
+			printf("\n\033[31m[WIFSS] Error: Target directory couldn\'t be created. Stopping now.\033[0m\n\n");
 			return false;
 		}
 		else
@@ -184,11 +193,31 @@ _Bool checkDownloadFolder()
 	}
 
 	struct dirent *ep;
+	struct stat file_stat;
 
 	while((ep = readdir(directory)))
 	{
 		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) //All bar currentDir + parentDir
 		{
+			memset(_destDir, 0, PATHSIZE);
+			strcpy(_destDir, getenv("WORKDIR"));
+			strcat(_destDir, ep->d_name);
+
+			if(stat(_destDir, &file_stat) != 0)
+			{
+				perror("Erreur");
+				printf("\n\033[31m[WIFSS] Error: A problem occured during reading information about one of your working directory content. Stopping now.\033[0m\n\n");
+				return false;
+			}
+			else
+			{
+				if(S_ISDIR(file_stat.st_mode))
+				{
+					printf("\n\033[31m[WIFSS] Error: One of your working directory content is a sub-directory (\"%s\"). Please consider remove it. Stopping now.\033[0m\n\n", ep->d_name);
+					return false;
+				}
+			}
+
 			_count++;
 		}
 	}
@@ -197,7 +226,7 @@ _Bool checkDownloadFolder()
 	
 	if(_count > MAXFILEDIR)
 	{
-		printf("\n\033[32m[WIFSS] Error: You've got so many files in: \"%s\" directory. Stopping now.\033[0m\n", _destDir);
+		printf("\n\033[32m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean up this please. Stopping now.\033[0m\n", MAXFILEDIR, _destDir);
 		return false;
 	}
 

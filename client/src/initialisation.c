@@ -82,7 +82,7 @@ void stop(int sock)
 		}
 	}
 	
-	printf("[WIFSS] Client is shutting down for now !\n");
+	printf("[WIFSS] Client is shutting down for now.\n");
 	for(short int _i = 0; _i < 60; _i++)
 	{
 		printf("=");

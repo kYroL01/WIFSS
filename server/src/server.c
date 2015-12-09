@@ -79,6 +79,8 @@ void* on_connection(void *data)
 
 void startServer(void)
 {
+	system("clear");
+
 	int res = 0, i;
 	struct sockaddr_in client;
 	struct sockaddr_in server;

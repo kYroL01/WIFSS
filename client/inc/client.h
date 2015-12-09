@@ -26,6 +26,9 @@
 #define false 0
 
 
+#define PATHWORKINGDIR "/Downloads/WIFSS/"
+
+
 #include <com.h>
 #include <str.h>
 
@@ -54,6 +57,7 @@ void download(const char*, int);
 void closeFile(FILE*, const char*);
 
 //FILE MANAGEMENT
+_Bool setWorkDir(void);
 void listFiles(char*);
 void removeFile(const char*);
 void renameFile(const char*);

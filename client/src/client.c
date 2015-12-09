@@ -1,6 +1,5 @@
 #include <client.h>
 
-
 int main(void)
 {
 	int sock = -1;
@@ -8,7 +7,7 @@ int main(void)
 
 	pthread_t sthread, cthread, ithread;
 
-	if(checkDownloadFolder() && start(&server, &sock))
+	if(setWorkDir() && checkDownloadFolder() && start(&server, &sock))
 	{
 		DATA data;
 		data.sock         = sock;

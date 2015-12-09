@@ -6,13 +6,11 @@ void upload(const char *command, int sock)
 	char _buff[BUFFER]       = "";
 	char _fileName[PATHSIZE] = "";
 	char _destFile[PATHSIZE] = "";
-	const char *_path        = "/Downloads/WIFSS/client0/"; /* /!\ REMOVE "CLIENT0/" BEFORE FINISH /!\ */
 
 	sscanf(command, "upload %[^\n]", _fileName);
 	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", _fileName);
 
-	strcpy(_destFile, getenv("HOME")); //_destFile = "$HOME"
-	strcat(_destFile, _path);          //_destFile = "$HOME/Downloads/WIFSS/"
+	strcpy(_destFile, getenv("WORKDIR")); //_destFile = "$HOME/Downloads/WIFSS/"
 	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
 
 	FILE *_file = NULL;
