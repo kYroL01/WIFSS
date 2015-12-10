@@ -59,7 +59,7 @@ void* on_connection(void *data)
 		res = recv(client.sock, buffer, BUFFER, false);
 		if(res <= 0)
 		{
-			break; //Client is offline
+			break; /* Client is offline */
 		}
 
 		process_command(buffer, client.id);
@@ -81,7 +81,9 @@ void startServer(void)
 {
 	system("clear");
 
-	int res = 0, i;
+	char c;
+	int res = 0;
+	short int i;
 	struct sockaddr_in client;
 	struct sockaddr_in server;
 	int listen_socket, sock;
@@ -92,13 +94,18 @@ void startServer(void)
 	server.sin_family 		= AF_INET;
 	server.sin_addr.s_addr 	= INADDR_ANY;
 
-	printf("\n\033[32m[WIFSS] Starting Server...\033[0m");
+	printf("\n\033[32m[WIFSS] Starting Server...\033[0m\n");
 
 	do
 	{
-		printf("\n\n-> Listening Port: ");
-		scanf("%d", &i);
-		getchar();
+		do
+		{
+			printf("\n-> Listening Port: ");
+			scanf("%hd", &i);
+
+			while((c = getchar()) && c != '\n');
+
+		} while(i < 1024 || i > 65535);
 
 		server.sin_port = htons(i);
 
@@ -211,13 +218,14 @@ void closeServer(int listen_socket)
 		printf("\n\033[32m[WIFSS] Socket of server successfully closed.\033[0m\n");
 	}
 
-	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
+	short int _i;
+	for(_i = 0; _i < MAX_CLIENTS; _i++)
 	{
 		pthread_cancel(threads[_i]);
 	}
 
 	printf("[WIFSS] Server stopped.\n");
-	for(short int _k = 0; _k < 60; _k++)
+	for(_i = 0; _i < 60; _i++)
 	{
 		printf("=");
 	}

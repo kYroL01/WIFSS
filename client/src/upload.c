@@ -10,8 +10,8 @@ void upload(const char *command, int sock)
 	sscanf(command, "upload %[^\n]", _fileName);
 	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", _fileName);
 
-	strcpy(_destFile, getenv("WORKDIR")); //_destFile = "$HOME/Downloads/WIFSS/"
-	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
+	strcpy(_destFile, getenv("WORKDIR")); /* _destFile = "$HOME/Downloads/WIFSS/" */
+	strcat(_destFile, _fileName);      /* _destFile = "$HOME/Downloads/WIFSS/fileName" */
 
 	FILE *_file = NULL;
 
@@ -40,7 +40,7 @@ void upload(const char *command, int sock)
 		printf("\n[WIFSS] Sending: \"%s\" (%ld bytes).\n", _fileName, _fsize);
 	}
 
-	recv(sock, _buff, BUFFER, false); //Receive "OK", cue-role
+	recv(sock, _buff, BUFFER, false); /* Receive "OK", cue-role */
 
 	int _res;
 	while(ftell(_file) != SEEK_END)

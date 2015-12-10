@@ -2,7 +2,8 @@
 
 void broadcast(int sender, const char *msg)
 {
-	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
+	short int _i;
+	for(_i = 0; _i < MAX_CLIENTS; _i++)
 	{
 		if(_i != sender)
 		{
@@ -18,7 +19,8 @@ void close_all_connections()
 	char _buffer[BUFFER] = "";
 	sprintf(_buffer, "%s", DISCONNECT);
 
-	for(short int _i = 0; _i < MAX_CLIENTS; _i++)
+	short int _i;
+	for(_i = 0; _i < MAX_CLIENTS; _i++)
 	{
 		if(g_clients[_i].status == TAKEN)
 		{

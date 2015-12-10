@@ -33,7 +33,7 @@
 #include <str.h>
 
 
-//DATA_MUTEXED
+/* DATA_MUTEXED */
 typedef struct
 {
 	int sock;
@@ -44,19 +44,19 @@ typedef struct
 } DATA;
 
 
-//START / STOP
+/* START / STOP */
 _Bool start(struct sockaddr_in*, int*);
 void stop(int);
 
-//COMMUNICATION
+/* COMMUNICATION */
 void handle_command(const char*, DATA*);
 
-//TRANSFER
+/* TRANSFER */
 void upload(const char*, int);
 void download(const char*, int);
 void closeFile(FILE*, const char*);
 
-//FILE MANAGEMENT
+/* FILE MANAGEMENT */
 _Bool setWorkDir(void);
 void listFiles(char*);
 void removeFile(const char*);
@@ -65,7 +65,7 @@ void isPresent(const char*, int);
 void asklist(const char*, int);
 _Bool checkDownloadFolder();
 
-//THREADS
+/* THREADS */
 void* serverCommunication(void*);
 void* clientCommunication(void*);
 void* infiniteWaitingFnct(void*);

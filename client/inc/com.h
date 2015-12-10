@@ -2,14 +2,14 @@
 #define __COM__
 
 
-//ACK
+/* ACK */
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
 #define PRESENT   "present"
 #define FINISHED  "finished"
 
-//CMD
+/* CMD */
 #define HELP       "help"
 #define EXIT       "exit"
 #define QUIT       "quit"
@@ -28,15 +28,15 @@
 #define DISCONNECT "disconnect"
 #define INTERROGATIONPOINT "?"
 
-//ADDR
+/* ADDR */
 #define LOCAL     "local"
 #define LOCALHOST "localhost"
 #define ADDRLOCAL "127.0.0.1"
 
-//SIG
+/* SIG */
 #define ENDSIG  -1
 
-//ARG
+/* ARG */
 #define ARGDWL 3
 #define ARGWHI 3
 #define ARGISP 3

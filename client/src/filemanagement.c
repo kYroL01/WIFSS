@@ -108,9 +108,9 @@ void listFiles(char *_buff)
 
 		while((ep = readdir(directory)))
 		{
-			if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) //All bar currentDir + parentDir
+			if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) /* All bar currentDir + parentDir */
 			{
-				if(_buff != NULL) //If function called with a buff, non-verbose list
+				if(_buff != NULL) /* If function called with a buff, non-verbose list */
 				{
 					strcat(_buff, ep->d_name);
 					strcat(_buff, "/");
@@ -146,7 +146,8 @@ void asklist(const char *command, int sock)
 		sscanf(_buff, "list: %[^\n]", _temp);
 
 		printf("\n\n[WIFSS] List of client asked:\n\t");
-		for(short int _i = 0; _temp[_i] != '\0'; _i++)
+		short int _i;
+		for(_i = 0; _temp[_i] != '\0'; _i++)
 		{
 			if(_temp[_i] == '/')
 			{
@@ -197,7 +198,7 @@ _Bool checkDownloadFolder()
 
 	while((ep = readdir(directory)))
 	{
-		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) //All bar currentDir + parentDir
+		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) /* All bar currentDir + parentDir */
 		{
 			memset(_destDir, 0, PATHSIZE);
 			strcpy(_destDir, getenv("WORKDIR"));

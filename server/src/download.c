@@ -20,7 +20,7 @@ void download(const char *command, int sender_id)
 	}
 
 	sprintf(_cpy, "upload %s", _filename);
-	send(g_clients[_remote_id].sock, _cpy, BUFFER, false); //LEAVES THE FUNCTION HERE ## BUG ##
+	send(g_clients[_remote_id].sock, _cpy, BUFFER, false); /* LEAVES THE FUNCTION HERE ## BUG ## */
 	/* Waiting for ACK... */
 	recv(g_clients[_remote_id].sock, _buffer, BUFFER, false);
 	if(!strcmp(_buffer, FAIL))
@@ -39,7 +39,7 @@ void download(const char *command, int sender_id)
 		/* Waiting for ACK... */
 		memset(_buffer, 0, BUFFER);
 		recv(g_clients[sender_id].sock, _buffer, BUFFER, false);
-		//Receive and Send "OK" (cue-role), from sender, to remote
+		/* Receive and Send "OK" (cue-role), from sender, to remote */
 		send(g_clients[_remote_id].sock, _buffer, BUFFER, false);
 	}
 

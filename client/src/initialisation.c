@@ -2,6 +2,7 @@
 
 _Bool start(struct sockaddr_in *server, int *sock)
 {
+	char _c;
 	char _buff[BUFFER] = "";
 	short int _port;
 
@@ -24,9 +25,10 @@ _Bool start(struct sockaddr_in *server, int *sock)
 	{
 		printf("-> Server Port: ");
 		scanf("%hd", &_port);
-		getchar();
 
-	} while(_port < 1024);
+		while((_c = getchar()) && _c != '\n');
+
+	} while(_port < 1024 || _port > 65535);
 
 	server->sin_family      = AF_INET;
 	server->sin_port        = htons(_port);
@@ -83,7 +85,8 @@ void stop(int sock)
 	}
 	
 	printf("[WIFSS] Client is shutting down for now.\n");
-	for(short int _i = 0; _i < 60; _i++)
+	short int  _i;
+	for(_i = 0; _i < 60; _i++)
 	{
 		printf("=");
 	}

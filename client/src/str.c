@@ -64,7 +64,7 @@ void str_lowerCase(char *buff)
 	short int _i;
 	short int _length = (short int)strlen(buff);
 
-	for(_i = 0; _i < _length && buff[_i] != ' '; _i++) //Tolower only first word !
+	for(_i = 0; _i < _length && buff[_i] != ' '; _i++) /* Tolower only first word ! */
 	{
 		buff[_i] = tolower(buff[_i]);
 	}

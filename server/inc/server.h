@@ -45,15 +45,15 @@ pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;
 
 
-//START / STOP
+/* START / STOP */
 void startServer(void);
 void closeServer(int);
 
-//FUNCTION MANAGEMENT
+/* FUNCTION MANAGEMENT */
 void broadcast(int, const char*);
 void close_all_connections();
 
-//COMMANDS
+/* COMMANDS */
 void process_command(const char*, int);
 void commandCursor(void);
 void download(const char*, int);
@@ -62,7 +62,7 @@ void whisper(const char*, int);
 void asklist(const char*, int);
 void disconnect(const char*);
 
-//THREADS
+/* THREADS */
 void* command_handler(void* data);
 void* on_connection(void* data);
 

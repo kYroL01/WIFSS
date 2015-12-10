@@ -55,7 +55,7 @@ void* command_handler(void* data)
 
 		else if(str_infiniteSpaces(_buffer))
 		{
-			//Do nothing...
+			/* Do nothing... */
 		}
 
 		else if(!strcmp(_buffer, HELP) || !strcmp(_buffer, INTERROGATIONPOINT))
@@ -75,7 +75,8 @@ void* command_handler(void* data)
 				"clear"
 			};
 
-			for(short int _j = 0; helpMenu[_j] != NULL; _j++)
+			short int _j;
+			for(_j = 0; helpMenu[_j] != NULL; _j++)
 			{
 				printf("\t");
 				puts(helpMenu[_j]);

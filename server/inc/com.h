@@ -2,14 +2,14 @@
 #define __COM__
 
 
-//ACK
+/* ACK */
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
 #define PRESENT   "present"
 #define FINISHED  "finished"
 
-//CMD
+/* CMD */
 #define HELP       "help"
 #define EXIT       "exit"
 #define QUIT       "quit"
@@ -26,10 +26,10 @@
 #define DISCONNECT "disconnect"
 #define INTERROGATIONPOINT "?"
 
-//SIG
+/* SIG */
 #define ENDSIG  -1
 
-//ARG
+/* ARG */
 #define ARGDWL 2
 #define ARGUPL 3
 #define ARGDCL 2

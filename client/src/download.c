@@ -10,11 +10,11 @@ void download(const char *command, int sock)
 	short int _foo = -1;
 	sscanf(command, "download %hd %[^\n]", &_foo, _fileName);
 
-	strcpy(_destFile, getenv("WORKDIR")); //_destFile = "$HOME/Downloads/WIFSS/"
-	strcat(_destFile, _fileName);      //_destFile = "$HOME/Downloads/WIFSS/fileName"
+	strcpy(_destFile, getenv("WORKDIR")); /* _destFile = "$HOME/Downloads/WIFSS/" */
+	strcat(_destFile, _fileName);      /* _destFile = "$HOME/Downloads/WIFSS/fileName" */
 
 	strcpy(_temp, _destFile);
-	strcat(_temp, _dotPart); //We append ".part" at the end of the file name during download
+	strcat(_temp, _dotPart); /* We append ".part" at the end of the file name during download */
 
 	FILE *_file = NULL;
 
@@ -45,7 +45,7 @@ void download(const char *command, int sock)
 
 	char _buff[BUFFER] = "";
 
-	send(sock, command, BUFFER, false); //Wake up the server with the command
+	send(sock, command, BUFFER, false); /* Wake up the server with the command */
 	/* Waiting for ACK... */
 	recv(sock, _buff, BUFFER, false);
 	if(!strcmp(_buff, FAIL))

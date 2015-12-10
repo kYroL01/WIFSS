@@ -13,12 +13,12 @@ void* serverCommunication(void *param)
 
 		_result = recv(data->sock, _buff, BUFFER, false);
 
-		//pthread_mutex_lock(&(data->mutex));
+		/* pthread_mutex_lock(&(data->mutex)); */
 
 		if(_result <= 0 || !data->keepGoing)
 		{
 			data->keepGoing = false;
-			//pthread_mutex_unlock(&(data->mutex));
+			/* pthread_mutex_unlock(&(data->mutex)); */
 			pthread_exit(NULL);
 		}
 
@@ -70,7 +70,7 @@ void* serverCommunication(void *param)
 			}
 		}
 
-		//pthread_mutex_unlock(&(data->mutex));
+		/* pthread_mutex_unlock(&(data->mutex)); */
 	}
 
 	pthread_exit(NULL);
@@ -85,7 +85,7 @@ void* clientCommunication(void *param)
 
 	while(1)
 	{
-		//pthread_mutex_lock(&(data->mutex));
+		/* pthread_mutex_lock(&(data->mutex)); */
 
 		if(!data->keepGoing)
 		{
@@ -96,10 +96,10 @@ void* clientCommunication(void *param)
 		promptKeyboard(_buff);
 		handle_command(_buff, data);
 
-		//pthread_mutex_unlock(&(data->mutex));
+		/* pthread_mutex_unlock(&(data->mutex)); */
 	}
 
-	//pthread_mutex_unlock(&(data->mutex));
+	/* pthread_mutex_unlock(&(data->mutex)); */
 	pthread_exit(NULL);
 }
 
@@ -110,15 +110,15 @@ void* infiniteWaitingFnct(void *param)
 
 	for(; ; sleep(1))
 	{
-		//pthread_mutex_lock(&(data->mutex));
+		/* pthread_mutex_lock(&(data->mutex)); */
 		if(!data->keepGoing)
 		{
 			break;
 		}
-		//pthread_mutex_unlock(&(data->mutex));
+		/* pthread_mutex_unlock(&(data->mutex)); */
 	}
 
-	//pthread_mutex_unlock(&(data->mutex));
+	/* pthread_mutex_unlock(&(data->mutex)); */
 	pthread_exit(NULL);
 }
 
@@ -177,7 +177,7 @@ void handle_command(const char *command, DATA *data)
 
 	else if(str_infiniteSpaces(command))
 	{
-		//Do nothing...
+		/* Do nothing... */
 	}
 
 	else if(!strcmp(command, HELP) || !strcmp(command, INTERROGATIONPOINT))
@@ -200,8 +200,9 @@ void handle_command(const char *command, DATA *data)
 			"close",
 			"download <idClient> <file>"
 		};
-		
-		for(short int _i = 0; helpMenu[_i] != NULL; _i++)
+
+		short int _i;
+		for(_i = 0; helpMenu[_i] != NULL; _i++)
 		{
 			printf("\t");
 			puts(helpMenu[_i]);
