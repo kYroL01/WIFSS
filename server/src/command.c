@@ -43,12 +43,12 @@ void* command_handler(void* data)
 			}
 		}
 
-		else if(str_beginwith(_buffer, DISCONNECT) && str_validation(_buffer, ARGDCL))
+		else if(str_beginwith(_buffer, DISCONNECT) && str_validation(_buffer, ARGDCL) && str_infiniteSpaces(_buffer + strlen(DISCONNECT)))
 		{
 			disconnect(_buffer);
 		}
 
-		else if(!strcmp(_buffer, CLEAR))
+		else if(str_beginwith(_buffer, CLEAR) && str_infiniteSpaces(_buffer + strlen(CLEAR)))
 		{
 			system("clear");
 		}
@@ -58,7 +58,7 @@ void* command_handler(void* data)
 			/* Do nothing... */
 		}
 
-		else if(!strcmp(_buffer, HELP) || !strcmp(_buffer, INTERROGATIONPOINT))
+		else if((str_beginwith(_buffer, HELP) && str_infiniteSpaces(_buffer + strlen(HELP))) || (str_beginwith(_buffer, INTERROGATIONPOINT) && strlen(INTERROGATIONPOINT)))
 		{
 			static const char *helpMenu[MAXCMD] =
 			{
