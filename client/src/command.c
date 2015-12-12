@@ -24,8 +24,8 @@ void* serverCommunication(void *param)
 
 		else
 		{
-			static _Bool _someThingWritten;
-			_someThingWritten = true;
+			static _Bool _smthWritten;
+			_smthWritten = true;
 
 			if(str_beginwith(_buff, UPLOAD))
 			{
@@ -39,14 +39,14 @@ void* serverCommunication(void *param)
 				break;
 			}
 
-			else if(!strcmp(_buff, ASKLIST))
+			else if(!strcmp(_buff, ASKLIST) && checkDownloadFolder())
 			{
 				char _buff[BUFFER] = "";
 				listFiles(_buff);
 				send(data->sock, _buff, BUFFER, false);
 			}
 
-			else if(str_beginwith(_buff, ISPRESENT))
+			else if(str_beginwith(_buff, ISPRESENT) && checkDownloadFolder())
 			{
 				isPresent(_buff, data->sock);
 			}
@@ -59,11 +59,11 @@ void* serverCommunication(void *param)
 				}
 				else
 				{
-					_someThingWritten = false;
+					_smthWritten = false;
 				}
 			}
 
-			if(_someThingWritten)
+			if(_smthWritten)
 			{
 				printf("\n\n|: ");
 				fflush(stdout);
@@ -175,12 +175,20 @@ void handle_command(const char *command, DATA *data)
 		system("clear");
 	}
 
+	else if(str_beginwith(command, CHECKFOLDER) && str_infiniteSpaces(command + strlen(CHECKFOLDER)))
+	{
+		if(checkDownloadFolder())
+		{
+			printf("\n\033[32m[WIFSS] Your directory is clear and you\'re able to start download or upload some files.\033[0m\n\n");
+		}
+	}
+
 	else if(str_infiniteSpaces(command))
 	{
 		/* Do nothing... */
 	}
 
-	else if(!strcmp(command, HELP) || !strcmp(command, INTERROGATIONPOINT))
+	else if((str_beginwith(command, HELP) && str_infiniteSpaces(command + strlen(HELP))) || (str_beginwith(command, INTERROGATIONPOINT) && strlen(INTERROGATIONPOINT)))
 	{
 		static const char *helpMenu[TALLERCMD] =
 		{
@@ -198,15 +206,17 @@ void handle_command(const char *command, DATA *data)
 			"logout",
 			"clear",
 			"close",
-			"download <idClient> <file>"
+			"download <idClient> <file>",
+			"checkfolder"
 		};
 
 		short int _i;
 		for(_i = 0; helpMenu[_i] != NULL; _i++)
 		{
-			printf("\t");
-			puts(helpMenu[_i]);
+			printf("\t%s\n", helpMenu[_i]);
 		}
+
+		printf("\n");
 	}
 
 	else

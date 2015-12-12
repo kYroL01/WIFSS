@@ -26,6 +26,7 @@
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DISCONNECT "disconnect"
+#define CHECKFOLDER "checkfolder"
 #define INTERROGATIONPOINT "?"
 
 /* ADDR */

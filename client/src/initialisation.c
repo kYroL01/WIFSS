@@ -6,7 +6,7 @@ _Bool start(struct sockaddr_in *server, int *sock)
 	char _buff[BUFFER] = "";
 	short int _port;
 
-	printf("\n\033[32m[WIFSS] Starting client...\033[0m\n\n");
+	printf("\n\n");
 
 	do
 	{

@@ -4,6 +4,9 @@ _Bool setWorkDir(void)
 {
 	system("clear");
 
+	printf("\n\033[32m[WIFSS] Starting Client...\033[0m\n");
+
+
 	char *_temp = NULL;
 
 	_temp = (char*)malloc((strlen("WORKDIR=") + strlen(getenv("HOME")) + strlen(PATHWORKINGDIR)) * sizeof(*_temp));
@@ -117,11 +120,12 @@ void listFiles(char *_buff)
 				}
 				else
 				{
-					printf("\t");
-					puts(ep->d_name);
+					printf("\t%s\n", ep->d_name);
 				}
 			}
 		}
+
+		printf("\n");
 
 		closedir(directory);
 	}
@@ -184,7 +188,8 @@ _Bool checkDownloadFolder()
 
 		if(directory == NULL)
 		{
-			printf("\n\033[31m[WIFSS] Error: Target directory couldn\'t be created. Stopping now.\033[0m\n\n");
+			printf("\n\033[31m[WIFSS] Error: Target directory couldn\'t be created.\033[0m\n\n");
+			perror("Error");
 			return false;
 		}
 		else
@@ -200,21 +205,27 @@ _Bool checkDownloadFolder()
 	{
 		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) /* All bar currentDir + parentDir */
 		{
+			if((int)strlen(ep->d_name) > MAXFILENAME)
+			{
+				printf("\n\033[31m[WIFSS] Error: One of your file (\"%s\") in your working directory has more than %d characters in its name. Consider rename it.\033[0m\n\n", ep->d_name, MAXFILENAME);
+				return false;
+			}
+
 			memset(_destDir, 0, PATHSIZE);
 			strcpy(_destDir, getenv("WORKDIR"));
 			strcat(_destDir, ep->d_name);
 
 			if(stat(_destDir, &file_stat) != 0)
 			{
-				perror("Erreur");
-				printf("\n\033[31m[WIFSS] Error: A problem occured during reading information about one of your working directory content. Stopping now.\033[0m\n\n");
+				perror("Error");
+				printf("\n\033[31m[WIFSS] Error: A problem occured during reading information about one of your working directory content.\033[0m\n\n");
 				return false;
 			}
 			else
 			{
 				if(S_ISDIR(file_stat.st_mode))
 				{
-					printf("\n\033[31m[WIFSS] Error: One of your working directory content is a sub-directory (\"%s\"). Please consider remove it. Stopping now.\033[0m\n\n", ep->d_name);
+					printf("\n\033[31m[WIFSS] Error: One of your working directory content is a sub-directory (\"%s\"). Please consider remove it.\033[0m\n\n", ep->d_name);
 					return false;
 				}
 			}
@@ -227,7 +238,7 @@ _Bool checkDownloadFolder()
 	
 	if(_count > MAXFILEDIR)
 	{
-		printf("\n\033[32m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean up this please. Stopping now.\033[0m\n", MAXFILEDIR, _destDir);
+		printf("\n\033[32m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean up this please.\033[0m\n", MAXFILEDIR, _destDir);
 		return false;
 	}
 

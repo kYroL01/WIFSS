@@ -20,7 +20,9 @@
 #define FGETSBUFF 256
 #define PATHSIZE   64
 #define TALLERCMD  32
-#define MAXFILEDIR 16
+#define MAXFILEDIR  8
+
+#define MAXFILENAME 62
 
 #define true  1
 #define false 0
