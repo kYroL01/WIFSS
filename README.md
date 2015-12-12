@@ -26,6 +26,7 @@ Run with:
 ```clear ```  
 ```close ```  
 ```download <idClient> <file> ```  
+```checkfolder ```  
 
 ### List of commands currently available for Server:  
 ```? ```  
