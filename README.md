@@ -3,10 +3,12 @@ _WIFSS Is not a File Sharing System_
 
 ## How to use it  
 
-Compile with:  
-```gcc client/src/*.c -lpthread -Iclient/inc/ -o client.out && gcc server/src/*.c -lpthread -Iserver/inc/ -o server.out```  
+Compile the whole project with:  
+```make```  
+... or just one side with:
+```make Server``` or ```make Client```  
 Run with:  
-``` ./client.out```  and ```./server.out``` 
+``` ./Client```  and ```./Server``` 
 
 ## Commands  
 

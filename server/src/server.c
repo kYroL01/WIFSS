@@ -1,6 +1,6 @@
 #include <server.h>
 
-inline void commandCursor()
+void commandCursor()
 {
 	printf("|: ");
 	fflush(stdout);
