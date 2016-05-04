@@ -3,10 +3,8 @@ _WIFSS Is not a File Sharing System_
 
 ## How to use it  
 
-Compile the whole project with:  
-```make ```  
-... or just one side with:
-```make SERVER ``` or ```make CLIENT ```  
+Compile the whole project with: ```make ```  
+... or just one side with: ```make SERVER ``` or ```make CLIENT ```  
 
 Run with:  
 ``` ./clientBin ```  and ```./serverBin ``` 
