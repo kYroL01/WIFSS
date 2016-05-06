@@ -197,10 +197,10 @@ void handle_command(const char *command, DATA *data)
 			"send <message>",
 			"whisper <idClient> <message>",
 			"list",
-			"rename <file> <newFileName>"
-			"remove <file>"
-			"ispresent <idClient> <file>"
-			"asklist <idClient>"
+			"rename <file> <newFileName>",
+			"remove <file>",
+			"ispresent <idClient> <file>",
+			"asklist <idClient>",
 			"quit",
 			"exit",
 			"logout",

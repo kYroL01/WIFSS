@@ -61,7 +61,13 @@ _Bool start(struct sockaddr_in *server, int *sock)
 
 		else
 		{
-			printf("\n\033[32m[WIFSS] Connected to %s:%hd.\033[0m\n\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
+			printf("\n\033[32m[WIFSS] Connected to %s:%hd.\033[0m\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
+			
+			short int clientId = -1;
+			memset(_buff, 0, BUFFER);
+			recv(*sock, _buff, BUFFER, false);
+			sscanf(_buff, "id: %hd", &clientId);
+			printf("\n\033[32m[WIFSS] Your id on the server is %hd.\033[0m\n\n", clientId);
 		}
 
 	} while(_result < 0);

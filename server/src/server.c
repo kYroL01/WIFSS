@@ -52,6 +52,10 @@ void* on_connection(void *data)
 	sprintf(buffer, "[Client %d] is connected.", client.id);
 	broadcast(client.id, buffer);
 	
+	memset(buffer, 0, BUFFER);
+	sprintf(buffer, "id: %hd", client.id);
+	send(client.sock, buffer, BUFFER, false);
+	
 	while(client.sock > 0)
 	{
 		memset(buffer, 0, BUFFER);
@@ -105,7 +109,7 @@ void startServer(void)
 
 			while((c = getchar()) && c != '\n');
 
-		} while(i < 1024 || i > 65535);
+		} while((i < 1024 && geteuid() != 0) || i > 65535);
 
 		server.sin_port = htons(i);
 

@@ -31,8 +31,8 @@ void* command_handler(void* data)
 			char _cpy[BUFFER] = "";
 			char _buffTemp[BUFFER] = "";
 			short int _idTemp      = -1;
-			sscanf(_buffer, "sendp %hd %[^\n]", &_idTemp, _cpy);
-			if(g_clients[_idTemp].status == TAKEN && _idTemp >= 0 && _idTemp < MAX_CLIENTS)
+			sscanf(_buffer, "whisper %hd %[^\n]", &_idTemp, _cpy);
+			if(_idTemp >= 0 && g_clients[_idTemp].status == TAKEN && _idTemp < MAX_CLIENTS)
 			{
 				sprintf(_buffTemp, "[Server] whispers to you: \"%s\".", _cpy);
 				send(g_clients[_idTemp].sock, _buffTemp, BUFFER, false);

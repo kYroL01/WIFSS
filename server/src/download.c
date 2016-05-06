@@ -14,7 +14,7 @@ void download(const char *command, int sender_id)
 	if((_remote_id >= MAX_CLIENTS) || (_remote_id < 0) || (_remote_id == sender_id) || (g_clients[_remote_id].sock <= 0))
 	{
 		memset(_filename, 0, BUFFER);
-		sprintf(_filename, "%s", "Error: Client wanted is invalid ot not conected...");
+		sprintf(_filename, "%s", "Error: Client wanted is invalid or not conected...");
 		send(g_clients[sender_id].sock, _filename, BUFFER, false);
 		return;
 	}
