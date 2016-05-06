@@ -1,0 +1,11 @@
+/!\ BUGS /!\
+
+- download() function got some troubles (Server)
+- Mutex problem (Client)
+
+
+* To implemant:
+
+-> (1) Finish DL / UL
+-> (2) Continue ".part" file ?
+-> (3) Percent DL ? Clients / Server
