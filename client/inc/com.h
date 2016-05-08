@@ -15,6 +15,7 @@
 #define QUIT       "quit"
 #define SEND       "send "
 #define LIST       "list"
+#define WHO        "who"
 #define CLEAR      "clear"
 #define CLOSE      "close"
 #define LOGOUT     "logout"

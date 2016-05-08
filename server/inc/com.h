@@ -16,6 +16,7 @@
 #define STOP       "stop"
 #define HALT       "halt"
 #define SEND       "send "
+#define WHO        "who"
 #define CLEAR      "clear"
 #define CLOSE      "close"
 #define UPLOAD     "upload "

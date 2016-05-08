@@ -7,13 +7,14 @@ Compile the whole project with: ```make ```
 ... or just one side with: ```make SERVER ``` or ```make CLIENT ```  
 
 Run with:  
-``` ./clientBin ```  and ```./serverBin ``` 
+``` ./WClient ```  and ```./WServer ``` 
 
 ## Commands  
 
 ### List of commands currently available for Client:  
 ```? ```  
 ```help ```  
+```who ```  
 ```send <message> ```  
 ```whisper <idClient> <message> ```  
 ```list ```  
@@ -32,6 +33,7 @@ Run with:
 ### List of commands currently available for Server:  
 ```? ```  
 ```help ```  
+```who ```  
 ```send <message> ```  
 ```whisper <idClient> <message> ```  
 ```disconnect <idClient> ['-1' = all] ```  
@@ -44,4 +46,6 @@ Run with:
 
 ### Additionnal content  
 
-You can try the system by connecting your client to your local server with ```localhost ``` or ```local ``` as address.
+You can try the system by connecting your client to your local server with ```localhost ``` or ```local ``` as address.  
+
+No data are saved by server, just a bridge between clients.

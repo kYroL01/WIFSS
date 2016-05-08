@@ -64,8 +64,9 @@ void listFiles(char*);
 void removeFile(const char*);
 void renameFile(const char*);
 void isPresent(const char*, int);
-void asklist(const char*, int);
+void askList(const char*, int);
 _Bool checkDownloadFolder();
+void who(int);
 
 /* THREADS */
 void* serverCommunication(void*);

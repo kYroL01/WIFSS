@@ -152,7 +152,7 @@ void handle_command(const char *command, DATA *data)
 
 	else if(str_beginwith(command, ASKLIST) && str_validation(command, ARGASK))
 	{
-		asklist(command, data->sock);
+		askList(command, data->sock);
 	}
 
 	else if(str_beginwith(command, REMOVE) && str_validation(command, ARGRMV))
@@ -170,6 +170,11 @@ void handle_command(const char *command, DATA *data)
 		listFiles(NULL);
 	}
 
+	else if(str_beginwith(command, WHO) && str_infiniteSpaces(command + strlen(WHO)))
+	{
+		who(data->sock);
+	}
+
 	else if(str_beginwith(command, CLEAR) && str_infiniteSpaces(command + strlen(CLEAR)))
 	{
 		system("clear");
@@ -177,10 +182,7 @@ void handle_command(const char *command, DATA *data)
 
 	else if(str_beginwith(command, CHECKFOLDER) && str_infiniteSpaces(command + strlen(CHECKFOLDER)))
 	{
-		if(checkDownloadFolder())
-		{
-			printf("\n\033[32m[WIFSS] Your directory is clear and you\'re able to start download or upload some files.\033[0m\n\n");
-		}
+		checkDownloadFolder();
 	}
 
 	else if(str_infiniteSpaces(command))
@@ -194,6 +196,7 @@ void handle_command(const char *command, DATA *data)
 		{
 			"?",
 			"help",
+			"who",
 			"send <message>",
 			"whisper <idClient> <message>",
 			"list",

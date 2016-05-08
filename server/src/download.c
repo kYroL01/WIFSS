@@ -70,7 +70,7 @@ void download(const char *command, int sender_id)
 				_res = send(g_clients[sender_id].sock, _buffer, BUFFER, false);
 				if(_res <= 0)
 				{
-					printf("\n[WIFSS] File could not be downloaded completely.\n\n");
+					printf("\n[WIFSS] File could not be uploaded completely.\n\n");
 					return;
 				}
 

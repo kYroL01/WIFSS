@@ -1,5 +1,11 @@
 #include <server.h>
 
+void commandCursor()
+{
+	printf("|: ");
+	fflush(stdout);
+}
+
 void* command_handler(void* data)
 {
 	int *listen_socket = (int*)data;
@@ -19,7 +25,7 @@ void* command_handler(void* data)
 
 		else if(str_beginwith(_buffer, SEND))
 		{
-			char _cpy[BUFFER] = "";
+			char _cpy[BUFFER]      = "";
 			char _buffTemp[BUFFER] = "";
 			sscanf(_buffer, "send %[^\n]", _cpy);
 			sprintf(_buffTemp, "[Server] says: \"%s\".", _cpy);
@@ -28,7 +34,7 @@ void* command_handler(void* data)
 
 		else if(str_beginwith(_buffer, WHISPER))
 		{
-			char _cpy[BUFFER] = "";
+			char _cpy[BUFFER]      = "";
 			char _buffTemp[BUFFER] = "";
 			short int _idTemp      = -1;
 			sscanf(_buffer, "whisper %hd %[^\n]", &_idTemp, _cpy);
@@ -53,6 +59,11 @@ void* command_handler(void* data)
 			system("clear");
 		}
 
+		else if(str_beginwith(_buffer, WHO) && str_infiniteSpaces(_buffer + strlen(WHO)))
+		{
+			who(-1);
+		}
+
 		else if(str_infiniteSpaces(_buffer))
 		{
 			/* Do nothing... */
@@ -64,6 +75,7 @@ void* command_handler(void* data)
 			{
 				"?",
 				"help",
+				"who",
 				"send <message>",
 				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",

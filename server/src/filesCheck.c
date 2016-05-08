@@ -1,6 +1,6 @@
 #include <server.h>
 
-void asklist(const char *command, int sender_id)
+void askList(const char *command, int sender_id)
 {
 	char _buff[BUFFER]   = "";
 	short int _remote_id = -1;
@@ -23,4 +23,9 @@ void asklist(const char *command, int sender_id)
 		send(g_clients[sender_id].sock, _buff, BUFFER, false);
 		printf("\n\n[Client %d] asked the file list of [Client %d], but he is not connected.\n\n", sender_id, _remote_id);
 	}
+}
+
+void isPresent(const char *command, int sender_id)
+{
+	/* ... */
 }

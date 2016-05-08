@@ -136,8 +136,16 @@ void listFiles(char *_buff)
 	}
 }
 
+void who(int sock)
+{
+	char _buff[BUFFER] = "";
 
-void asklist(const char *command, int sock)
+	sprintf(_buff, "%s", "who");
+	send(sock, _buff, BUFFER, false);
+	memset(_buff, 0, BUFFER);
+}
+
+void askList(const char *command, int sock)
 {
 	char _buff[BUFFER] = "";
 
@@ -149,7 +157,7 @@ void asklist(const char *command, int sock)
 		char _temp[BUFFER] = "";
 		sscanf(_buff, "list: %[^\n]", _temp);
 
-		printf("\n\n[WIFSS] List of client asked:\n\t");
+		printf("\n\n[WIFSS] File list of client asked:\n\t");
 		short int _i;
 		for(_i = 0; _temp[_i] != '\0'; _i++)
 		{
@@ -242,5 +250,6 @@ _Bool checkDownloadFolder()
 		return false;
 	}
 
+	printf("\n\033[32m[WIFSS] Your directory is clear and you\'re able to start downloading or uploading some files.\033[0m\n\n");
 	return true;
 }

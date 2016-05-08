@@ -59,8 +59,10 @@ void commandCursor(void);
 void download(const char*, int);
 void message(const char*, int);
 void whisper(const char*, int);
-void asklist(const char*, int);
+void askList(const char*, int);
+void isPresent(const char*, int);
 void disconnect(const char*);
+void who(int);
 
 /* THREADS */
 void* command_handler(void* data);

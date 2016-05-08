@@ -1,16 +1,15 @@
 #include <server.h>
 
-void commandCursor()
-{
-	printf("|: ");
-	fflush(stdout);
-}
-
 void process_command(const char *command, int sender_id)
 {
 	if(str_beginwith(command, DOWNLOAD))
 	{
 		download(command, sender_id);
+	}
+
+	else if(str_beginwith(command, WHO))
+	{
+		who(sender_id);
 	}
 
 	else if(str_beginwith(command, QUIT))
@@ -31,7 +30,12 @@ void process_command(const char *command, int sender_id)
 
 	else if(str_beginwith(command, ASKLIST))
 	{
-		asklist(command, sender_id);
+		askList(command, sender_id);
+	}
+
+	else if(str_beginwith(command, ISPRESENT))
+	{
+		isPresent(command, sender_id);
 	}
 
 	else
