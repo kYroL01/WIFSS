@@ -13,12 +13,10 @@ void* serverCommunication(void *param)
 
 		_result = recv(data->sock, _buff, BUFFER, false);
 
-		/* pthread_mutex_lock(&(data->mutex)); */
-
-		if(_result <= 0 || !data->keepGoing)
+		if(_result <= 0 || !strcmp(_buff, DISCONNECT))
 		{
-			data->keepGoing = false;
-			/* pthread_mutex_unlock(&(data->mutex)); */
+			printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
+			pthread_cancel(*(data->cthread));
 			pthread_exit(NULL);
 		}
 
@@ -30,13 +28,6 @@ void* serverCommunication(void *param)
 			if(str_beginwith(_buff, UPLOAD))
 			{
 				upload(_buff, data->sock);
-			}
-
-			else if(!strcmp(_buff, DISCONNECT))
-			{
-				printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
-				data->keepGoing = false;
-				break;
 			}
 
 			else if(!strcmp(_buff, ASKLIST) && checkDownloadFolder())
@@ -57,6 +48,7 @@ void* serverCommunication(void *param)
 				{
 					printf("\n\n[sthread] \"%s\"", _buff);
 				}
+
 				else
 				{
 					_smthWritten = false;
@@ -69,13 +61,8 @@ void* serverCommunication(void *param)
 				fflush(stdout);
 			}
 		}
-
-		/* pthread_mutex_unlock(&(data->mutex)); */
 	}
-
-	pthread_exit(NULL);
 }
-
 
 void* clientCommunication(void *param)
 {
@@ -85,49 +72,22 @@ void* clientCommunication(void *param)
 
 	while(1)
 	{
-		/* pthread_mutex_lock(&(data->mutex)); */
-
-		if(!data->keepGoing)
-		{
-			break;
-		}
-
 		printf("|: ");
 		promptKeyboard(_buff);
-		handle_command(_buff, data);
 
-		/* pthread_mutex_unlock(&(data->mutex)); */
-	}
-
-	/* pthread_mutex_unlock(&(data->mutex)); */
-	pthread_exit(NULL);
-}
-
-
-void* infiniteWaitingFnct(void *param)
-{
-	DATA *data = (DATA*)param;
-
-	for(; ; sleep(1))
-	{
-		/* pthread_mutex_lock(&(data->mutex)); */
-		if(!data->keepGoing)
+		if(!handle_command(_buff, data))
 		{
-			break;
+			pthread_cancel(*(data->sthread));
+			pthread_exit(NULL);
 		}
-		/* pthread_mutex_unlock(&(data->mutex)); */
 	}
-
-	/* pthread_mutex_unlock(&(data->mutex)); */
-	pthread_exit(NULL);
 }
 
-
-void handle_command(const char *command, DATA *data)
+_Bool handle_command(const char *command, DATA *data)
 {
 	if((str_beginwith(command, QUIT) && str_infiniteSpaces(command + strlen(QUIT))) || (str_beginwith(command, EXIT) && str_infiniteSpaces(command + strlen(EXIT))) || (str_beginwith(command, LOGOUT) && str_infiniteSpaces(command + strlen(LOGOUT))) || (str_beginwith(command, CLOSE) && str_infiniteSpaces(command + strlen(CLOSE))))
 	{
-		data->keepGoing = false;
+		return false;
 	}
 
 	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
@@ -226,4 +186,6 @@ void handle_command(const char *command, DATA *data)
 	{
 		printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
 	}
+
+	return true;
 }

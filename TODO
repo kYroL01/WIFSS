@@ -1,10 +1,9 @@
 /!\ BUGS /!\
 
 - download() function got some troubles (Server)
-- Mutex problem (Client)
 
 
-* To implemant:
+* To implement:
 
 -> (1) Finish DL / UL
 -> (2) Finish askList()

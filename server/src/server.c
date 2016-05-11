@@ -195,7 +195,7 @@ void startServer(void)
 			return;
 		}
 
-		/* Let's count clients online */
+		/* Let's count the number of clients online */
 		count = 0;
 		for(i = 0; i < MAX_CLIENTS; i++)
 		{

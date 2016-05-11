@@ -39,9 +39,9 @@
 typedef struct
 {
 	int sock;
-	_Bool keepGoing;
 
-	pthread_mutex_t mutex;
+	pthread_t *cthread;
+	pthread_t *sthread;
 
 } DATA;
 
@@ -51,7 +51,7 @@ _Bool start(struct sockaddr_in*, int*);
 void stop(int);
 
 /* COMMUNICATION */
-void handle_command(const char*, DATA*);
+_Bool handle_command(const char*, DATA*);
 
 /* TRANSFER */
 void upload(const char*, int);
@@ -71,7 +71,7 @@ void who(int);
 /* THREADS */
 void* serverCommunication(void*);
 void* clientCommunication(void*);
-void* infiniteWaitingFnct(void*);
+/*void* infiniteWaitingFnct(void*);*/
 
 
 #endif
