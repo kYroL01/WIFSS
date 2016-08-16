@@ -46,6 +46,11 @@ typedef struct
 } DATA;
 
 
+char *SERVER_ADDR;
+unsigned short int SERVER_PORT;
+unsigned short int CLIENT_ID;
+
+
 /* START / STOP */
 _Bool start(struct sockaddr_in*, int*);
 void stop(int);

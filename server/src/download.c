@@ -2,64 +2,119 @@
 
 void download(const char *command, int sender_id)
 {
-	char _cpy[BUFFER]      = "";
-	char _buffer[BUFFER]   = "";
-	char _filename[BUFFER] = "";
-	long int _fsize        =  0;
-	short int _remote_id   = -1;
+	char cpy[BUFFER]      = "";
+	char buffer[BUFFER]   = "";
+	char filename[BUFFER] = "";
+	long int fsize        =  0;
+	short int remote_id   = -1;
+	int res_DL = 0, res_UL = 0;
+	struct sockaddr_in clientDL, clientUL;
+	int clientDL_sock, clientUL_sock;
+	unsigned int asize;
 
-	sscanf(command, "download %hd %[^\n]", &_remote_id, _filename);
-	printf("\n\n[Client %d] is asking the uploading of [Client %d]'s \"%s\".\n", sender_id, _remote_id, _filename);
+	sscanf(command, "download %hd %[^\n]", &remote_id, filename);
+	printf("\n\n[Client %d] is asking the uploading of [Client %d]'s \"%s\".\n", sender_id, remote_id, filename);
 
-	if((_remote_id >= MAX_CLIENTS) || (_remote_id < 0) || (_remote_id == sender_id) || (g_clients[_remote_id].sock <= 0))
+	if((remote_id >= MAX_CLIENTS) || (remote_id < 0) || (remote_id == sender_id) || (g_clients[remote_id].sock <= 0))
 	{
-		memset(_filename, 0, BUFFER);
-		sprintf(_filename, "%s", "Error: Client wanted is invalid or not conected...");
-		send(g_clients[sender_id].sock, _filename, BUFFER, false);
+		memset(filename, 0, BUFFER);
+		sprintf(filename, "%s", "Error: Client wanted is invalid or not connected...");
+		send(g_clients[sender_id].sock, filename, BUFFER, false);
 		return;
 	}
 
-	sprintf(_cpy, "upload %s", _filename);
-	send(g_clients[_remote_id].sock, _cpy, BUFFER, false); /* LEAVES THE FUNCTION HERE ## BUG ## */
-	/* Waiting for ACK... */
-	recv(g_clients[_remote_id].sock, _buffer, BUFFER, false);
-	if(!strcmp(_buffer, FAIL))
+	/* Let's create a new socket for the client who want to download */
+
+	clientDL_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	clientDL.sin_family      = AF_INET;
+	clientDL.sin_addr.s_addr = INADDR_ANY;
+	clientDL.sin_port        = htons(SERVER_PORT + sender_id + 1); /* We use this value because it's known by client as well */
+
+	res_DL = bind(SERVER_PORT + sender_id, (struct sockaddr*)&clientDL, sizeof(clientDL));
+
+	/* Now the same, but with the client who'll upload the file */
+
+	clientUL_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	clientUL.sin_family      = AF_INET;
+	clientUL.sin_addr.s_addr = INADDR_ANY;
+	clientUL.sin_port        = htons(SERVER_PORT + remote_id + 1);
+
+	res_UL = bind(SERVER_PORT + remote_id, (struct sockaddr*)&clientUL, sizeof(clientUL));
+
+	close(clientDL_sock);
+	close(clientUL_sock);
+
+	/* Let's test the bindings */
+
+	if(res_DL < 0 || res_UL < 0)
 	{
-		printf("\n\n[WIFSS] A problem occured with the file during its opening.\n");
-		memset(_buffer, 0, BUFFER);
-		sprintf(_buffer, "%s", FAIL);
-		send(g_clients[sender_id].sock, _buffer, BUFFER, false);
+		printf("\n\n\033[31m[WIFSS] Error during creation of the listening socket for one of the two clients (%d) & (%hd) [bind (%d) & (%d)].\033[0m\n", sender_id, remote_id, res_DL, res_UL);
+		memset(buffer, 0, BUFFER);
+		sprintf(buffer, "%s", FAIL);
+		send(g_clients[sender_id].sock, buffer, BUFFER, false);
+		return;
+	}
+
+	listen(clientDL_sock, 1);
+	listen(clientUL_sock, 1);
+
+	asize = sizeof(struct sockaddr_in);
+
+	/* Now waiting for both connections ! */
+
+	res_DL = accept(clientDL_sock, (struct sockaddr*)&clientDL, &asize);
+	printf("\n\n[WIFSS] Downloading client paired !.\n");
+	close(clientDL_sock);
+
+	res_UL = accept(clientUL_sock, (struct sockaddr*)&clientUL, &asize);
+	printf("\n\n[WIFSS] Uploading client paired !.\n");
+	close(clientUL_sock);
+
+	/* We FINALLY could send a file ! */
+
+	sprintf(cpy, "upload %s", filename);
+	send(g_clients[remote_id].sock, cpy, BUFFER, false);
+	/* Waiting for ACK... */
+	recv(res_UL, buffer, BUFFER, false);
+	if(!strcmp(buffer, FAIL))
+	{
+		printf("\n\n[WIFSS] A problem occurred with the file during its opening.\n");
+		memset(buffer, 0, BUFFER);
+		sprintf(buffer, "%s", FAIL);
+		send(res_DL, buffer, BUFFER, false);
 		return;
 	}
 	else
 	{
-		sscanf(_buffer, "size: %ld", &_fsize);
-		printf("\n\n[WIFSS] File size: %ld bytes.\n", _fsize);
-		send(g_clients[sender_id].sock, _buffer, BUFFER, false);
+		sscanf(buffer, "size: %ld", &fsize);
+		printf("\n\n[WIFSS] File size: %ld bytes.\n", fsize);
+		send(res_DL, buffer, BUFFER, false);
 		/* Waiting for ACK... */
-		memset(_buffer, 0, BUFFER);
-		recv(g_clients[sender_id].sock, _buffer, BUFFER, false);
+		memset(buffer, 0, BUFFER);
+		recv(res_DL, buffer, BUFFER, false);
 		/* Receive and Send "OK" (cue-role), from sender, to remote */
-		send(g_clients[_remote_id].sock, _buffer, BUFFER, false);
+		send(res_UL, buffer, BUFFER, false);
 	}
 
-	int _res;
+	int res;
 	while(1)
 	{
-		memset(_buffer, 0, BUFFER);
+		memset(buffer, 0, BUFFER);
 
 		do
 		{
-			_res = recv(g_clients[_remote_id].sock, _buffer, BUFFER, false);
-			if(_res <= 0)
+			res = recv(res_UL, buffer, BUFFER, false);
+			if(res <= 0)
 			{
 				printf("\n[WIFSS] File could not be downloaded completely.\n\n");
 				return;
 			}
 
-		} while(_res != BUFFER);
+		} while(res != BUFFER);
 
-		if(!strcmp(_buffer, ENDT))
+		if(!strcmp(buffer, FINISHED))
 		{
 			break;
 		}
@@ -67,14 +122,14 @@ void download(const char *command, int sender_id)
 		{
 			do
 			{
-				_res = send(g_clients[sender_id].sock, _buffer, BUFFER, false);
-				if(_res <= 0)
+				res = send(res_DL, buffer, BUFFER, false);
+				if(res <= 0)
 				{
 					printf("\n[WIFSS] File could not be uploaded completely.\n\n");
 					return;
 				}
 
-			} while(_res != BUFFER);
+			} while(res != BUFFER);
 		}
 	}
 }

@@ -2,18 +2,18 @@
 
 void* serverCommunication(void *param)
 {
-	int _result;
-	char _buff[BUFFER];
+	int result;
+	char buff[BUFFER];
 
 	DATA *data = (DATA*)param;
 
 	while(1)
 	{
-		memset(_buff, 0, BUFFER);
+		memset(buff, 0, BUFFER);
 
-		_result = recv(data->sock, _buff, BUFFER, false);
+		result = recv(data->sock, buff, BUFFER, false);
 
-		if(_result <= 0 || !strcmp(_buff, DISCONNECT))
+		if(result <= 0 || !strcmp(buff, DISCONNECT))
 		{
 			printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
 			pthread_cancel(*(data->cthread));
@@ -22,40 +22,40 @@ void* serverCommunication(void *param)
 
 		else
 		{
-			static _Bool _smthWritten;
-			_smthWritten = true;
+			static _Bool smthWritten;
+			smthWritten = true;
 
-			if(str_beginwith(_buff, UPLOAD))
+			if(str_beginwith(buff, UPLOAD))
 			{
-				upload(_buff, data->sock);
+				upload(buff, data->sock);
 			}
 
-			else if(!strcmp(_buff, ASKLIST) && checkDownloadFolder())
+			else if(!strcmp(buff, ASKLIST) && checkDownloadFolder())
 			{
-				char _buff[BUFFER] = "";
-				listFiles(_buff);
-				send(data->sock, _buff, BUFFER, false);
+				char buff[BUFFER] = "";
+				listFiles(buff);
+				send(data->sock, buff, BUFFER, false);
 			}
 
-			else if(str_beginwith(_buff, ISPRESENT) && checkDownloadFolder())
+			else if(str_beginwith(buff, ISPRESENT) && checkDownloadFolder())
 			{
-				isPresent(_buff, data->sock);
+				isPresent(buff, data->sock);
 			}
 
 			else
 			{
-				if(strcmp(_buff, ""))
+				if(strcmp(buff, ""))
 				{
-					printf("\n\n[sthread] \"%s\"", _buff);
+					printf("\n\n[sthread] \"%s\"", buff);
 				}
 
 				else
 				{
-					_smthWritten = false;
+					smthWritten = false;
 				}
 			}
 
-			if(_smthWritten)
+			if(smthWritten)
 			{
 				printf("\n\n|: ");
 				fflush(stdout);
@@ -68,14 +68,14 @@ void* clientCommunication(void *param)
 {
 	DATA *data = (DATA*)param;
 
-	char _buff[BUFFER];
+	char buff[BUFFER];
 
 	while(1)
 	{
 		printf("|: ");
-		promptKeyboard(_buff);
+		promptKeyboard(buff);
 
-		if(!handle_command(_buff, data))
+		if(!handle_command(buff, data))
 		{
 			pthread_cancel(*(data->sthread));
 			pthread_exit(NULL);
@@ -173,10 +173,10 @@ _Bool handle_command(const char *command, DATA *data)
 			"checkfolder"
 		};
 
-		short int _i;
-		for(_i = 0; helpMenu[_i] != NULL; _i++)
+		short int i;
+		for(i = 0; helpMenu[i] != NULL; i++)
 		{
-			printf("\t%s\n", helpMenu[_i]);
+			printf("\t%s\n", helpMenu[i]);
 		}
 
 		printf("\n");

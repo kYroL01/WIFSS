@@ -10,9 +10,9 @@ int main(void)
 	if(setWorkDir() && checkDownloadFolder() && start(&server, &sock))
 	{
 		DATA data;
-		data.sock      = sock;
-		data.sthread   = &sthread;
-		data.cthread   = &cthread;
+		data.sock    = sock;
+		data.sthread = &sthread;
+		data.cthread = &cthread;
 
 		pthread_create(&sthread, NULL, &serverCommunication, (void*)&data);
 		pthread_create(&cthread, NULL, &clientCommunication, (void*)&data);

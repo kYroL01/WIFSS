@@ -14,3 +14,8 @@ SERVER:
 CLIENT:
 
 	$(CLIENT)
+
+clean:
+
+	rm ./WClient
+	rm ./WServer

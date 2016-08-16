@@ -34,15 +34,18 @@
 struct client_t
 {
 	struct sockaddr_in addr;
-	unsigned int id;
+	unsigned short id;
 	int sock;
 	int status;
+
 };
 
 struct client_t g_clients[MAX_CLIENTS];
 
 pthread_t threads[MAX_CLIENTS];
 pthread_t command_thread;
+
+unsigned short int SERVER_PORT;
 
 
 /* START / STOP */

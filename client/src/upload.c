@@ -2,67 +2,83 @@
 
 void upload(const char *command, int sock)
 {
-	long _fsize              = 0;
-	char _buff[BUFFER]       = "";
-	char _fileName[PATHSIZE] = "";
-	char _destFile[PATHSIZE] = "";
+	long fsize              = 0;
+	char buff[BUFFER]       = "";
+	char fileName[PATHSIZE] = "";
+	char destFile[PATHSIZE] = "";
 
-	sscanf(command, "upload %[^\n]", _fileName);
-	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", _fileName);
+	sscanf(command, "upload %[^\n]", fileName);
+	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", fileName);
 
-	strcpy(_destFile, getenv("WORKDIR")); /* _destFile = "$HOME/Downloads/WIFSS/" */
-	strcat(_destFile, _fileName);      /* _destFile = "$HOME/Downloads/WIFSS/fileName" */
+	strcpy(destFile, getenv("WORKDIR")); /* destFile = "$HOME/Downloads/WIFSS/" */
+	strcat(destFile, fileName);      /* destFile = "$HOME/Downloads/WIFSS/fileName" */
 
-	FILE *_file = NULL;
+	FILE *file = NULL;
 
-	if(!access(_destFile, F_OK))
+	if(!access(destFile, F_OK))
 	{
-		_file = fopen(_destFile, "rb");
+		file = fopen(destFile, "rb");
 	}
 
-	if(_file == NULL)
+	struct sockaddr_in serverDL;
+	int sockDL;
+	int res;
+
+	/* Ok, now we'll need a new socket to upload this file through the server */
+
+	serverDL.sin_port        = htons(SERVER_PORT + CLIENT_ID + 1);
+	serverDL.sin_addr.s_addr = inet_addr(SERVER_ADDR);
+
+	sockDL = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	res = connect(sockDL, (struct sockaddr*)&serverDL, sizeof(serverDL));
+	if(res < 0)
 	{
-		printf("\n\033[31m[WIFSS] \"%s\" asked is unreachable.\033[0m\n", _fileName);
-		sprintf(_buff, "%s", FAIL);
-		send(sock, _buff, BUFFER, false);
+		printf("\n\033[31m[WIFSS] Error: Could not establish a new connection the server.\033[0m\n\n");
 		return;
+	}
+
+	if(file == NULL)
+	{
+		printf("\n\033[31m[WIFSS] \"%s\" asked is unreachable.\033[0m\n", fileName);
+		sprintf(buff, "%s", FAIL);
+		send(sockDL, buff, BUFFER, false);
 	}
 	else
 	{
-		memset(_buff, 0, BUFFER);
+		memset(buff, 0, BUFFER);
 
-		fseek(_file, 0, SEEK_END);
-		_fsize = ftell(_file);
-		fseek(_file, 0, SEEK_SET);
+		fseek(file, 0, SEEK_END);
+		fsize = ftell(file);
+		fseek(file, 0, SEEK_SET);
 
-		sprintf(_buff, "size: %ld", _fsize);
-		send(sock, _buff, BUFFER, false);
-		printf("\n[WIFSS] Sending: \"%s\" (%ld bytes).\n", _fileName, _fsize);
-	}
+		sprintf(buff, "size: %ld", fsize);
+		send(sockDL, buff, BUFFER, false);
+		printf("\n[WIFSS] Sending: \"%s\" (%ld bytes).\n", fileName, fsize);
 
-	recv(sock, _buff, BUFFER, false); /* Receive "OK", cue-role */
+		recv(sockDL, buff, BUFFER, false); /* Receive "OK", cue-role */
 
-	int _res;
-	while(ftell(_file) != SEEK_END)
-	{
-		memset(_buff, 0, BUFFER);
-		fread(_buff, sizeof(char), BUFFER, _file);
-
-		do
+		while(ftell(file) != SEEK_END)
 		{
-			_res = send(sock, _buff, BUFFER, false);
-			if(_res <= 0)
+			memset(buff, 0, BUFFER);
+			fread(buff, sizeof(char), BUFFER, file);
+
+			do
 			{
-				printf("\n\n[WIFSS] File could not be uploaded completely.\n");
-				break;
-			}
+				res = send(sockDL, buff, BUFFER, false);
+				if(res <= 0)
+				{
+					printf("\n\n[WIFSS] File could not be uploaded completely.\n");
+					break;
+				}
 
-		} while(_res != BUFFER);
+			} while(res != BUFFER);
+		}
+
+		memset(buff, 0, BUFFER);
+		sprintf(buff, "%s", FINISHED);
+		send(sockDL, buff, BUFFER, false);
+
+		closeFile(file, fileName);
 	}
-
-	memset(_buff, 0, BUFFER);
-	sprintf(_buff, "%s", ENDT);
-	send(sock, _buff, BUFFER, false);
-
-	closeFile(_file, _fileName);
 }

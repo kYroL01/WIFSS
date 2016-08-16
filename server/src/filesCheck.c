@@ -2,26 +2,26 @@
 
 void askList(const char *command, int sender_id)
 {
-	char _buff[BUFFER]   = "";
-	short int _remote_id = -1;
+	char buff[BUFFER]   = "";
+	short int remote_id = -1;
 
-	sscanf(command, "asklist %hd", &_remote_id);
+	sscanf(command, "asklist %hd", &remote_id);
 
-	if(g_clients[_remote_id].status == TAKEN && sender_id != _remote_id && _remote_id >= 0 && _remote_id < MAX_CLIENTS)
+	if(g_clients[remote_id].status == TAKEN && sender_id != remote_id && remote_id >= 0 && remote_id < MAX_CLIENTS)
 	{
-		sprintf(_buff, "%s", ASKLIST);
-		send(g_clients[_remote_id].sock, _buff, BUFFER, false);
+		sprintf(buff, "%s", ASKLIST);
+		send(g_clients[remote_id].sock, buff, BUFFER, false);
 		/* Waiting for file list... */
-		memset(_buff, 0, BUFFER);
-		recv(g_clients[_remote_id].sock, _buff, BUFFER, false);
-		send(g_clients[sender_id].sock, _buff, BUFFER, false);
-		printf("\n\n[Client %d] asked the file list of [Client %d].\n\n", sender_id, _remote_id);
+		memset(buff, 0, BUFFER);
+		recv(g_clients[remote_id].sock, buff, BUFFER, false);
+		send(g_clients[sender_id].sock, buff, BUFFER, false);
+		printf("\n\n[Client %d] asked the file list of [Client %d].\n\n", sender_id, remote_id);
 	}
 	else
 	{
-		sprintf(_buff, "%s", "Error: This client is not connected or its identifier is invalid.");
-		send(g_clients[sender_id].sock, _buff, BUFFER, false);
-		printf("\n\n[Client %d] asked the file list of [Client %d], but he is not connected.\n\n", sender_id, _remote_id);
+		sprintf(buff, "%s", "Error: This client is not connected or its identifier is invalid.");
+		send(g_clients[sender_id].sock, buff, BUFFER, false);
+		printf("\n\n[Client %d] asked the file list of [Client %d], but he is not connected.\n\n", sender_id, remote_id);
 	}
 }
 

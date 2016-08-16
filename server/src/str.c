@@ -18,23 +18,23 @@ _Bool str_beginwith(const char *w, const char *s)
 
 _Bool str_validation(const char *str, short int nbArgs)
 {
-	short int _i, _arg;
+	short int i, arg;
 
-	for(_i = 0, _arg = 1; _i < BUFFER; _i++)
+	for(i = 0, arg = 1; i < BUFFER; i++)
 	{
-		if(str[_i] == ' ' && (str[_i + 1] != ' ' && str[_i + 1] != '\0'))
+		if(str[i] == ' ' && (str[i + 1] != ' ' && str[i + 1] != '\0'))
 		{
-			_arg++;
+			arg++;
 		}
 	}
 
-	if(_arg > nbArgs)
+	if(arg > nbArgs)
 	{
 		printf("Too many arguments for this command.\n\n");
 		return false;
 	}
 
-	else if(_arg < nbArgs)
+	else if(arg < nbArgs)
 	{
 		printf("Too few arguments for this command.\n\n");
 		return false;
@@ -45,12 +45,12 @@ _Bool str_validation(const char *str, short int nbArgs)
 
 _Bool str_infiniteSpaces(const char *buff)
 {
-	short int _i;
-	short int _length = (short int)strlen(buff);
+	short int i;
+	short int length = (short int)strlen(buff);
 
-	for(_i = 0; _i < _length; _i++)
+	for(i = 0; i < length; i++)
 	{
-		if(buff[_i] != ' ' && buff[_i] != '\t')
+		if(buff[i] != ' ' && buff[i] != '\t')
 		{
 			return false;
 		}
@@ -61,22 +61,22 @@ _Bool str_infiniteSpaces(const char *buff)
 
 void str_lowerCase(char *buff)
 {
-	short int _i;
-	short int _length = (short int)strlen(buff);
+	short int i;
+	short int length = (short int)strlen(buff);
 
-	for(_i = 0; _i < _length && buff[_i] != ' '; _i++) /* Tolower only first word ! */
+	for(i = 0; i < length && buff[i] != ' '; i++) /* Tolower only first word ! */
 	{
-		buff[_i] = tolower(buff[_i]);
+		buff[i] = tolower(buff[i]);
 	}
 }
 
 void str_removeSlashN(char *buff)
 {
-	char *_slashNPosition = strchr(buff, '\n');
+	char *slashNPosition = strchr(buff, '\n');
 
-    if(_slashNPosition != NULL)
+    if(slashNPosition != NULL)
     {
-		*_slashNPosition = '\0';
+		*slashNPosition = '\0';
     }
 }
 

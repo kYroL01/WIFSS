@@ -7,14 +7,14 @@ _Bool setWorkDir(void)
 	printf("\n\033[32m[WIFSS] Starting Client...\033[0m\n");
 
 
-	char *_temp = NULL;
+	char *temp = NULL;
 
-	_temp = (char*)malloc((strlen("WORKDIR=") + strlen(getenv("HOME")) + strlen(PATHWORKINGDIR)) * sizeof(*_temp));
-	sprintf(_temp, "WORKDIR=%s%s", getenv("HOME"), PATHWORKINGDIR);
+	temp = (char*)malloc((strlen("WORKDIR=") + strlen(getenv("HOME")) + strlen(PATHWORKINGDIR)) * sizeof(*temp));
+	sprintf(temp, "WORKDIR=%s%s", getenv("HOME"), PATHWORKINGDIR);
 
-	if(putenv(_temp) != 0)
+	if(putenv(temp) != 0)
 	{
-		free(_temp);
+		free(temp);
 		printf("\n\033[31m[WIFSS] Error: Working directory couldn\'t be set as environment variable.\033[0m\n\n");
 		return false;
 	}
@@ -26,85 +26,85 @@ _Bool setWorkDir(void)
 
 void isPresent(const char *command, int sock)
 {
-	char _buff[BUFFER]           = "";
-	char _destFile[PATHSIZE]     = ""; 
-	char _fileName[PATHSIZE / 4] = "";
+	char buff[BUFFER]           = "";
+	char destFile[PATHSIZE]     = ""; 
+	char fileName[PATHSIZE / 4] = "";
 
-	sscanf(command, "ispresent %[^\n]", _fileName);
+	sscanf(command, "ispresent %[^\n]", fileName);
 
-	strcpy(_destFile, getenv("WORKDIR"));
-	strcat(_destFile, _fileName);
+	strcpy(destFile, getenv("WORKDIR"));
+	strcat(destFile, fileName);
 
-	if(!access(_destFile, F_OK))
+	if(!access(destFile, F_OK))
 	{
-		sprintf(_buff, "%s", PRESENT);
+		sprintf(buff, "%s", PRESENT);
 	}
 	else
 	{
-		sprintf(_buff, "%s", FAIL);
+		sprintf(buff, "%s", FAIL);
 	}
 
-	send(sock, _buff, BUFFER, false);
+	send(sock, buff, BUFFER, false);
 }
 
 void removeFile(const char *command)
 {
-	char _fileName[PATHSIZE / 4] = "";
-	char _destFile[PATHSIZE]     = ""; 
+	char fileName[PATHSIZE / 4] = "";
+	char destFile[PATHSIZE]     = ""; 
 
-	sscanf(command, "remove %[^\n]", _fileName);
+	sscanf(command, "remove %[^\n]", fileName);
 
-	strcpy(_destFile, getenv("WORKDIR"));
-	strcat(_destFile, _fileName);
+	strcpy(destFile, getenv("WORKDIR"));
+	strcat(destFile, fileName);
 
-	if(remove(_destFile) == -1)
+	if(remove(destFile) == -1)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n\n", _fileName);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be removed as well.\033[0m\n\n", fileName);
 	}
 	else
 	{
-		printf("\n\033[32m[WIFSS] \"%s\" has been removed.\033[0m\n\n", _fileName);
+		printf("\n\033[32m[WIFSS] \"%s\" has been removed.\033[0m\n\n", fileName);
 	}
 }
 
 void renameFile(const char *command)
 {
-	char _fileName[PATHSIZE / 4]    = "";
-	char _newFileName[PATHSIZE / 4] = "";
-	char _destFile[BUFFER]          = "";
-	char _newDestFile[BUFFER]       = "";
+	char fileName[PATHSIZE / 4]    = "";
+	char newFileName[PATHSIZE / 4] = "";
+	char destFile[BUFFER]          = "";
+	char newDestFile[BUFFER]       = "";
 
-	sscanf(command, "rename %s %[^\n]", _fileName, _newFileName);
+	sscanf(command, "rename %s %[^\n]", fileName, newFileName);
 
-	strcpy(_destFile, getenv("WORKDIR"));
-	strcat(_destFile, _fileName);
-	strcpy(_newDestFile, getenv("WORKDIR"));
-	strcat(_newDestFile, _newFileName);
+	strcpy(destFile, getenv("WORKDIR"));
+	strcat(destFile, fileName);
+	strcpy(newDestFile, getenv("WORKDIR"));
+	strcat(newDestFile, newFileName);
 
-	if(rename(_destFile, _newDestFile) == -1)
+	if(rename(destFile, newDestFile) == -1)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", _fileName);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", fileName);
 	}
 	else
 	{
-		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n\n", _fileName, _newFileName);
+		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n\n", fileName, newFileName);
 	}
 }
 
-void listFiles(char *_buff)
+void listFiles(char *buff)
 {
-	char _destDir[PATHSIZE] = "";
+	char destDir[PATHSIZE] = "";
 
-	strcpy(_destDir, getenv("WORKDIR"));
+	strcpy(destDir, getenv("WORKDIR"));
 
-	DIR *directory = opendir(_destDir);
+	DIR *directory = opendir(destDir);
 
 	if(directory != NULL)
 	{
-		if(_buff != NULL)
+		if(buff != NULL)
 		{
-			memset(_buff, 0, BUFFER);
-			strcpy(_buff, "list: ");
+			memset(buff, 0, BUFFER);
+			strcpy(buff, "list: ");
 		}
 
 		struct dirent *ep;
@@ -113,10 +113,10 @@ void listFiles(char *_buff)
 		{
 			if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) /* All bar currentDir + parentDir */
 			{
-				if(_buff != NULL) /* If function called with a buff, non-verbose list */
+				if(buff != NULL) /* If function called with a buff, non-verbose list */
 				{
-					strcat(_buff, ep->d_name);
-					strcat(_buff, "/");
+					strcat(buff, ep->d_name);
+					strcat(buff, "/");
 				}
 				else
 				{
@@ -132,43 +132,43 @@ void listFiles(char *_buff)
 
 	else
 	{
-		printf("\n\033[31m[WIFSS] Error: Couldn't open the target directory: \"%s\".\033[0m\n", _destDir);
+		printf("\n\033[31m[WIFSS] Error: Couldn't open the target directory: \"%s\".\033[0m\n", destDir);
 	}
 }
 
 void who(int sock)
 {
-	char _buff[BUFFER] = "";
+	char buff[BUFFER] = "";
 
-	sprintf(_buff, "%s", "who");
-	send(sock, _buff, BUFFER, false);
-	memset(_buff, 0, BUFFER);
+	sprintf(buff, "%s", "who");
+	send(sock, buff, BUFFER, false);
+	memset(buff, 0, BUFFER);
 }
 
 void askList(const char *command, int sock)
 {
-	char _buff[BUFFER] = "";
+	char buff[BUFFER] = "";
 
 	send(sock, command, BUFFER, false);
-	recv(sock, _buff, BUFFER, false);
+	recv(sock, buff, BUFFER, false);
 
-	if(str_beginwith(_buff, LIST))
+	if(str_beginwith(buff, LIST))
 	{
-		char _temp[BUFFER] = "";
-		sscanf(_buff, "list: %[^\n]", _temp);
+		char temp[BUFFER] = "";
+		sscanf(buff, "list: %[^\n]", temp);
 
 		printf("\n\n[WIFSS] File list of client asked:\n\t");
-		short int _i;
-		for(_i = 0; _temp[_i] != '\0'; _i++)
+		short int i;
+		for(i = 0; temp[i] != '\0'; i++)
 		{
-			if(_temp[_i] == '/')
+			if(temp[i] == '/')
 			{
 				printf("\n\t");
 				continue;
 			}
 			else
 			{
-				printf("%c", _temp[_i]);
+				printf("%c", temp[i]);
 			}
 		}
 		printf("\n");
@@ -182,17 +182,17 @@ void askList(const char *command, int sock)
 
 _Bool checkDownloadFolder()
 {
-	char _destDir[2 * PATHSIZE] = "";
-	short int _count = 0;
+	char destDir[2 * PATHSIZE] = "";
+	short int count = 0;
 
-	strcpy(_destDir, getenv("WORKDIR"));
-	DIR *directory = opendir(_destDir);
+	strcpy(destDir, getenv("WORKDIR"));
+	DIR *directory = opendir(destDir);
 
 	if(directory == NULL)
 	{
 		printf("\n\033[31m[WIFSS] Error: Target directory doesn\'t exist, we attempt to create it.\033[0m\n");
-		mkdir(_destDir, S_IRWXU);
-		directory = opendir(_destDir);
+		mkdir(destDir, S_IRWXU);
+		directory = opendir(destDir);
 
 		if(directory == NULL)
 		{
@@ -202,7 +202,7 @@ _Bool checkDownloadFolder()
 		}
 		else
 		{
-			printf("\n\033[32m[WIFSS] Target directory: \"%s\" successfully created.\033[0m\n", _destDir);
+			printf("\n\033[32m[WIFSS] Target directory: \"%s\" successfully created.\033[0m\n", destDir);
 		}
 	}
 
@@ -219,11 +219,11 @@ _Bool checkDownloadFolder()
 				return false;
 			}
 
-			memset(_destDir, 0, PATHSIZE);
-			strcpy(_destDir, getenv("WORKDIR"));
-			strcat(_destDir, ep->d_name);
+			memset(destDir, 0, PATHSIZE);
+			strcpy(destDir, getenv("WORKDIR"));
+			strcat(destDir, ep->d_name);
 
-			if(stat(_destDir, &file_stat) != 0)
+			if(stat(destDir, &file_stat) != 0)
 			{
 				perror("Error");
 				printf("\n\033[31m[WIFSS] Error: A problem occured during reading information about one of your working directory content.\033[0m\n\n");
@@ -238,15 +238,15 @@ _Bool checkDownloadFolder()
 				}
 			}
 
-			_count++;
+			count++;
 		}
 	}
 
 	closedir(directory);
 	
-	if(_count > MAXFILEDIR)
+	if(count > MAXFILEDIR)
 	{
-		printf("\n\033[32m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean up this please.\033[0m\n", MAXFILEDIR, _destDir);
+		printf("\n\033[32m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean up this please.\033[0m\n", MAXFILEDIR, destDir);
 		return false;
 	}
 

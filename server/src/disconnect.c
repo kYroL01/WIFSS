@@ -2,19 +2,19 @@
 
 void disconnect(const char *buffer)
 {
-	short int _idTemp = -2;
-	sscanf(buffer, "disconnect %hd", &_idTemp);
-	if(_idTemp == -1)
+	short int idTemp = -2;
+	sscanf(buffer, "disconnect %hd", &idTemp);
+	if(idTemp == -1)
 	{
 		close_all_connections(); 
 		printf("\n");
 	}
-	else if(_idTemp >= 0 && _idTemp < MAX_CLIENTS)
+	else if(idTemp >= 0 && idTemp < MAX_CLIENTS)
 	{
-		if(g_clients[_idTemp].status == TAKEN)
+		if(g_clients[idTemp].status == TAKEN)
 		{
-			send(g_clients[_idTemp].sock, DISCONNECT, BUFFER, false);
-			close(g_clients[_idTemp].sock);
+			send(g_clients[idTemp].sock, DISCONNECT, BUFFER, false);
+			close(g_clients[idTemp].sock);
 		}
 		else
 		{
