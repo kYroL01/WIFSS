@@ -2,6 +2,8 @@
 #define __COM__
 
 
+#include "../core/server.h"
+
 /* ACK */
 #define OK        "ok"
 #define FAIL      "fail"
@@ -13,38 +15,33 @@
 #define HELP       "help"
 #define EXIT       "exit"
 #define QUIT       "quit"
+#define STOP       "stop"
+#define HALT       "halt"
 #define SEND       "send "
-#define LIST       "list"
 #define WHO        "who"
 #define CLEAR      "clear"
 #define CLOSE      "close"
-#define LOGOUT     "logout"
-#define REMOVE     "remove "
-#define RENAME     "rename "
 #define UPLOAD     "upload "
 #define ASKLIST    "asklist "
 #define WHISPER    "whisper "
 #define DOWNLOAD   "download "
 #define ISPRESENT  "ispresent "
 #define DISCONNECT "disconnect"
-#define CHECKFOLDER "checkfolder"
 #define INTERROGATIONPOINT "?"
-
-/* ADDR */
-#define LOCAL     "local"
-#define LOCALHOST "localhost"
-#define ADDRLOCAL "127.0.0.1"
 
 /* SIG */
 #define ENDSIG  -1
 
 /* ARG */
-#define ARGDWL 3
-#define ARGWHI 3
-#define ARGISP 3
-#define ARGASK 2
-#define ARGRNA 3
-#define ARGRMV 2
+#define ARGDWL 2
+#define ARGUPL 3
+#define ARGDCL 2
+
+
+void process_command(const char*, int);
+void command_cursor(void);
+void* command_handler(void* data);
+void* on_connection(void* data);
 
 
 #endif

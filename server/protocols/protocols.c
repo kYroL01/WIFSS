@@ -1,8 +1,9 @@
-#include <server.h>
+#include "protocols.h"
+
 
 void download(const char *command, int sender_id)
 {
-	char cpy[BUFFER]      = "";
+	char copy[BUFFER]     = "";
 	char buffer[BUFFER]   = "";
 	char filename[BUFFER] = "";
 	long int fsize        =  0;
@@ -29,9 +30,9 @@ void download(const char *command, int sender_id)
 
 	clientDL.sin_family      = AF_INET;
 	clientDL.sin_addr.s_addr = INADDR_ANY;
-	clientDL.sin_port        = htons(SERVER_PORT + sender_id + 1); /* We use this value because it's known by client as well */
+	clientDL.sin_port        = htons(g_server_port + sender_id + 1); /* We use this value because it's known by client as well */
 
-	res_DL = bind(SERVER_PORT + sender_id, (struct sockaddr*)&clientDL, sizeof(clientDL));
+	res_DL = bind(g_server_port + sender_id, (struct sockaddr*)&clientDL, sizeof(clientDL));
 
 	/* Now the same, but with the client who'll upload the file */
 
@@ -39,9 +40,9 @@ void download(const char *command, int sender_id)
 
 	clientUL.sin_family      = AF_INET;
 	clientUL.sin_addr.s_addr = INADDR_ANY;
-	clientUL.sin_port        = htons(SERVER_PORT + remote_id + 1);
+	clientUL.sin_port        = htons(g_server_port + remote_id + 1);
 
-	res_UL = bind(SERVER_PORT + remote_id, (struct sockaddr*)&clientUL, sizeof(clientUL));
+	res_UL = bind(g_server_port + remote_id, (struct sockaddr*)&clientUL, sizeof(clientUL));
 
 	close(clientDL_sock);
 	close(clientUL_sock);
@@ -74,8 +75,8 @@ void download(const char *command, int sender_id)
 
 	/* We FINALLY could send a file ! */
 
-	sprintf(cpy, "upload %s", filename);
-	send(g_clients[remote_id].sock, cpy, BUFFER, false);
+	sprintf(copy, "upload %s", filename);
+	send(g_clients[remote_id].sock, copy, BUFFER, false);
 	/* Waiting for ACK... */
 	recv(res_UL, buffer, BUFFER, false);
 	if(!strcmp(buffer, FAIL))
@@ -131,5 +132,100 @@ void download(const char *command, int sender_id)
 
 			} while(res != BUFFER);
 		}
+	}
+}
+
+
+void who(int sender)
+{
+	char buffer[BUFFER] = "Id(s) of other(s) client(s) currently connected: ";
+	char microBuff[8];
+
+	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
+	{
+		if(g_clients[i].status == TAKEN && i != sender)
+		{
+			strcpy(microBuff, "");
+			sprintf(microBuff, "\t%d", i);
+			strcat(buffer, microBuff);
+		}
+	}
+
+	if(sender >= 0)
+	{
+		printf("\n\n[WIFSS] [Client %d] has just listed others connected clients.\n\n", sender);
+		send(g_clients[sender].sock, buffer, BUFFER, false);
+	}
+
+	else
+	{
+		printf("\n\n[WIFSS] %s\n\n", buffer);
+	}
+}
+
+
+void ask_list(const char *command, int sender_id)
+{
+	char buff[BUFFER]   = "";
+	short int remote_id = -1;
+
+	sscanf(command, "asklist %hd", &remote_id);
+
+	if(g_clients[remote_id].status == TAKEN && sender_id != remote_id && remote_id >= 0 && remote_id < MAX_CLIENTS)
+	{
+		sprintf(buff, "%s", ASKLIST);
+		send(g_clients[remote_id].sock, buff, BUFFER, false);
+		/* Waiting for file list... */
+		memset(buff, 0, BUFFER);
+		recv(g_clients[remote_id].sock, buff, BUFFER, false);
+		send(g_clients[sender_id].sock, buff, BUFFER, false);
+		printf("\n\n[Client %d] asked the file list of [Client %d].\n\n", sender_id, remote_id);
+	}
+	else
+	{
+		sprintf(buff, "%s", "Error: This client is not connected or its identifier is invalid.");
+		send(g_clients[sender_id].sock, buff, BUFFER, false);
+		printf("\n\n[Client %d] asked the file list of [Client %d], but he is not connected.\n\n", sender_id, remote_id);
+	}
+}
+
+
+void is_present(const char *command, int sender_id)
+{
+	/* ... */
+}
+
+
+void message(const char *command, int sender_id)
+{
+	char copy[BUFFER]    = "";
+	char buffer[BUFFER] = "";
+
+	sscanf(command, "send %[^\n]", buffer);
+	sprintf(copy, "[Client %d] : \"%s\".", sender_id, buffer);
+	broadcast(sender_id, copy);
+	printf("\n\n[Client %d] says: \"%s\".\n\n", sender_id, buffer);
+}
+
+
+void whisper(const char *command, int sender_id)
+{
+	char copy[BUFFER]    = "";
+	char buffer[BUFFER] = "";
+	short int idTemp = -1;
+
+	sscanf(command, "sendp %hd %[^\n]", &idTemp, copy);
+
+	if(g_clients[idTemp].status == TAKEN && sender_id != idTemp && idTemp >= 0 && idTemp < MAX_CLIENTS)
+	{
+		sprintf(buffer, "[Client %d] whispers: \"%s\".", sender_id, copy);
+		send(g_clients[idTemp].sock, buffer, BUFFER, false);
+		printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n\n", sender_id, idTemp, copy);
+	}
+	else
+	{
+		sprintf(buffer, "%s", "Error: This client is not connected or its identifier is invalid.");
+		send(g_clients[sender_id].sock, buffer, BUFFER, false);
+		printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n\n", sender_id, idTemp, copy);
 	}
 }

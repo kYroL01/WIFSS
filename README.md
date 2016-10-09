@@ -4,7 +4,7 @@ _WIFSS Is not a File Sharing System_
 ## How to use it  
 
 Compile the whole project with: ```make ```  
-... or just one side with: ```make SERVER ``` or ```make CLIENT ```  
+... or just one side with: ```make WClient ``` or ```make WServer ```  
 
 Run with:  
 ``` ./WClient ```  and ```./WServer ``` 

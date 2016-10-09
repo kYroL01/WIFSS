@@ -1,6 +1,7 @@
-#include <client.h>
+#include "str.h"
 
-_Bool str_beginwith(const char *w, const char *s)
+
+bool str_beginwith(const char *w, const char *s)
 {
 	while(*s)
 	{
@@ -16,11 +17,12 @@ _Bool str_beginwith(const char *w, const char *s)
 	return true;
 }
 
-_Bool str_validation(const char *str, short int nbArgs)
-{
-	short int i, arg;
 
-	for(i = 0, arg = 1; i < BUFFER; i++)
+bool str_validation(const char *str, uint8_t nbArgs)
+{
+	uint8_t arg = 1;
+
+	for(uint16_t i = 0; i < BUFFER; i++)
 	{
 		if(str[i] == ' ' && (str[i + 1] != ' ' && str[i + 1] != '\0'))
 		{
@@ -40,15 +42,18 @@ _Bool str_validation(const char *str, short int nbArgs)
 		return false;
 	}
 
-	return true;
+	else
+	{
+		return true;
+	}
 }
 
-_Bool str_infiniteSpaces(const char *buff)
-{
-	short int i;
-	short int length = (short int)strlen(buff);
 
-	for(i = 0; i < length; i++)
+bool str_infinite_spaces(const char *buff)
+{
+	int16_t length = strlen(buff);
+
+	for(uint16_t i = 0; i < length; i++)
 	{
 		if(buff[i] != ' ' && buff[i] != '\t')
 		{
@@ -59,18 +64,20 @@ _Bool str_infiniteSpaces(const char *buff)
 	return true;
 }
 
-void str_lowerCase(char *buff)
-{
-	short int i;
-	short int length = (short int)strlen(buff);
 
-	for(i = 0; i < length && buff[i] != ' '; i++) /* Tolower only first word ! */
+void str_lower_case(char *buff)
+{
+	uint16_t length = strlen(buff);
+
+	/* Lower only the first word (the command) */
+	for(uint16_t i = 0; i < length && buff[i] != ' '; i++)
 	{
 		buff[i] = tolower(buff[i]);
 	}
 }
 
-void str_removeSlashN(char *buff)
+
+void str_remove_slash_n(char *buff)
 {
 	char *slashNPosition = strchr(buff, '\n');
 
@@ -80,10 +87,11 @@ void str_removeSlashN(char *buff)
     }
 }
 
-void promptKeyboard(char *buff)
+
+void prompt_keyboard(char *buff)
 {
-	memset(buff, 0, BUFFER);
+	strcpy(buff, "");
 	fgets(buff, FGETSBUFF, stdin);
-	str_removeSlashN(buff);
-	str_lowerCase(buff);
+	str_remove_slash_n(buff);
+	str_lower_case(buff);
 }
