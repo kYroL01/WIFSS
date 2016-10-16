@@ -1,16 +1,10 @@
 #include "commands.h"
 
 
-void command_cursor(void)
+void* command_handler(void *foo)
 {
-	printf("|: ");
-	fflush(stdout);
-}
-
-
-void* command_handler(void* data)
-{
-	int *listen_socket = (int*)data;
+	/* To get rid of '-Wextra' "Unused variable" warning */
+	(void)foo;
 
 	char buffer[BUFFER];
 
@@ -19,10 +13,10 @@ void* command_handler(void* data)
 		command_cursor();
 		prompt_keyboard(buffer);
 
-		if((str_beginwith(buffer, QUIT) && str_infinite_spaces(buffer + strlen(QUIT))) || (str_beginwith(buffer, EXIT) && str_infinite_spaces(buffer + strlen(EXIT))) || (str_beginwith(buffer, STOP) && str_infinite_spaces(buffer + strlen(STOP))) || (str_beginwith(buffer, HALT) && str_infinite_spaces(buffer + strlen(HALT))) || (str_beginwith(buffer, CLOSE) && str_infinite_spaces(buffer + strlen(CLOSE))))
+		if(command_validation(buffer, EXIT, 0) || command_validation(buffer, STOP, 0))
 		{
 			broadcast(SID, "[Server] is going to shutdown !");
-			break;
+			pthread_exit(NULL);
 		}
 
 		else if(str_beginwith(buffer, SEND))
@@ -38,32 +32,35 @@ void* command_handler(void* data)
 		{
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
-			short int idTemp      = -1;
-			sscanf(buffer, "whisper %hd %[^\n]", &idTemp, cpy);
-			if(idTemp >= 0 && g_clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
+
+			int8_t idTemp = -1;
+			sscanf(buffer, "whisper %" SCNd8 " %[^\n]", &idTemp, cpy);
+
+			if(idTemp >= 0 && g_core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
 			{
 				sprintf(buffTemp, "[Server] whispers to you: \"%s\".", cpy);
-				send(g_clients[idTemp].sock, buffTemp, BUFFER, false);
+				send(g_core_variables.clients[idTemp].sock, buffTemp, BUFFER, false);
 			}
+
 			else
 			{
 				printf("\n[WIFSS] This client identifier is invalid.\n\n");
 			}
 		}
 
-		else if(str_beginwith(buffer, DISCONNECT) && str_validation(buffer, ARGDCL) && str_infinite_spaces(buffer + strlen(DISCONNECT)))
+		else if(command_validation(buffer, DISCONNECT, ARGDCL))
 		{
 			disconnect(buffer);
 		}
 
-		else if(str_beginwith(buffer, CLEAR) && str_infinite_spaces(buffer + strlen(CLEAR)))
+		else if(command_validation(buffer, CLEAR, 0))
 		{
 			system("clear");
 		}
 
-		else if(str_beginwith(buffer, WHO) && str_infinite_spaces(buffer + strlen(WHO)))
+		else if(command_validation(buffer, WHO, 0))
 		{
-			who(-1);
+			who(SID);
 		}
 
 		else if(str_infinite_spaces(buffer))
@@ -71,9 +68,9 @@ void* command_handler(void* data)
 			/* Do nothing... */
 		}
 
-		else if((str_beginwith(buffer, HELP) && str_infinite_spaces(buffer + strlen(HELP))) || (str_beginwith(buffer, INTERROGATIONPOINT) && strlen(INTERROGATIONPOINT)))
+		else if(command_validation(buffer, HELP, 0) || command_validation(buffer, INTERROGATIONPOINT, 0))
 		{
-			static const char *helpMenu[MAXCMD] =
+			static const char *helpMenu[32] =
 			{
 				"?",
 				"help",
@@ -81,11 +78,8 @@ void* command_handler(void* data)
 				"send <message>",
 				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",
-				"quit",
 				"exit",
-				"halt",
 				"stop",
-				"close",
 				"clear"
 			};
 
@@ -103,13 +97,11 @@ void* command_handler(void* data)
 		}
 	}
 
-	close_server(*listen_socket);
-
-	exit(false);
+	close_server();
 }
 
 
-void process_command(const char *command, int sender_id)
+void process_command(const char *command, const uint8_t sender_id)
 {
 	if(str_beginwith(command, DOWNLOAD))
 	{
@@ -119,12 +111,6 @@ void process_command(const char *command, int sender_id)
 	else if(str_beginwith(command, WHO))
 	{
 		who(sender_id);
-	}
-
-	else if(str_beginwith(command, QUIT))
-	{
-		close(g_clients[sender_id].sock);
-		return;
 	}
 
 	else if(str_beginwith(command, SEND))
@@ -156,23 +142,100 @@ void process_command(const char *command, int sender_id)
 }
 
 
+void* connections_handler(void *foo)
+{
+	/* In order to deal with '-Wextra' "Unused variable" warning */
+	(void)foo;
+
+	struct sockaddr_in client;
+	uint32_t asize = sizeof(struct sockaddr_in);
+
+	int8_t sock;
+	uint8_t count = 0;
+	while(1)
+	{
+		sock = accept(g_core_variables.server_sock, (struct sockaddr*)&client, &asize);
+		if(sock == -1)
+		{
+			printf("\033[31m[WIFSS] Error during a tentative of accepting connection: %s.\033[0m\n\n", strerror(errno));
+			continue;
+		}
+
+		if(count + 1 >= MAX_CLIENTS)
+		{
+			char buffer[BUFFER] = "";
+			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s:%" SCNu8 ")\n", inet_ntoa(client.sin_addr), (uint8_t)ntohs(client.sin_port));
+			sprintf(buffer, "%s", "Maximum capacity reached, no more slot available for you yet.");
+			send(sock, buffer, BUFFER, false);
+			close(sock);
+			command_cursor();
+			continue;
+		}
+
+		uint8_t current_id = -1;
+		for(uint8_t i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(g_core_variables.clients[i].status == FREE)
+			{
+				current_id = i;
+				g_core_variables.clients[i].status = TAKEN;
+				break;
+			}
+		}
+		
+		printf("\n\n[WIFSS] Connection received \'%s:%" SCNu16 "\'' -> ID given: %" SCNu8 ".\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), current_id);
+
+		client_t new_client;
+		new_client.id     = current_id;
+		new_client.addr   = client;
+		new_client.sock   = sock;
+		new_client.status = TAKEN;
+
+		g_core_variables.clients[current_id] = new_client;
+
+		int16_t res = pthread_create(&g_core_variables.threads[current_id], NULL, &on_connection, (void*)&new_client);
+		if(res != 0)
+		{
+			printf("\033[31m[WIFSS] Error during thread creation %d: Error (%d).\033[0m\n\n", current_id, res);
+			broadcast(SID, "Server fatal error, stopping now.\n");
+			close_all_connections();
+			pthread_exit(NULL);
+		}
+
+		/* Let's count the number of clients online */
+		count = 0;
+		for(uint8_t i = 0; i < MAX_CLIENTS; i++)
+		{
+			if(g_core_variables.clients[i].status == TAKEN)
+			{
+				count++;
+			}
+		}
+
+		printf("[WIFSS] There is %" SCNu8 " client(s) connected.\n\n", count);
+
+		command_cursor();
+	}
+}
+
+
 void* on_connection(void *data)
 {
 	client_t client = *((client_t*)data);
 
-	int res;
 	char buffer[BUFFER] = "";
 
-	sprintf(buffer, "[Client %d] is connected.", client.id);
+	sprintf(buffer, "[Client %" SCNd8 "] is connected.", client.id);
 	broadcast(client.id, buffer);
-	
-	memset(buffer, 0, BUFFER);
+
+	strcpy(buffer, "");
 	sprintf(buffer, "id: %" SCNd8, client.id);
 	send(client.sock, buffer, BUFFER, false);
-	
+
+	ssize_t res;
 	while(client.sock > 0)
 	{
-		memset(buffer, 0, BUFFER);
+		strcpy(buffer, "");
 
 		res = recv(client.sock, buffer, BUFFER, false);
 		if(res <= 0)
@@ -183,14 +246,22 @@ void* on_connection(void *data)
 		process_command(buffer, client.id);
 	}
 
-	printf("\n\n[Client %d] is disconnected.\n\n", client.id);
-	memset(buffer, 0, BUFFER);
+	printf("\n\n[Client %" SCNd8 "] is disconnected.\n\n", client.id);
+
+	strcpy(buffer, "");
 	sprintf(buffer, "[Client %d] is disconnected.", client.id);
 	broadcast(client.id, buffer);
-	close(client.sock);
+
+	if(close(client.sock) == -1)
+	{
+		printf("\033[31m[WIFSS] Error while closing the socket of client %" SCNd8 ": %s.\033[0m\n\n", client.id, strerror(errno));
+	}
 	
 	command_cursor();
 
-	g_clients[client.id].status = FREE;
+	g_core_variables.clients[client.id].status = FREE;
+	g_core_variables.clients[client.id].id = -1;
+	g_core_variables.clients[client.id].sock = -1;
+
 	return NULL;
 }

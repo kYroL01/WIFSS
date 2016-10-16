@@ -18,7 +18,7 @@ bool str_beginwith(const char *w, const char *s)
 }
 
 
-bool str_validation(const char *str, uint8_t nbArgs)
+bool str_validation(const char *str, const uint8_t nbArgs)
 {
 	uint8_t arg = 1;
 
@@ -94,4 +94,33 @@ void prompt_keyboard(char *buff)
 	fgets(buff, FGETSBUFF, stdin);
 	str_remove_slash_n(buff);
 	str_lower_case(buff);
+}
+
+
+bool command_validation(const char *buff, const char *command, const uint8_t nbArgs)
+{
+	if(str_beginwith(buff, command))
+	{
+		if(nbArgs == 0)
+		{
+			return str_infinite_spaces(buff + strlen(command));
+		}
+
+		else
+		{
+			return str_validation(buff, nbArgs);
+		}
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+
+void command_cursor(void)
+{
+	printf("|: ");
+	fflush(stdout);
 }

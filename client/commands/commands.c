@@ -5,6 +5,7 @@ void* server_communication(void *param)
 {
 	int16_t result;
 	char buff[BUFFER];
+	bool newCursor = true;
 
 	THREADS *threads = (THREADS*)param;
 
@@ -23,9 +24,6 @@ void* server_communication(void *param)
 
 		else
 		{
-			static bool smthWritten;
-			smthWritten = true;
-
 			if(str_beginwith(buff, UPLOAD))
 			{
 				upload(buff);
@@ -45,25 +43,31 @@ void* server_communication(void *param)
 
 			else
 			{
+				/* We received from server a non-null string, let's print it */
 				if(strcmp(buff, ""))
 				{
-					printf("\n\n[sthread] \"%s\"", buff);
+					printf("\n\n[sthread] \"%s\"\n\n", buff);
 				}
 
 				else
 				{
-					smthWritten = false;
+					newCursor = false;
 				}
 			}
 
-			if(smthWritten)
+			if(newCursor)
 			{
-				printf("\n\n|: ");
-				fflush(stdout);
+				command_cursor();
+			}
+
+			else
+			{
+				newCursor = true;
 			}
 		}
 	}
 }
+
 
 void* client_communication(void *param)
 {
@@ -73,119 +77,112 @@ void* client_communication(void *param)
 
 	while(1)
 	{
-		printf("|: ");
+		command_cursor();
 		prompt_keyboard(buff);
 
-		if(!handle_command(buff))
+		if(command_validation(buff, EXIT, 0) || command_validation(buff, LOGOUT, 0))
 		{
 			pthread_cancel(*(threads->sthread));
 			pthread_exit(NULL);
 		}
-	}
-}
 
-bool handle_command(const char *command)
-{
-	if((str_beginwith(command, QUIT) && str_infinite_spaces(command + strlen(QUIT))) || (str_beginwith(command, EXIT) && str_infinite_spaces(command + strlen(EXIT))) || (str_beginwith(command, LOGOUT) && str_infinite_spaces(command + strlen(LOGOUT))) || (str_beginwith(command, CLOSE) && str_infinite_spaces(command + strlen(CLOSE))))
-	{
-		return false;
-	}
-
-	else if(str_beginwith(command, DOWNLOAD) && str_validation(command, ARGDWL))
-	{
-		download(command);
-	}
-
-	else if(str_beginwith(command, SEND))
-	{
-		send(g_core_variables.server_sock, command, BUFFER, false);
-	}
-
-	else if(str_beginwith(command, WHISPER) && str_validation(command, ARGWHI))
-	{
-		send(g_core_variables.server_sock, command, BUFFER, false);
-	}
-
-	else if(str_beginwith(command, ISPRESENT) && str_validation(command, ARGISP))
-	{
-		send(g_core_variables.server_sock, command, BUFFER, false);
-	}
-
-	else if(str_beginwith(command, ASKLIST) && str_validation(command, ARGASK))
-	{
-		ask_list(command);
-	}
-
-	else if(str_beginwith(command, REMOVE) && str_validation(command, ARGRMV))
-	{
-		remove_file(command);
-	}
-
-	else if(str_beginwith(command, RENAME) && str_validation(command, ARGRNA))
-	{
-		rename_file(command);
-	}
-
-	else if(str_beginwith(command, LIST) && str_infinite_spaces(command + strlen(LIST)))
-	{
-		list_files(NULL);
-	}
-
-	else if(str_beginwith(command, WHO) && str_infinite_spaces(command + strlen(WHO)))
-	{
-		who();
-	}
-
-	else if(str_beginwith(command, CLEAR) && str_infinite_spaces(command + strlen(CLEAR)))
-	{
-		system("clear");
-	}
-
-	else if(str_beginwith(command, CHECKFOLDER) && str_infinite_spaces(command + strlen(CHECKFOLDER)))
-	{
-		check_download_folder();
-	}
-
-	else if(str_infinite_spaces(command))
-	{
-		/* Do nothing... */
-	}
-
-	else if((str_beginwith(command, HELP) && str_infinite_spaces(command + strlen(HELP))) || (str_beginwith(command, INTERROGATIONPOINT) && strlen(INTERROGATIONPOINT)))
-	{
-		static const char *const helpMenu[TALLERCMD] =
+		else if(command_validation(buff, DOWNLOAD, ARGDWL))
 		{
-			"?",
-			"help",
-			"who",
-			"send <message>",
-			"whisper <idClient> <message>",
-			"list",
-			"rename <file> <newFileName>",
-			"remove <file>",
-			"ispresent <idClient> <file>",
-			"asklist <idClient>",
-			"quit",
-			"exit",
-			"logout",
-			"clear",
-			"close",
-			"download <idClient> <file>",
-			"checkfolder"
-		};
-
-		for(uint8_t i = 0; helpMenu[i] != NULL; i++)
-		{
-			printf("\t%s\n", helpMenu[i]);
+			download(buff);
 		}
 
-		printf("\n");
-	}
+		else if(str_beginwith(buff, SEND))
+		{
+			send(g_core_variables.server_sock, buff, BUFFER, false);
+		}
 
-	else
-	{
-		printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
-	}
+		else if(command_validation(buff, WHISPER, ARGWHI))
+		{
+			send(g_core_variables.server_sock, buff, BUFFER, false);
+		}
 
-	return true;
+		else if(command_validation(buff, ISPRESENT, ARGISP))
+		{
+			send(g_core_variables.server_sock, buff, BUFFER, false);
+		}
+
+		else if(command_validation(buff, ASKLIST, ARGASK))
+		{
+			ask_list(buff);
+		}
+
+		else if(command_validation(buff, REMOVE, ARGRMV))
+		{
+			remove_file(buff);
+		}
+
+		else if(command_validation(buff, RENAME, ARGRNA))
+		{
+			rename_file(buff);
+		}
+
+		else if(command_validation(buff, LIST, 0))
+		{
+			list_files(NULL);
+		}
+
+		else if(command_validation(buff, WHO, 0))
+		{
+			char temp[BUFFER] = WHO;
+			send(g_core_variables.server_sock, temp, BUFFER, false);
+		}
+
+		else if(command_validation(buff, CLEAR, 0))
+		{
+			system("clear");
+		}
+
+		else if(command_validation(buff, CHECKFOLDER, 0))
+		{
+			if(!check_download_folder())
+			{
+				pthread_cancel(*(threads->sthread));
+				pthread_exit(NULL);
+			}
+		}
+
+		else if(str_infinite_spaces(buff))
+		{
+			/* Do nothing... */
+		}
+
+		else if(command_validation(buff, HELP, 0) || command_validation(buff, INTERROGATIONPOINT, 0))
+		{
+			static const char *const helpMenu[32] =
+			{
+				"?",
+				"help",
+				"who",
+				"send <message>",
+				"whisper <idClient> <message>",
+				"list",
+				"rename <file> <newFileName>",
+				"remove <file>",
+				"ispresent <idClient> <file>",
+				"asklist <idClient>",
+				"exit",
+				"logout",
+				"clear",
+				"download <idClient> <file>",
+				"checkfolder"
+			};
+
+			for(uint8_t i = 0; helpMenu[i] != NULL; i++)
+			{
+				printf("\t%s\n", helpMenu[i]);
+			}
+
+			printf("\n");
+		}
+
+		else
+		{
+			printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
+		}
+	}
 }

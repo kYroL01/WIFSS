@@ -5,12 +5,10 @@
 
 #define HELP       "help"
 #define EXIT       "exit"
-#define QUIT       "quit"
 #define SEND       "send "
 #define LIST       "list"
 #define WHO        "who"
 #define CLEAR      "clear"
-#define CLOSE      "close"
 #define LOGOUT     "logout"
 #define REMOVE     "remove "
 #define RENAME     "rename "
@@ -22,8 +20,6 @@
 #define DISCONNECT "disconnect"
 #define CHECKFOLDER "checkfolder"
 #define INTERROGATIONPOINT "?"
-
-#define ENDSIG  -1
 
 #define ARGDWL 3
 #define ARGWHI 3
@@ -42,7 +38,6 @@ typedef struct
 
 void* server_communication(void*);
 void* client_communication(void*);
-bool handle_command(const char*);
 
 
 #endif

@@ -14,13 +14,10 @@
 /* CMD */
 #define HELP       "help"
 #define EXIT       "exit"
-#define QUIT       "quit"
 #define STOP       "stop"
-#define HALT       "halt"
 #define SEND       "send "
 #define WHO        "who"
 #define CLEAR      "clear"
-#define CLOSE      "close"
 #define UPLOAD     "upload "
 #define ASKLIST    "asklist "
 #define WHISPER    "whisper "
@@ -29,19 +26,16 @@
 #define DISCONNECT "disconnect"
 #define INTERROGATIONPOINT "?"
 
-/* SIG */
-#define ENDSIG  -1
-
 /* ARG */
 #define ARGDWL 2
 #define ARGUPL 3
 #define ARGDCL 2
 
 
-void process_command(const char*, int);
-void command_cursor(void);
-void* command_handler(void* data);
-void* on_connection(void* data);
+void process_command(const char*, const uint8_t);
+void* on_connection(void*);
+void* command_handler(void*);
+void* connections_handler(void*);
 
 
 #endif

@@ -13,7 +13,6 @@ void rename_file(const char*);
 void close_file(FILE*, const char*);
 void is_present(const char*);
 void ask_list(const char*);
-void who(void);
 
 
 #endif

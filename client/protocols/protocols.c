@@ -5,10 +5,10 @@ void download(const char *command)
 {
 	char fileName[PATHSIZE / 4] = "";
 	char destFile[PATHSIZE]     = "";
-	char temp[PATHSIZE]         = "";
+	char temp[PATHSIZE];
 
 	int8_t foo = -1;
-	sscanf(command, "download %" SCNd8 "%[^\n]", &foo, fileName);
+	sscanf(command, "download %" SCNd8 " %[^\n]", &foo, fileName);
 
 	strcpy(destFile, getenv("WORKDIR")); /* destFile = "$HOME" */
 	strcat(destFile, PATHWORKINGDIR); /* destFile = "$HOME/Downloads/WIFSS/" */
@@ -174,7 +174,7 @@ void upload(const char *command)
 
 		sprintf(buff, "size: %" SCNd32, fsize);
 		send(sockDL, buff, BUFFER, false);
-		printf("\n[WIFSS] Sending: \"%s\" (%" SCNd32 "bytes).\n", fileName, fsize);
+		printf("\n[WIFSS] Sending: \"%s\" (%" SCNd32 " bytes).\n", fileName, fsize);
 
 		recv(sockDL, buff, BUFFER, false); /* Receive "OK", cue-role */
 

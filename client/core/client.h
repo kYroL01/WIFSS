@@ -9,7 +9,6 @@
 #include "../protocols/protocols.h"
 
 #define PATHSIZE   64
-#define TALLERCMD  32
 #define MAXFILEDIR  8
 #define MAXFILENAME 62
 
@@ -26,6 +25,8 @@ typedef struct
 	int16_t server_sock;
 	int16_t server_port;
 	int8_t client_id;
+
+	char *working_dir;
 } core_variables_t;
 
 core_variables_t g_core_variables;
@@ -33,6 +34,7 @@ core_variables_t g_core_variables;
 
 bool start_client(struct sockaddr_in*);
 void stop_client(void);
+void init_global_variables(void);
 
 
 #endif

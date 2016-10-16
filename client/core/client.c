@@ -3,7 +3,7 @@
 
 int main(int argc, const char *argv[])
 {
-	/* In order to deal with '-Wextra' GCC flag */
+	/* In order to deal with '-Wextra' "Unused variable" warning */
 	(void)argc;
 	(void)argv;
 
