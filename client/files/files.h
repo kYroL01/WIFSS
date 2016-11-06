@@ -4,6 +4,8 @@
 
 #include "../core/client.h"
 
+#define MAXFILEDIR 32
+
 
 bool set_work_dir(void);
 bool check_download_folder(void);

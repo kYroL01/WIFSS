@@ -43,6 +43,6 @@ Run with:
 
 ### Additional content  
 
-1.You can try the system by connecting your client to your local server with `localhost` or `local` as address, once the server is running and listening.  
+1. You can try the system by connecting your client to your local server with `localhost` or `local` as address, once the server is running and listening.  
 
-2.No data are saved by server, just a bridge between clients.
+2. No data are saved by server, just a bridge between clients.

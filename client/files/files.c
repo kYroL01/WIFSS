@@ -20,12 +20,10 @@ bool set_work_dir(void)
 
 bool check_download_folder()
 {
-	char destDir[4 * PATHSIZE];
-	uint8_t count = 0;
+	char destDir[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
 
 	strcpy(destDir, g_core_variables.working_dir);
 	DIR *directory = opendir(destDir);
-
 
 	if(directory == NULL)
 	{
@@ -44,6 +42,7 @@ bool check_download_folder()
 		}
 	}
 
+	uint8_t count = 0;
 	struct dirent *ep;
 	struct stat file_stat;
 
@@ -52,9 +51,9 @@ bool check_download_folder()
 		/* All the content, bar 'current_dir' and 'parent_dir' */
 		if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, ".."))
 		{
-			if(strlen(ep->d_name) > (size_t)MAXFILENAME)
+			if((long)strlen(ep->d_name) > sysconf(_PC_NAME_MAX))
 			{
-				printf("\n\033[31m[WIFSS] Error: One of your file (\"%s\") in your working directory has more than %d characters in its name. Consider renaming it.\033[0m\n\n", ep->d_name, MAXFILENAME);
+				printf("\n\033[31m[WIFSS] Error: One of your file (\"%s\") in your working directory has more than %ld characters in its name. Consider renaming it.\033[0m\n\n", ep->d_name, sysconf(_PC_NAME_MAX));
 				return false;
 			}
 
@@ -100,8 +99,8 @@ void is_present(const char *command)
 {
 	char buff[BUFFER];
 
-	char destFile[PATHSIZE]     = ""; 
-	char fileName[PATHSIZE / 4] = "";
+	char fileName[sysconf(_PC_NAME_MAX)];
+	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)]; 
 
 	sscanf(command, "ispresent %[^\n]", fileName);
 
@@ -124,8 +123,8 @@ void is_present(const char *command)
 
 void remove_file(const char *command)
 {
-	char fileName[PATHSIZE / 4] = "";
-	char destFile[PATHSIZE]     = ""; 
+	char fileName[sysconf(_PC_NAME_MAX)];
+	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)]; 
 
 	sscanf(command, "remove %[^\n]", fileName);
 
@@ -145,10 +144,10 @@ void remove_file(const char *command)
 
 void rename_file(const char *command)
 {
-	char fileName[PATHSIZE / 4]    = "";
-	char newFileName[PATHSIZE / 4] = "";
-	char destFile[BUFFER];
-	char newDestFile[BUFFER];
+	char fileName[sysconf(_PC_NAME_MAX)];
+	char newFileName[sysconf(_PC_NAME_MAX)];
+	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char newDestFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
 
 	sscanf(command, "rename %s %[^\n]", fileName, newFileName);
 

@@ -3,9 +3,9 @@
 
 void download(const char *command)
 {
-	char fileName[PATHSIZE / 4] = "";
-	char destFile[PATHSIZE]     = "";
-	char temp[PATHSIZE];
+	char fileName[sysconf(_PC_NAME_MAX)];
+	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char temp[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
 
 	int8_t foo = -1;
 	sscanf(command, "download %" SCNd8 " %[^\n]", &foo, fileName);
@@ -123,8 +123,8 @@ void download(const char *command)
 void upload(const char *command)
 {
 	char buff[BUFFER]       = "";
-	char fileName[PATHSIZE] = "";
-	char destFile[PATHSIZE] = "";
+	char fileName[sysconf(_PC_NAME_MAX)];
+	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
 
 	sscanf(command, "upload %[^\n]", fileName);
 	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", fileName);

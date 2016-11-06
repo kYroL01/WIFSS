@@ -8,10 +8,6 @@
 #include "../files/files.h"
 #include "../protocols/protocols.h"
 
-#define PATHSIZE   64
-#define MAXFILEDIR  8
-#define MAXFILENAME 62
-
 #define PATHWORKINGDIR "/Downloads/WIFSS/"
 
 #define LOCAL     "local"
@@ -25,7 +21,6 @@ typedef struct
 	int16_t server_sock;
 	int16_t server_port;
 	int8_t client_id;
-
 	char *working_dir;
 } core_variables_t;
 
