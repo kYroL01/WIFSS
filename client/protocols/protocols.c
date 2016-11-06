@@ -4,14 +4,13 @@
 void download(const char *command)
 {
 	char fileName[sysconf(_PC_NAME_MAX)];
-	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
-	char temp[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
+	char temp[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX) + strlen(DOTPART)];
 
 	int8_t foo = -1;
 	sscanf(command, "download %" SCNd8 " %[^\n]", &foo, fileName);
 
-	strcpy(destFile, getenv("WORKDIR")); /* destFile = "$HOME" */
-	strcat(destFile, PATHWORKINGDIR); /* destFile = "$HOME/Downloads/WIFSS/" */
+	strcpy(destFile, g_core_variables.working_dir);
 	strcat(destFile, fileName);      /* destFile = "$HOME/Downloads/WIFSS/fileName" */
 
 	strcpy(temp, destFile);
@@ -122,14 +121,14 @@ void download(const char *command)
 
 void upload(const char *command)
 {
-	char buff[BUFFER]       = "";
+	char buff[BUFFER] = "";
 	char fileName[sysconf(_PC_NAME_MAX)];
-	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
 
 	sscanf(command, "upload %[^\n]", fileName);
 	printf("\n\n[sthread] [Server] is asking us to upload: \"%s\". Trying to upload it...\n", fileName);
 
-	strcpy(destFile, getenv("WORKDIR")); /* destFile = "$HOME/Downloads/WIFSS/" */
+	strcpy(destFile, g_core_variables.working_dir); /* destFile = "$HOME/Downloads/WIFSS/" */
 	strcat(destFile, fileName);      /* destFile = "$HOME/Downloads/WIFSS/fileName" */
 
 	FILE *file = NULL;

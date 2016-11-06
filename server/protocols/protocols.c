@@ -166,7 +166,7 @@ void who(const int8_t sender)
 
 void ask_list(const char *command, const uint8_t sender_id)
 {
-	char buff[BUFFER]   = "";
+	char buff[BUFFER] = "";
 	int8_t remote_id = -1;
 
 	sscanf(command, "asklist %" SCNd8, &remote_id);

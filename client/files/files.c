@@ -20,16 +20,16 @@ bool set_work_dir(void)
 
 bool check_download_folder()
 {
-	char destDir[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char buffer[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
 
-	strcpy(destDir, g_core_variables.working_dir);
-	DIR *directory = opendir(destDir);
+	strcpy(buffer, g_core_variables.working_dir);
 
+	DIR *directory = opendir(buffer);
 	if(directory == NULL)
 	{
 		printf("\n\033[31m[WIFSS] Error: Target directory doesn\'t exist, we attempt to create it.\033[0m\n\n");
-		mkdir(destDir, S_IRWXU);
-		directory = opendir(destDir);
+		mkdir(buffer, S_IRWXU);
+		directory = opendir(buffer);
 
 		if(directory == NULL)
 		{
@@ -38,14 +38,14 @@ bool check_download_folder()
 		}
 		else
 		{
-			printf("\n\033[32m[WIFSS] Target directory: \"%s\" successfully created.\033[0m\n\n", destDir);
+			printf("\n\033[32m[WIFSS] Target directory: \"%s\" successfully created.\033[0m\n\n", buffer);
 		}
 	}
 
 	uint8_t count = 0;
-	struct dirent *ep;
 	struct stat file_stat;
 
+	struct dirent *ep;
 	while((ep = readdir(directory)))
 	{
 		/* All the content, bar 'current_dir' and 'parent_dir' */
@@ -57,12 +57,12 @@ bool check_download_folder()
 				return false;
 			}
 
-			strcpy(destDir, g_core_variables.working_dir);
-			strcat(destDir, ep->d_name);
+			strcpy(buffer, g_core_variables.working_dir);
+			strcat(buffer, ep->d_name);
 
-			if(stat(destDir, &file_stat) == -1)
+			if(stat(buffer, &file_stat) == -1)
 			{
-				printf("\n\033[31m[WIFSS] Error: A problem occurred during reading information about one of your working directory content (\"%s\").\033[0m\n\n", destDir);
+				printf("\n\033[31m[WIFSS] Error: A problem occurred during reading information about one of your working directory content (\"%s\").\033[0m\n\n", buffer);
 				return false;
 			}
 
@@ -83,7 +83,7 @@ bool check_download_folder()
 	
 	if(count > MAXFILEDIR)
 	{
-		printf("\n\033[31m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean this up please.\033[0m\n\n", MAXFILEDIR, destDir);
+		printf("\n\033[31m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean this up please.\033[0m\n\n", MAXFILEDIR, buffer);
 		return false;
 	}
 
@@ -100,7 +100,7 @@ void is_present(const char *command)
 	char buff[BUFFER];
 
 	char fileName[sysconf(_PC_NAME_MAX)];
-	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)]; 
+	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)]; 
 
 	sscanf(command, "ispresent %[^\n]", fileName);
 
@@ -124,7 +124,7 @@ void is_present(const char *command)
 void remove_file(const char *command)
 {
 	char fileName[sysconf(_PC_NAME_MAX)];
-	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)]; 
+	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)]; 
 
 	sscanf(command, "remove %[^\n]", fileName);
 
@@ -146,8 +146,8 @@ void rename_file(const char *command)
 {
 	char fileName[sysconf(_PC_NAME_MAX)];
 	char newFileName[sysconf(_PC_NAME_MAX)];
-	char destFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
-	char newDestFile[sysconf(_PC_PATH_MAX) + sysconf(_PC_NAME_MAX)];
+	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
+	char newDestFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
 
 	sscanf(command, "rename %s %[^\n]", fileName, newFileName);
 
@@ -179,7 +179,6 @@ void close_file(FILE *file, const char *fileName)
 void list_files(char *buffer)
 {
 	DIR *directory = opendir(g_core_variables.working_dir);
-
 	if(directory != NULL)
 	{
 		/* Let's pre-format the buffer for the server */
