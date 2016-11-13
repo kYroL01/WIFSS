@@ -5,14 +5,13 @@
 #include "../wifss.h"
 
 
-bool str_beginwith(const char*, const char*);
-bool str_validation(const char*, const uint8_t);
-bool str_infinite_spaces(const char*);
-void str_lower_case(char*);
-void str_remove_slash_n(char*);
-void prompt_keyboard(char*);
-bool command_validation(const char*, const char*, const uint8_t);
+void clear_console(void);
 void command_cursor(void);
-
+void prompt_keyboard(char *const);
+void free_args(char**, uint16_t *const);
+void parse_command(const char *const, char **const, uint16_t *const);
+bool command_validation(const char *const *const, const uint16_t, const char *const, const uint8_t);
+bool str_beginwith(const char*, const char*);
+bool prompt_yes_no(char *const, char **const, uint16_t *const);
 
 #endif

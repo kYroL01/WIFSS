@@ -1,6 +1,105 @@
 #include "str.h"
 
 
+void clear_console(void)
+{
+	pid_t status = fork();
+	switch(status)
+	{
+		case -1:
+			printf("Couldn\'t \'fork()\' the current process into a child: %s\n", strerror(errno));
+			break;
+
+		case 0:
+			if(execvp("clear", (char *const[]){"clear", NULL}) == -1)
+			{
+				printf("Couldn\'t \'exec()\' the command: %s\n", strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+
+			exit(EXIT_SUCCESS);
+
+		default:
+			wait(&status);
+			break;
+	}
+}
+
+
+void command_cursor(void)
+{
+	printf("|: ");
+	fflush(stdout);
+}
+
+
+void prompt_keyboard(char *const buffer)
+{
+	strncpy(buffer, "", COMMANDBUFFER);
+	fgets(buffer, COMMANDBUFFER, stdin);
+}
+
+
+void free_args(char **args, uint16_t *const nbArgs)
+{
+	for(uint16_t i = 0; i < *nbArgs; i++)
+	{
+		free(args[i]);
+		args[i] = NULL;
+	}
+
+	*nbArgs = 0;
+}
+
+
+void parse_command(const char *const buffer, char **const args, uint16_t *const nbArgs)
+{
+	size_t size = 0;
+	char *ptr = NULL;
+
+	uint16_t i = 0;
+	const size_t length = strlen(buffer);
+	while(i < length)
+	{
+		while(buffer[i] == ' ' || buffer[i] == '\t' || buffer[i] == '\0')
+		{
+			i++;
+		}
+
+		if(buffer[i] == '\n')
+		{
+			break;
+		}
+
+		ptr = strstr(buffer + i, " ");
+		size = strlen(buffer + i) - (ptr != NULL ? strlen(ptr) : 0);
+		args[*nbArgs] = strndup(buffer + i, size);
+
+		if(args[*nbArgs][size - 1] == '\n')
+		{
+			args[*nbArgs][size - 1] = '\0';
+		}
+
+		(*nbArgs)++;
+		i += size + 1;
+	}
+}
+
+
+bool command_validation(const char *const *const args, const uint16_t nbArgs, const char *const command, const uint8_t nbCommandArgs)
+{
+	if(strcmp(args[0], command) || nbArgs != nbCommandArgs)
+	{
+		return false;
+	}
+
+	else
+	{
+		return true;
+	}
+}
+
+
 bool str_beginwith(const char *w, const char *s)
 {
 	while(*s)
@@ -18,109 +117,34 @@ bool str_beginwith(const char *w, const char *s)
 }
 
 
-bool str_validation(const char *str, const uint8_t nbArgs)
+bool prompt_yes_no(char *const buffer, char **const args, uint16_t *const nbArgs)
 {
-	uint8_t arg = 1;
-
-	for(uint16_t i = 0; i < BUFFER; i++)
+	while(1)
 	{
-		if(str[i] == ' ' && (str[i + 1] != ' ' && str[i + 1] != '\0'))
+		command_cursor();
+		prompt_keyboard(buffer);
+		free_args(args, nbArgs);
+		parse_command(buffer, args, nbArgs);
+
+		if(*nbArgs != 1)
 		{
-			arg++;
-		}
-	}
-
-	if(arg > nbArgs)
-	{
-		printf("\nToo many arguments for this command.\n");
-		return false;
-	}
-
-	else if(arg < nbArgs)
-	{
-		printf("\nToo few arguments for this command.\n");
-		return false;
-	}
-
-	else
-	{
-		return true;
-	}
-}
-
-
-bool str_infinite_spaces(const char *buff)
-{
-	int16_t length = strlen(buff);
-
-	for(uint16_t i = 0; i < length; i++)
-	{
-		if(buff[i] != ' ' && buff[i] != '\t')
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-
-void str_lower_case(char *buff)
-{
-	uint16_t length = strlen(buff);
-
-	/* Lower only the first word (the command) */
-	for(uint16_t i = 0; i < length && buff[i] != ' '; i++)
-	{
-		buff[i] = tolower(buff[i]);
-	}
-}
-
-
-void str_remove_slash_n(char *buff)
-{
-	char *slashNPosition = strchr(buff, '\n');
-
-    if(slashNPosition != NULL)
-    {
-		*slashNPosition = '\0';
-    }
-}
-
-
-void prompt_keyboard(char *buff)
-{
-	strcpy(buff, "");
-	fgets(buff, FGETSBUFF, stdin);
-	str_remove_slash_n(buff);
-	str_lower_case(buff);
-}
-
-
-bool command_validation(const char *buff, const char *command, const uint8_t nbArgs)
-{
-	if(str_beginwith(buff, command))
-	{
-		if(nbArgs == 0)
-		{
-			return str_infinite_spaces(buff + strlen(command));
+			continue;
 		}
 
 		else
 		{
-			return str_validation(buff, nbArgs);
+			if(!strcmp(args[0], "no"))
+			{
+				return false;
+			}
+
+			else
+			{
+				if(!strcmp(args[0], "yes") || !strcmp(args[0], "YES"))
+				{
+					return true;
+				}
+			}
 		}
 	}
-
-	else
-	{
-		return false;
-	}
-}
-
-
-void command_cursor(void)
-{
-	printf("|: ");
-	fflush(stdout);
 }

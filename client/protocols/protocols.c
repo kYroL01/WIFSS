@@ -55,7 +55,7 @@ void download(const char *command)
 	serverDL.sin_port        = htons(g_core_variables.server_port + g_core_variables.client_id + 1);
 	serverDL.sin_addr.s_addr = inet_addr(g_core_variables.server_addr);
 
-	sockDL = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	sockDL = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	res = connect(sockDL, (struct sockaddr*)&serverDL, sizeof(serverDL));
 	if(res < 0)
@@ -145,7 +145,7 @@ void upload(const char *command)
 	serverDL.sin_port        = htons(g_core_variables.server_port + g_core_variables.client_id + 1);
 	serverDL.sin_addr.s_addr = inet_addr(g_core_variables.server_addr);
 
-	int8_t sockDL = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int8_t sockDL = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	int16_t res = connect(sockDL, (struct sockaddr*)&serverDL, sizeof(serverDL));
 	if(res == -1)

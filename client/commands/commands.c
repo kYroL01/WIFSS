@@ -4,18 +4,18 @@
 void* server_communication(void *param)
 {
 	int16_t result;
-	char buff[BUFFER];
+	char buffer[BUFFER];
 	bool newCursor = true;
 
 	THREADS *threads = (THREADS*)param;
 
 	while(1)
 	{
-		strcpy(buff, "");
+		strcpy(buffer, "");
 
-		result = recv(g_core_variables.server_sock, buff, BUFFER, false);
+		result = recv(g_core_variables.server_sock, buffer, BUFFER, false);
 
-		if(result <= 0 || !strcmp(buff, DISCONNECT))
+		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
 			printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
 			pthread_cancel(*(threads->cthread));
@@ -24,29 +24,29 @@ void* server_communication(void *param)
 
 		else
 		{
-			if(str_beginwith(buff, UPLOAD))
+			if(str_beginwith(buffer, UPLOAD))
 			{
-				upload(buff);
+				upload(buffer);
 			}
 
-			else if(!strcmp(buff, ASKLIST) && check_download_folder())
+			else if(!strcmp(buffer, ASKLIST) && check_download_folder())
 			{
 				char temp[BUFFER] = "";
 				list_files(temp);
 				send(g_core_variables.server_sock, temp, BUFFER, false);
 			}
 
-			else if(str_beginwith(buff, ISPRESENT) && check_download_folder())
+			else if(str_beginwith(buffer, ISPRESENT) && check_download_folder())
 			{
-				is_present(buff);
+				is_present(buffer);
 			}
 
 			else
 			{
 				/* We received from server a non-null string, let's print it */
-				if(strcmp(buff, ""))
+				if(strcmp(buffer, ""))
 				{
-					printf("\n\n[sthread] \"%s\"\n\n", buff);
+					printf("\n\n[sthread] \"%s\"\n\n", buffer);
 				}
 
 				else
@@ -73,71 +73,81 @@ void* client_communication(void *param)
 {
 	THREADS *threads = (THREADS*)param;
 
-	char buff[BUFFER];
+	char buffer[BUFFER];
+	char *args[BUFFER];
+	uint16_t nbArgs;
 
 	while(1)
 	{
 		command_cursor();
-		prompt_keyboard(buff);
+		prompt_keyboard(buffer);
+		free_args(args, &nbArgs);
+		parse_command(buffer, args, &nbArgs);
 
-		if(command_validation(buff, EXIT, 0) || command_validation(buff, LOGOUT, 0))
+		// In order to avoid a segmentation fault if 'args' is empty...
+		if(nbArgs == 0)
+		{
+			continue;
+		}
+
+		if(command_validation((const char* const*)args, nbArgs, EXIT, 1) || command_validation((const char* const*)args, nbArgs, LOGOUT, 1))
 		{
 			pthread_cancel(*(threads->sthread));
 			pthread_exit(NULL);
 		}
 
-		else if(command_validation(buff, DOWNLOAD, ARGDWL))
+		else if(command_validation((const char* const*)args, nbArgs, DOWNLOAD, ARGDOWNLOAD))
 		{
-			download(buff);
+			download(buffer);
 		}
 
-		else if(str_beginwith(buff, SEND))
+		else if(str_beginwith(buffer, SEND))
 		{
-			send(g_core_variables.server_sock, buff, BUFFER, false);
+			send(g_core_variables.server_sock, buffer, BUFFER, false);
 		}
 
-		else if(command_validation(buff, WHISPER, ARGWHI))
+		else if(command_validation((const char* const*)args, nbArgs, WHISPER, ARGWHISPER))
 		{
-			send(g_core_variables.server_sock, buff, BUFFER, false);
+			send(g_core_variables.server_sock, buffer, BUFFER, false);
 		}
 
-		else if(command_validation(buff, ISPRESENT, ARGISP))
+		else if(command_validation((const char* const*)args, nbArgs, ISPRESENT, ARGISPRESENT))
 		{
-			send(g_core_variables.server_sock, buff, BUFFER, false);
+			send(g_core_variables.server_sock, buffer, BUFFER, false);
 		}
 
-		else if(command_validation(buff, ASKLIST, ARGASK))
+		else if(command_validation((const char* const*)args, nbArgs, ASKLIST, ARGASKLIST))
 		{
-			ask_list(buff);
+			ask_list(buffer);
 		}
 
-		else if(command_validation(buff, REMOVE, ARGRMV))
+		else if(command_validation((const char* const*)args, nbArgs, REMOVE, ARGREMOVE))
 		{
-			remove_file(buff);
+			remove_file(buffer);
 		}
 
-		else if(command_validation(buff, RENAME, ARGRNA))
+		else if(command_validation((const char* const*)args, nbArgs, RENAME, ARGRENAME))
 		{
-			rename_file(buff);
+			rename_file(buffer);
 		}
 
-		else if(command_validation(buff, LIST, 0))
+		else if(command_validation((const char* const*)args, nbArgs, LIST, 1))
 		{
 			list_files(NULL);
 		}
 
-		else if(command_validation(buff, WHO, 0))
+		else if(command_validation((const char* const*)args, nbArgs, WHO, 1))
 		{
 			char temp[BUFFER] = WHO;
 			send(g_core_variables.server_sock, temp, BUFFER, false);
 		}
 
-		else if(command_validation(buff, CLEAR, 0))
+		else if(command_validation((const char* const*)args, nbArgs, CLEAR, 1))
 		{
-			system("clear");
+			clear_console();
 		}
 
-		else if(command_validation(buff, CHECKFOLDER, 0))
+		else if(command_validation((const char* const*)args, nbArgs, CHECKFOLDER, 1))
 		{
 			if(!check_download_folder())
 			{
@@ -146,16 +156,10 @@ void* client_communication(void *param)
 			}
 		}
 
-		else if(str_infinite_spaces(buff))
-		{
-			/* Do nothing... */
-		}
-
-		else if(command_validation(buff, HELP, 0) || command_validation(buff, INTERROGATIONPOINT, 0))
+		else if(command_validation((const char* const*)args, nbArgs, HELP, 1))
 		{
 			static const char *const helpMenu[32] =
 			{
-				"?",
 				"help",
 				"who",
 				"send <message>",
@@ -182,7 +186,7 @@ void* client_communication(void *param)
 
 		else
 		{
-			printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
+			printf("\nCommand unknown. Try \"help\" for further information.\n\n");
 		}
 	}
 }

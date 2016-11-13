@@ -26,7 +26,7 @@ void download(const char *command, const uint8_t sender_id)
 
 	/* Let's create a new socket for the client who want to download */
 
-	clientDL_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	clientDL_sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	clientDL.sin_family      = AF_INET;
 	clientDL.sin_addr.s_addr = INADDR_ANY;
@@ -36,7 +36,7 @@ void download(const char *command, const uint8_t sender_id)
 
 	/* Now the same, but with the client who'll upload the file */
 
-	clientUL_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	clientUL_sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	clientUL.sin_family      = AF_INET;
 	clientUL.sin_addr.s_addr = INADDR_ANY;

@@ -18,18 +18,16 @@
 #define SEND       "send "
 #define WHO        "who"
 #define CLEAR      "clear"
-#define UPLOAD     "upload "
-#define ASKLIST    "asklist "
-#define WHISPER    "whisper "
-#define DOWNLOAD   "download "
-#define ISPRESENT  "ispresent "
+#define UPLOAD     "upload"
+#define ASKLIST    "asklist"
+#define WHISPER    "whisper"
+#define DOWNLOAD   "download"
+#define ISPRESENT  "ispresent"
 #define DISCONNECT "disconnect"
-#define INTERROGATIONPOINT "?"
 
 /* ARG */
-#define ARGDWL 2
-#define ARGUPL 3
-#define ARGDCL 2
+#define ARGDOWNLOAD 2
+#define ARGDISCONNECT 2
 
 
 void process_command(const char*, const uint8_t);

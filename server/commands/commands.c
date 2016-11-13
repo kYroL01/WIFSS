@@ -7,13 +7,23 @@ void* command_handler(void *foo)
 	(void)foo;
 
 	char buffer[BUFFER];
+	char *args[BUFFER];
+	uint16_t nbArgs;
 
 	while(1)
 	{
 		command_cursor();
 		prompt_keyboard(buffer);
+		free_args(args, &nbArgs);
+		parse_command(buffer, args, &nbArgs);
 
-		if(command_validation(buffer, EXIT, 0) || command_validation(buffer, STOP, 0))
+		// In order to avoid a segmentation fault if 'args' is empty...
+		if(nbArgs == 0)
+		{
+			continue;
+		}
+
+		if(command_validation((const char* const*)args, nbArgs, EXIT, 1) || command_validation((const char* const*)args, nbArgs, STOP, 1))
 		{
 			broadcast(SID, "[Server] is going to shutdown !");
 			pthread_exit(NULL);
@@ -48,31 +58,25 @@ void* command_handler(void *foo)
 			}
 		}
 
-		else if(command_validation(buffer, DISCONNECT, ARGDCL))
+		else if(command_validation((const char* const*)args, nbArgs, DISCONNECT, ARGDISCONNECT))
 		{
 			disconnect(buffer);
 		}
 
-		else if(command_validation(buffer, CLEAR, 0))
+		else if(command_validation((const char* const*)args, nbArgs, CLEAR, 1))
 		{
-			system("clear");
+			clear_console();
 		}
 
-		else if(command_validation(buffer, WHO, 0))
+		else if(command_validation((const char* const*)args, nbArgs, WHO, 1))
 		{
 			who(SID);
 		}
 
-		else if(str_infinite_spaces(buffer))
-		{
-			/* Do nothing... */
-		}
-
-		else if(command_validation(buffer, HELP, 0) || command_validation(buffer, INTERROGATIONPOINT, 0))
+		else if(command_validation((const char* const*)args, nbArgs, HELP, 1))
 		{
 			static const char *helpMenu[32] =
 			{
-				"?",
 				"help",
 				"who",
 				"send <message>",
@@ -183,7 +187,7 @@ void* connections_handler(void *foo)
 			}
 		}
 		
-		printf("\n\n[WIFSS] Connection received \'%s:%" SCNu16 "\'' -> ID given: %" SCNu8 ".\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), current_id);
+		printf("\n\n[WIFSS] Connection received \'%s:%" SCNu16 "\' -> ID given: %" SCNu8 ".\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), current_id);
 
 		client_t new_client;
 		new_client.id     = current_id;

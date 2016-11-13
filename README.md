@@ -13,7 +13,6 @@ Run with:
 
 ### List of commands currently available for Client:  
 
-`?`  
 `help`  
 `who`  
 `send <message>`  
@@ -31,7 +30,6 @@ Run with:
 
 ### List of commands currently available for Server:  
 
-`?`  
 `help`  
 `who`  
 `send <message>`  

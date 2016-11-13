@@ -3,7 +3,8 @@
 
 bool start_client(struct sockaddr_in *server)
 {
-	system("clear");
+	clear_console();
+
 	printf("\n\033[32m[WIFSS] Starting Client...\033[0m\n");
 
 	init_global_variables();
@@ -18,42 +19,59 @@ bool start_client(struct sockaddr_in *server)
 		return false;
 	}
 
-	char buff[BUFFER];
+	char address[BUFFER];
+	char *args[BUFFER];
+	uint16_t nbArgs;
+
 	do
 	{
 		printf("-> Server IP: ");
-		prompt_keyboard(buff);
+		prompt_keyboard(address);
+		free_args(args, &nbArgs);
+		parse_command(address, args, &nbArgs);
 
-	} while(!strcmp(buff, "\0") || str_infinite_spaces(buff));
+	} while(nbArgs != 1);
 
-	if(!strcmp(buff, LOCALHOST) || !strcmp(buff, LOCAL))
+	if(!strcmp(args[0], LOCALHOST) || !strcmp(args[0], LOCAL))
 	{
-		strcpy(buff, "");
-		sprintf(buff, "%s", ADDRLOCAL);
+		strcpy(address, "");
+		sprintf(address, "%s", ADDRLOCAL);
 	}
 
-	uint8_t c;
-	uint32_t port;
+
+	char portBuffer[BUFFER];
+	int32_t port;
 	do
 	{
 		printf("-> Server Port: ");
-		scanf("%" SCNu32, &port);
+		prompt_keyboard(portBuffer);
+		free_args(args, &nbArgs);
+		parse_command(portBuffer, args, &nbArgs);
 
-		while((c = getchar()) && c != '\n');
+		if(nbArgs == 1)
+		{
+			port = strtoul(args[0], NULL, 10);
+		}
 
-	} while(port < 1024 || port > 65535);
+		else
+		{
+			port = -1;
+		}
+
+	} while(port < 0 || port > 65535);
 
 	server->sin_family      = AF_INET;
 	server->sin_port        = htons(port);
-	server->sin_addr.s_addr = inet_addr(buff);
+	server->sin_addr.s_addr = inet_addr(address);
 
-	int16_t sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int16_t sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(sock == -1)
 	{
 		printf("\n\033[31m[WIFSS] Error while creating an endpoint for communication with server: %s.\033[0m\n\n", strerror(errno));
 		return false;
 	}
 
+	char buffer[BUFFER];
 	int16_t result;
 	do
 	{
@@ -61,20 +79,14 @@ bool start_client(struct sockaddr_in *server)
 
 		if(result == -1)
 		{
-			printf("\n\033[31m[WIFSS] Error while connecting to \'%s:%" SCNu32 "\':%s.\033[0m\n\n", inet_ntoa(server->sin_addr), server->sin_port, strerror(errno));
+			printf("\n\033[31m[WIFSS] Error while connecting to \'%s:%" SCNu32 "\': %s.\033[0m\n\n", inet_ntoa(server->sin_addr), server->sin_port, strerror(errno));
 			printf("\nWould you like to retry now ? (YES / no)\n\n");
 
-			do
+			if(!prompt_yes_no(buffer, args, &nbArgs))
 			{
-				command_cursor();
-				prompt_keyboard(buff);
-
-				if(!strcmp(buff, "no") || !strcmp(buff, "n"))
-				{
-					return false;
-				}
-
-			} while(strcmp(buff, "yes") && strcmp(buff, "y"));
+				printf("\n");
+				return false;
+			}
 		}
 
 		else
@@ -82,11 +94,11 @@ bool start_client(struct sockaddr_in *server)
 			printf("\n\033[32m[WIFSS] Connected to \'%s:%hd\'.\033[0m\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
 			
 			uint8_t temp_id = -1;
-			strcpy(buff, "");
+			strcpy(buffer, "");
 
-			recv(sock, buff, BUFFER, false);
+			recv(sock, buffer, BUFFER, false);
 
-			sscanf(buff, "id: %" SCNu8, &temp_id);
+			sscanf(buffer, "id: %" SCNu8, &temp_id);
 			printf("\n\033[32m[WIFSS] Your id on the server is %" SCNu8 ".\033[0m\n\n", temp_id);
 
 			/* We save the ID of the client for the future */
@@ -137,7 +149,7 @@ void stop_client(void)
 
 void init_global_variables(void)
 {
-	strcpy(g_core_variables.server_addr, "");
+	strncpy(g_core_variables.server_addr, "", 16);
 	g_core_variables.server_sock = -1;
 	g_core_variables.server_port = -1;
 	g_core_variables.client_id   = -1;

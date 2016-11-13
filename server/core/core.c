@@ -3,12 +3,13 @@
 
 void start_server(void)
 {
-	system("clear");
+	clear_console();
+
 	printf("\n\033[32m[WIFSS] Starting Server...\033[0m\n\n");
 
 	init_global_variables();
 
-	int8_t listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int8_t listen_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(listen_socket == -1)
 	{
 		printf("\n\n\033[31m[WIFSS] Error during creation of an endpoint for listening socket: %s.\033[0m\n\n", strerror(errno));
@@ -19,7 +20,10 @@ void start_server(void)
 	server.sin_family      = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
 
-	uint8_t c;
+	char buffer[BUFFER];
+	char *args[BUFFER];
+	uint16_t nbArgs;
+
 	int8_t res;
 	uint32_t port;
 	do
@@ -27,9 +31,19 @@ void start_server(void)
 		do
 		{
 			printf("\n-> Listening Port: ");
-			scanf("%" SCNu32, &port);
+			prompt_keyboard(buffer);
+			free_args(args, &nbArgs);
+			parse_command(buffer, args, &nbArgs);
 
-			while((c = getchar()) && c != '\n');
+			if(nbArgs == 1)
+			{
+				port = strtoul(args[0], NULL, 10);
+			}
+
+			else
+			{
+				port = -1;
+			}
 
 		} while((port < 1024 && geteuid() != 0) || port > 65535);
 
@@ -42,22 +56,14 @@ void start_server(void)
 		res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
 		if(res == -1)
 		{
-			char buff[BUFFER];
 			printf("\n\n\033[31m[WIFSS] Error during creation of the listening socket: %s.\033[0m\n\n", strerror(errno));
 			printf("\nWould you like to retry on another port ? (YES / no)\n\n");
 
-			do
+			if(!prompt_yes_no(buffer, args, &nbArgs))
 			{
-				command_cursor();
-				prompt_keyboard(buff);
-
-				if(!strcmp(buff, "no") || !strcmp(buff, "n"))
-				{
-					printf("\n\n");
-					return;
-				}
-
-			} while(strcmp(buff, "yes") && strcmp(buff, "y"));
+				close_server();
+				exit(EXIT_FAILURE);
+			}
 		}
 
 	} while(res == -1);
@@ -65,7 +71,8 @@ void start_server(void)
 	if(listen(listen_socket, MAX_CLIENTS) == -1)
 	{
 		printf("\n\n\033[31m[WIFSS] Error during listening on the socket: %s.\033[0m\n\n", strerror(errno));
-		return;
+		close_server();
+		exit(EXIT_FAILURE);
 	}
 
 	printf("\n\n[WIFSS] Server opened, waiting for clients on port %" SCNu16 "...\033[0m\n\n", ntohs(server.sin_port));

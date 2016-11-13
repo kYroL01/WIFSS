@@ -20,9 +20,10 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
-#define BUFFER   1024
-#define FGETSBUFF 512
+#define BUFFER        1024
+#define COMMANDBUFFER 2048
 
 
 #endif

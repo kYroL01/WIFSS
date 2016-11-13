@@ -1,7 +1,7 @@
 # Horloge's Makefile for: WIFSS
 
 CC=gcc
-CFLAGS=-D _POSIX_C_SOURCE=200112L -std=c99 -O3 -pthread -Wall -Wextra -Wpedantic -Wshadow -Wno-missing-field-initializers -Wstrict-overflow
+CFLAGS=-D _XOPEN_SOURCE=200809L -std=c99 -O3 -pthread -Wall -Wextra -Wpedantic -Wshadow -Wno-missing-field-initializers -Wstrict-overflow
 LDFLAGS=-pthread
 EXEC=WClient WServer
 
