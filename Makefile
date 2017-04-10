@@ -45,8 +45,8 @@ sprotocols.o: server/protocols/*
 
 
 # Common string functions
-str.o: wifss/str/*
-	$(CC) -o $@ -c wifss/str/str.c $(CFLAGS)
+str.o: commons/str/*
+	$(CC) -o $@ -c commons/str/str.c $(CFLAGS)
 
 
 .SILENT:

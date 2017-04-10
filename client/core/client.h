@@ -2,8 +2,8 @@
 #define __CLIENT__
 
 
-#include "../../wifss/wifss.h"
-#include "../../wifss/str/str.h"
+#include "../../commons/commons.h"
+#include "../../commons/str/str.h"
 #include "../commands/commands.h"
 #include "../files/files.h"
 #include "../protocols/protocols.h"
