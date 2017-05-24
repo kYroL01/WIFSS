@@ -12,11 +12,11 @@
 #define FINISHED  "finished"
 
 /* CMD */
+#define WHO        "who"
 #define HELP       "help"
 #define EXIT       "exit"
 #define STOP       "stop"
-#define SEND       "send "
-#define WHO        "who"
+#define SEND       "send"
 #define CLEAR      "clear"
 #define UPLOAD     "upload"
 #define ASKLIST    "asklist"
@@ -26,7 +26,7 @@
 #define DISCONNECT "disconnect"
 
 /* ARG */
-#define ARGDOWNLOAD 2
+#define ARGDOWNLOAD   2
 #define ARGDISCONNECT 2
 
 

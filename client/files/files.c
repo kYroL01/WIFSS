@@ -3,7 +3,7 @@
 
 bool set_work_dir(void)
 {
-	g_core_variables.working_dir = calloc(strlen(getenv("HOME")) + strlen(PATHWORKINGDIR), sizeof(*(g_core_variables.working_dir)));
+	g_core_variables.working_dir = calloc(strlen(getenv("HOME")) + strlen(PATHWORKINGDIR), sizeof(*g_core_variables.working_dir));
 
 	if(g_core_variables.working_dir == NULL)
 	{
@@ -62,7 +62,7 @@ bool check_download_folder()
 
 			if(stat(buffer, &file_stat) == -1)
 			{
-				printf("\n\033[31m[WIFSS] Error: A problem occurred during reading information about one of your working directory content (\"%s\").\033[0m\n\n", buffer);
+				printf("\n\033[31m[WIFSS] Error: A problem occurred while reading information about one of your working directory content (\"%s\").\033[0m\n\n", buffer);
 				return false;
 			}
 
@@ -80,7 +80,7 @@ bool check_download_folder()
 	}
 
 	closedir(directory);
-	
+
 	if(count > MAXFILEDIR)
 	{
 		printf("\n\033[31m[WIFSS] Error: You've got more than %d files in: \"%s\" directory. Clean this up please.\033[0m\n\n", MAXFILEDIR, buffer);
@@ -102,7 +102,7 @@ void is_present(const char *command)
 	char fileName[sysconf(_PC_NAME_MAX)];
 	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)]; 
 
-	sscanf(command, "ispresent %[^\n]", fileName);
+	strncpy(fileName, getSecondArgsGroup(command), sysconf(_PC_NAME_MAX));
 
 	strcpy(destFile, g_core_variables.working_dir);
 	strcat(destFile, fileName);
@@ -126,7 +126,7 @@ void remove_file(const char *command)
 	char fileName[sysconf(_PC_NAME_MAX)];
 	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)]; 
 
-	sscanf(command, "remove %[^\n]", fileName);
+	strncpy(fileName, getSecondArgsGroup(command), sysconf(_PC_NAME_MAX));
 
 	strcpy(destFile, g_core_variables.working_dir);
 	strcat(destFile, fileName);
@@ -144,25 +144,24 @@ void remove_file(const char *command)
 
 void rename_file(const char *command)
 {
-	char fileName[sysconf(_PC_NAME_MAX)];
-	char newFileName[sysconf(_PC_NAME_MAX)];
 	char destFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
 	char newDestFile[strlen(g_core_variables.working_dir) + sysconf(_PC_NAME_MAX)];
 
-	sscanf(command, "rename %s %[^\n]", fileName, newFileName);
+	const char *const tempGrp2 = getSecondArgsGroup(command);
+	const char *const tempGrp3 = getThirdArgsGroup(command);
 
 	strcpy(destFile, g_core_variables.working_dir);
-	strcat(destFile, fileName);
+	strncat(destFile, tempGrp2, strlen(tempGrp2) - strlen(tempGrp3) - 1);
 	strcpy(newDestFile, g_core_variables.working_dir);
-	strcat(newDestFile, newFileName);
+	strncat(newDestFile, tempGrp3, sysconf(_PC_NAME_MAX));
 
 	if(rename(destFile, newDestFile) == -1)
 	{
-		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", fileName);
+		printf("\n\033[31m[WIFSS] Error: \"%s\" could not be renamed as well.\033[0m\n\n", destFile);
 	}
 	else
 	{
-		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n\n", fileName, newFileName);
+		printf("\n\033[32m[WIFSS] \"%s\" has been renamed as \"%s\".\033[0m\n\n", destFile, newDestFile);
 	}
 }
 
@@ -232,7 +231,7 @@ void ask_list(const char *command)
 	if(str_beginwith(buff, LIST))
 	{
 		char temp[BUFFER] = "";
-		sscanf(buff, "list: %[^\n]", temp);
+		strncat(temp, getSecondArgsGroup(buff), BUFFER);
 
 		printf("\n\n[WIFSS] File list of client asked:\n\t");
 

@@ -16,13 +16,13 @@ typedef enum
 	TAKEN
 } STATUS;
 
-
 typedef struct
 {
 	struct sockaddr_in addr;
 	int8_t id;
 	int8_t sock;
 	STATUS status;
+
 } client_t;
 
 
@@ -34,7 +34,8 @@ typedef struct
 	pthread_t command_thread;
 	pthread_t connections_thread;
 	pthread_t threads[MAX_CLIENTS];
-	client_t clients[MAX_CLIENTS];	
+	client_t clients[MAX_CLIENTS];
+
 } core_variables_t;
 
 core_variables_t g_core_variables;

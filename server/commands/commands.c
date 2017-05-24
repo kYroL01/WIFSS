@@ -33,8 +33,8 @@ void* command_handler(void *foo)
 		{
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
-			sscanf(buffer, "send %[^\n]", cpy);
-			sprintf(buffTemp, "[Server] says: \"%s\".", cpy);
+			strncat(cpy, getSecondArgsGroup(buffer), BUFFER);
+			snprintf(buffTemp, BUFFER, "[Server] says: \"%s\".", cpy);
 			broadcast(SID, buffTemp);
 		}
 
@@ -43,12 +43,12 @@ void* command_handler(void *foo)
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
 
-			int8_t idTemp = -1;
-			sscanf(buffer, "whisper %" SCNd8 " %[^\n]", &idTemp, cpy);
+			int8_t idTemp = getSecondArgsGroupAsInteger(buffer);
+			strncpy(cpy, getThirdArgsGroup(buffer), BUFFER);
 
 			if(idTemp >= 0 && g_core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
 			{
-				sprintf(buffTemp, "[Server] whispers to you: \"%s\".", cpy);
+				snprintf(buffTemp, BUFFER, "[Server] whispers to you: \"%s\".", cpy);
 				send(g_core_variables.clients[idTemp].sock, buffTemp, BUFFER, false);
 			}
 
@@ -84,20 +84,19 @@ void* command_handler(void *foo)
 				"disconnect <idClient> ['-1' for all]",
 				"exit",
 				"stop",
-				"clear"
+				"clear",
+				"\n"
 			};
 
 			for(uint8_t j = 0; helpMenu[j] != NULL; j++)
 			{
 				printf("\t%s\n", helpMenu[j]);
 			}
-
-			printf("\n");
 		}
 
 		else
 		{
-			printf("\nCommand unknown. Try \"?\" or \"help\" for further information.\n\n");
+			printf("\nUnknown command. Try \"help\" for further information.\n\n");
 		}
 	}
 
@@ -169,7 +168,7 @@ void* connections_handler(void *foo)
 		{
 			char buffer[BUFFER] = "";
 			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s:%" SCNu8 ")\n", inet_ntoa(client.sin_addr), (uint8_t)ntohs(client.sin_port));
-			sprintf(buffer, "%s", "Maximum capacity reached, no more slot available for you yet.");
+			snprintf(buffer, BUFFER, "%s", "Maximum capacity reached, no more slot available for you yet.");
 			send(sock, buffer, BUFFER, false);
 			close(sock);
 			command_cursor();
@@ -229,17 +228,17 @@ void* on_connection(void *data)
 
 	char buffer[BUFFER] = "";
 
-	sprintf(buffer, "[Client %" SCNd8 "] is connected.", client.id);
+	snprintf(buffer, BUFFER, "[Client %" SCNd8 "] is connected.", client.id);
 	broadcast(client.id, buffer);
 
-	strcpy(buffer, "");
-	sprintf(buffer, "id: %" SCNd8, client.id);
+	strncpy(buffer, "", BUFFER);
+	snprintf(buffer, BUFFER, "id: %" SCNd8, client.id);
 	send(client.sock, buffer, BUFFER, false);
 
 	ssize_t res;
 	while(client.sock > 0)
 	{
-		strcpy(buffer, "");
+		strncpy(buffer, "", BUFFER);
 
 		res = recv(client.sock, buffer, BUFFER, false);
 		if(res <= 0)
@@ -252,8 +251,8 @@ void* on_connection(void *data)
 
 	printf("\n\n[Client %" SCNd8 "] is disconnected.\n\n", client.id);
 
-	strcpy(buffer, "");
-	sprintf(buffer, "[Client %d] is disconnected.", client.id);
+	strncpy(buffer, "", BUFFER);
+	snprintf(buffer, BUFFER, "[Client %d] is disconnected.", client.id);
 	broadcast(client.id, buffer);
 
 	if(close(client.sock) == -1)
@@ -264,8 +263,8 @@ void* on_connection(void *data)
 	command_cursor();
 
 	g_core_variables.clients[client.id].status = FREE;
-	g_core_variables.clients[client.id].id = -1;
-	g_core_variables.clients[client.id].sock = -1;
+	g_core_variables.clients[client.id].id     = -1;
+	g_core_variables.clients[client.id].sock   = -1;
 
 	return NULL;
 }

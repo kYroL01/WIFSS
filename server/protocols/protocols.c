@@ -138,15 +138,15 @@ void download(const char *command, const uint8_t sender_id)
 
 void who(const int8_t sender)
 {
-	char buffer[BUFFER] = "Id(s) of other(s) client(s) currently connected: ";
+	char buffer[BUFFER] = "Id(s) of other client(s) currently connected: ";
 	char microBuff[8];
 
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{
 		if(g_core_variables.clients[i].status == TAKEN && i != sender)
 		{
-			strcpy(microBuff, "");
-			sprintf(microBuff, "\t%d", i);
+			strncpy(microBuff, "", 8);
+			snprintf(microBuff, 8, "\t%d", i);
 			strcat(buffer, microBuff);
 		}
 	}
@@ -210,11 +210,11 @@ void message(const char *command, const uint8_t sender_id)
 
 void whisper(const char *command, const uint8_t sender_id)
 {
-	char copy[BUFFER]    = "";
+	char copy[BUFFER]   = "";
 	char buffer[BUFFER] = "";
-	int8_t idTemp = -1;
 
-	sscanf(command, "sendp %" SCNd8 "%[^\n]", &idTemp, copy);
+	int8_t idTemp = getSecondArgsGroupAsInteger(command);
+	strncpy(copy, getThirdArgsGroup(command), BUFFER);
 
 	if(g_core_variables.clients[idTemp].status == TAKEN && sender_id != idTemp && idTemp >= 0 && idTemp < MAX_CLIENTS)
 	{
@@ -224,7 +224,7 @@ void whisper(const char *command, const uint8_t sender_id)
 	}
 	else
 	{
-		sprintf(buffer, "%s", "Error: This client is not connected or its identifier is invalid.");
+		sprintf(buffer, "%s", "Error: This client is not connected or its identifier is invalid. Take a look to \"help\".");
 		send(g_core_variables.clients[sender_id].sock, buffer, BUFFER, false);
 		printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n\n", sender_id, idTemp, copy);
 	}
@@ -261,7 +261,7 @@ void disconnect(const char *buffer)
 		}
 		else
 		{
-			printf("\n[WIFSS] This client is already offline. Can't disconnect him.\n\n");
+			printf("\n[WIFSS] This client is already offline. You can\'t disconnect him.\n\n");
 		}
 	}
 	else

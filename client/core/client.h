@@ -10,7 +10,6 @@
 
 #define PATHWORKINGDIR "/Downloads/WIFSS/"
 
-#define LOCAL     "local"
 #define LOCALHOST "localhost"
 #define ADDRLOCAL "127.0.0.1"
 
@@ -22,6 +21,7 @@ typedef struct
 	int16_t server_port;
 	int8_t client_id;
 	char *working_dir;
+
 } core_variables_t;
 
 core_variables_t g_core_variables;

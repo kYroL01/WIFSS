@@ -11,13 +11,13 @@ void* server_communication(void *param)
 
 	while(1)
 	{
-		strcpy(buffer, "");
+		strncpy(buffer, "", BUFFER);
 
 		result = recv(g_core_variables.server_sock, buffer, BUFFER, false);
 
 		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
-			printf("\n\n[sthread] [Server] is demanding the Client disconnection. Stopping now.");
+			printf("\n\n[sthread] Server is demanding this client disconnection. Stopping now.");
 			pthread_cancel(*(threads->cthread));
 			pthread_exit(NULL);
 		}
@@ -46,7 +46,7 @@ void* server_communication(void *param)
 				/* We received from server a non-null string, let's print it */
 				if(strcmp(buffer, ""))
 				{
-					printf("\n\n[sthread] \"%s\"\n\n", buffer);
+					printf("\n\n[sthread] %s\n\n", buffer);
 				}
 
 				else
@@ -106,7 +106,7 @@ void* client_communication(void *param)
 			send(g_core_variables.server_sock, buffer, BUFFER, false);
 		}
 
-		else if(command_validation((const char* const*)args, nbArgs, WHISPER, ARGWHISPER))
+		else if(str_beginwith(buffer, WHISPER))
 		{
 			send(g_core_variables.server_sock, buffer, BUFFER, false);
 		}
@@ -173,20 +173,19 @@ void* client_communication(void *param)
 				"logout",
 				"clear",
 				"download <idClient> <file>",
-				"checkfolder"
+				"checkfolder",
+				"\n"
 			};
 
 			for(uint8_t i = 0; helpMenu[i] != NULL; i++)
 			{
 				printf("\t%s\n", helpMenu[i]);
 			}
-
-			printf("\n");
 		}
 
 		else
 		{
-			printf("\nCommand unknown. Try \"help\" for further information.\n\n");
+			printf("\nUnknown command. Try \"help\" for further information.\n\n");
 		}
 	}
 }

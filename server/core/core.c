@@ -5,7 +5,7 @@ void start_server(void)
 {
 	clear_console();
 
-	printf("\n\033[32m[WIFSS] Starting Server...\033[0m\n\n");
+	printf("\n\033[32m[WIFSS] Starting Server...\033[0m\n");
 
 	init_global_variables();
 
@@ -120,8 +120,8 @@ void init_global_variables(void)
 
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{
-		g_core_variables.clients[i].id = -1;
-		g_core_variables.clients[i].sock = -1;
+		g_core_variables.clients[i].id     = -1;
+		g_core_variables.clients[i].sock   = -1;
 		g_core_variables.clients[i].status = FREE;
 	}
 }

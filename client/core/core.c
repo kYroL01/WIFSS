@@ -9,12 +9,7 @@ bool start_client(struct sockaddr_in *server)
 
 	init_global_variables();
 
-	if(!set_work_dir())
-	{
-		return false;
-	}
-
-	if(!check_download_folder())
+	if(!set_work_dir() || !check_download_folder())
 	{
 		return false;
 	}
@@ -32,15 +27,15 @@ bool start_client(struct sockaddr_in *server)
 
 	} while(nbArgs != 1);
 
-	if(!strcmp(args[0], LOCALHOST) || !strcmp(args[0], LOCAL))
+	if(!strcmp(args[0], LOCALHOST))
 	{
-		strcpy(address, "");
-		sprintf(address, "%s", ADDRLOCAL);
+		strncpy(address, "", BUFFER);
+		snprintf(address, BUFFER, "%s", ADDRLOCAL);
 	}
 
 
-	char portBuffer[BUFFER];
 	int32_t port;
+	char portBuffer[BUFFER];
 	do
 	{
 		printf("-> Server Port: ");
@@ -93,12 +88,11 @@ bool start_client(struct sockaddr_in *server)
 		{
 			printf("\n\033[32m[WIFSS] Connected to \'%s:%hd\'.\033[0m\n", inet_ntoa(server->sin_addr), ntohs(server->sin_port));
 			
-			uint8_t temp_id = -1;
-			strcpy(buffer, "");
+			strncpy(buffer, "", BUFFER);
 
 			recv(sock, buffer, BUFFER, false);
 
-			sscanf(buffer, "id: %" SCNu8, &temp_id);
+			uint8_t temp_id = getSecondArgsGroupAsInteger(buffer);
 			printf("\n\033[32m[WIFSS] Your id on the server is %" SCNu8 ".\033[0m\n\n", temp_id);
 
 			/* We save the ID of the client for the future */
@@ -130,11 +124,8 @@ void stop_client(void)
 		}
 	}
 
-	if(g_core_variables.working_dir != NULL)
-	{
-		free(g_core_variables.working_dir);
-		g_core_variables.working_dir = NULL;
-	}
+	free(g_core_variables.working_dir);
+	g_core_variables.working_dir = NULL;
 	
 	printf("[WIFSS] Client is shutting down for now.\n");
 

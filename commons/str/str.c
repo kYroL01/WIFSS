@@ -52,21 +52,30 @@ void free_args(char **args, uint16_t *const nbArgs)
 }
 
 
-void parse_command(const char *const buffer, char **const args, uint16_t *const nbArgs)
+void parse_command(char *const buffer, char **const args, uint16_t *const nbArgs)
 {
 	size_t size = 0;
 	char *ptr = NULL;
 
-	uint16_t i = 0;
 	const size_t length = strlen(buffer);
+
+	if(buffer[length - 1] == '\n')
+	{
+		buffer[length - 1] = '\0';
+	}
+
+	uint16_t i = 0;
 	while(i < length)
 	{
 		while(buffer[i] == ' ' || buffer[i] == '\t' || buffer[i] == '\0')
 		{
-			i++;
+			if(++i >= length)
+			{
+				break;
+			}
 		}
 
-		if(buffer[i] == '\n')
+		if(i >= length)
 		{
 			break;
 		}
@@ -74,11 +83,6 @@ void parse_command(const char *const buffer, char **const args, uint16_t *const 
 		ptr = strstr(buffer + i, " ");
 		size = strlen(buffer + i) - (ptr != NULL ? strlen(ptr) : 0);
 		args[*nbArgs] = strndup(buffer + i, size);
-
-		if(args[*nbArgs][size - 1] == '\n')
-		{
-			args[*nbArgs][size - 1] = '\0';
-		}
 
 		(*nbArgs)++;
 		i += size + 1;
@@ -126,12 +130,7 @@ bool prompt_yes_no(char *const buffer, char **const args, uint16_t *const nbArgs
 		free_args(args, nbArgs);
 		parse_command(buffer, args, nbArgs);
 
-		if(*nbArgs != 1)
-		{
-			continue;
-		}
-
-		else
+		if(*nbArgs == 1)
 		{
 			if(!strcmp(args[0], "no"))
 			{
@@ -147,4 +146,22 @@ bool prompt_yes_no(char *const buffer, char **const args, uint16_t *const nbArgs
 			}
 		}
 	}
+}
+
+
+const char* getSecondArgsGroup(const char *const buffer)
+{
+	return strstr(buffer, " ") + 1;
+}
+
+
+int8_t getSecondArgsGroupAsInteger(const char *const buffer)
+{
+	return strtoul(strstr(buffer, " ") + 1, NULL, 10);
+}
+
+
+const char* getThirdArgsGroup(const char *const buffer)
+{
+	return strstr(strstr(buffer, " ") + 1, " ") + 1;
 }
