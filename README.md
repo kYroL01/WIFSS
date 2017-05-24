@@ -1,17 +1,18 @@
 # WIFSS
-_WIFSS Is not a File Sharing System_  
+_WIFSS Is not a File Sharing System_
 
-## How to use it  
+## How to use it
 
 Compile the whole project with: `make`  
-... or just one side with: `make WClient` or `make WServer`  
+... or just one side with: `make WClient` or `make WServer`
 
-Run with:  
-` ./WClient`  and `./WServer`  
+Run with:
 
-## Commands  
+` ./WClient`  and `./WServer`
 
-### List of commands currently available for Client:  
+## Commands
+
+### List of commands currently available for Client
 
 `help`  
 `who`  
@@ -26,9 +27,9 @@ Run with:
 `logout`  
 `clear`  
 `download <idClient> <file>`  
-`checkfolder`  
+`checkfolder`
 
-### List of commands currently available for Server:  
+### List of commands currently available for Server
 
 `help`  
 `who`  
@@ -37,10 +38,10 @@ Run with:
 `disconnect <idClient> ['-1' = all]`  
 `exit`  
 `stop`  
-`clear`  
+`clear`
 
-### Additional content  
+### Additional notes
 
-1. You can try the system by connecting your client to your local server with `localhost` or `local` as address, once the server is running and listening.  
+1. You can try the system by connecting your client to a local server with `localhost` as address, once the server is running and listening.  
 
-2. No data are saved by server, just a bridge between clients.
+2. No data are saved by server, it's just a "bridge" between clients.
