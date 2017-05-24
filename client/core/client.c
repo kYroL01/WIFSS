@@ -7,10 +7,9 @@ int main(int argc, const char *argv[])
 	(void)argc;
 	(void)argv;
 
-	struct sockaddr_in server;
 	pthread_t sthread, cthread;
 
-	if(start_client(&server))
+	if(start_client())
 	{
 		THREADS threads;
 		threads.sthread = &sthread;
