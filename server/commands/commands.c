@@ -23,7 +23,7 @@ void* command_handler(void *foo)
 			continue;
 		}
 
-		if(command_validation((const char* const*)args, nbArgs, EXIT, 1) || command_validation((const char* const*)args, nbArgs, STOP, 1))
+		if(command_validation((const char* const*)args, nbArgs, EXIT, 1))
 		{
 			broadcast(SID, "[Server] is going to shutdown !");
 			pthread_exit(NULL);
@@ -83,7 +83,6 @@ void* command_handler(void *foo)
 				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",
 				"exit",
-				"stop",
 				"clear",
 				"\n"
 			};
@@ -106,12 +105,7 @@ void* command_handler(void *foo)
 
 void process_command(const char *command, const uint8_t sender_id)
 {
-	if(str_beginwith(command, DOWNLOAD))
-	{
-		download(command, sender_id);
-	}
-
-	else if(str_beginwith(command, WHO))
+	if(str_beginwith(command, WHO))
 	{
 		who(sender_id);
 	}
@@ -124,16 +118,6 @@ void process_command(const char *command, const uint8_t sender_id)
 	else if(str_beginwith(command, WHISPER))
 	{
 		whisper(command, sender_id);
-	}
-
-	else if(str_beginwith(command, ASKLIST))
-	{
-		ask_list(command, sender_id);
-	}
-
-	else if(str_beginwith(command, ISPRESENT))
-	{
-		is_present(command, sender_id);
 	}
 
 	else

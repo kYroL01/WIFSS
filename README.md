@@ -1,5 +1,4 @@
 # WIFSS
-_WIFSS Is not a File Sharing System_
 
 ## How to use it
 
@@ -18,16 +17,9 @@ Run with:
 `who`  
 `send <message>`  
 `whisper <idClient> <message>`  
-`list`  
-`rename <file> <newFileName>`  
-`remove <file>`  
-`ispresent <idClient> <file>`  
-`asklist <idClient>`  
 `exit`  
 `logout`  
 `clear`  
-`download <idClient> <file>`  
-`checkfolder`
 
 ### List of commands currently available for Server
 
@@ -37,7 +29,6 @@ Run with:
 `whisper <idClient> <message>`  
 `disconnect <idClient> ['-1' = all]`  
 `exit`  
-`stop`  
 `clear`
 
 ### Additional notes

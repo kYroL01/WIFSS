@@ -5,14 +5,9 @@ bool start_client(struct sockaddr_in *server)
 {
 	clear_console();
 
-	printf("\n\033[32m[WIFSS] Starting Client...\033[0m\n");
+	printf("\n\033[32m[WIFSS] Starting Client...\033[0m\n\n");
 
 	init_global_variables();
-
-	if(!set_work_dir() || !check_download_folder())
-	{
-		return false;
-	}
 
 	char address[BUFFER];
 	char *args[BUFFER];
@@ -123,9 +118,6 @@ void stop_client(void)
 			printf("\n\n[WIFSS] Socket successfully closed.\n\n");
 		}
 	}
-
-	free(g_core_variables.working_dir);
-	g_core_variables.working_dir = NULL;
 	
 	printf("[WIFSS] Client is shutting down for now.\n");
 
@@ -144,5 +136,4 @@ void init_global_variables(void)
 	g_core_variables.server_sock = -1;
 	g_core_variables.server_port = -1;
 	g_core_variables.client_id   = -1;
-	g_core_variables.working_dir = NULL;
 }

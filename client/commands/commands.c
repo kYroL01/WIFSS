@@ -5,7 +5,6 @@ void* server_communication(void *param)
 {
 	int16_t result;
 	char buffer[BUFFER];
-	bool newCursor = true;
 
 	THREADS *threads = (THREADS*)param;
 
@@ -24,45 +23,11 @@ void* server_communication(void *param)
 
 		else
 		{
-			if(str_beginwith(buffer, UPLOAD))
+			/* We received from server a non-null string, let's print it */
+			if(strcmp(buffer, ""))
 			{
-				upload(buffer);
-			}
-
-			else if(!strcmp(buffer, ASKLIST) && check_download_folder())
-			{
-				char temp[BUFFER] = "";
-				list_files(temp);
-				send(g_core_variables.server_sock, temp, BUFFER, false);
-			}
-
-			else if(str_beginwith(buffer, ISPRESENT) && check_download_folder())
-			{
-				is_present(buffer);
-			}
-
-			else
-			{
-				/* We received from server a non-null string, let's print it */
-				if(strcmp(buffer, ""))
-				{
-					printf("\n\n[sthread] %s\n\n", buffer);
-				}
-
-				else
-				{
-					newCursor = false;
-				}
-			}
-
-			if(newCursor)
-			{
+				printf("\n\n[sthread] %s\n\n", buffer);
 				command_cursor();
-			}
-
-			else
-			{
-				newCursor = true;
 			}
 		}
 	}
@@ -96,11 +61,6 @@ void* client_communication(void *param)
 			pthread_exit(NULL);
 		}
 
-		else if(command_validation((const char* const*)args, nbArgs, DOWNLOAD, ARGDOWNLOAD))
-		{
-			download(buffer);
-		}
-
 		else if(str_beginwith(buffer, SEND))
 		{
 			send(g_core_variables.server_sock, buffer, BUFFER, false);
@@ -109,31 +69,6 @@ void* client_communication(void *param)
 		else if(str_beginwith(buffer, WHISPER))
 		{
 			send(g_core_variables.server_sock, buffer, BUFFER, false);
-		}
-
-		else if(command_validation((const char* const*)args, nbArgs, ISPRESENT, ARGISPRESENT))
-		{
-			send(g_core_variables.server_sock, buffer, BUFFER, false);
-		}
-
-		else if(command_validation((const char* const*)args, nbArgs, ASKLIST, ARGASKLIST))
-		{
-			ask_list(buffer);
-		}
-
-		else if(command_validation((const char* const*)args, nbArgs, REMOVE, ARGREMOVE))
-		{
-			remove_file(buffer);
-		}
-
-		else if(command_validation((const char* const*)args, nbArgs, RENAME, ARGRENAME))
-		{
-			rename_file(buffer);
-		}
-
-		else if(command_validation((const char* const*)args, nbArgs, LIST, 1))
-		{
-			list_files(NULL);
 		}
 
 		else if(command_validation((const char* const*)args, nbArgs, WHO, 1))
@@ -147,15 +82,6 @@ void* client_communication(void *param)
 			clear_console();
 		}
 
-		else if(command_validation((const char* const*)args, nbArgs, CHECKFOLDER, 1))
-		{
-			if(!check_download_folder())
-			{
-				pthread_cancel(*(threads->sthread));
-				pthread_exit(NULL);
-			}
-		}
-
 		else if(command_validation((const char* const*)args, nbArgs, HELP, 1))
 		{
 			static const char *const helpMenu[32] =
@@ -164,16 +90,9 @@ void* client_communication(void *param)
 				"who",
 				"send <message>",
 				"whisper <idClient> <message>",
-				"list",
-				"rename <file> <newFileName>",
-				"remove <file>",
-				"ispresent <idClient> <file>",
-				"asklist <idClient>",
 				"exit",
 				"logout",
 				"clear",
-				"download <idClient> <file>",
-				"checkfolder",
 				"\n"
 			};
 

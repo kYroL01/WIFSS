@@ -11,7 +11,7 @@ all: $(EXEC)
 
 
 # Client
-WClient: ccommands.o ccore.o cclient.o cfiles.o cprotocols.o
+WClient: ccommands.o ccore.o cclient.o
 	$(MAKE) str.o
 	$(CC) -o $@ $^ str.o $(LDFLAGS)
 	$(MAKE) clean
@@ -22,10 +22,6 @@ ccore.o: client/core/*
 	$(CC) -o $@ -c client/core/core.c $(CFLAGS)
 cclient.o: client/core/*
 	$(CC) -o $@ -c client/core/client.c $(CFLAGS)
-cfiles.o: client/files/*
-	$(CC) -o $@ -c client/files/files.c $(CFLAGS)
-cprotocols.o: client/protocols/*
-	$(CC) -o $@ -c client/protocols/protocols.c $(CFLAGS)
 
 
 # Server

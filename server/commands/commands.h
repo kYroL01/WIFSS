@@ -4,29 +4,20 @@
 
 #include "../core/server.h"
 
-/* ACK */
 #define OK        "ok"
 #define FAIL      "fail"
 #define ENDT      "ENDT"
 #define PRESENT   "present"
 #define FINISHED  "finished"
 
-/* CMD */
 #define WHO        "who"
 #define HELP       "help"
 #define EXIT       "exit"
-#define STOP       "stop"
 #define SEND       "send"
 #define CLEAR      "clear"
-#define UPLOAD     "upload"
-#define ASKLIST    "asklist"
 #define WHISPER    "whisper"
-#define DOWNLOAD   "download"
-#define ISPRESENT  "ispresent"
 #define DISCONNECT "disconnect"
 
-/* ARG */
-#define ARGDOWNLOAD   2
 #define ARGDISCONNECT 2
 
 
