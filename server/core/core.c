@@ -22,7 +22,7 @@ void start_server(void)
 
 	char buffer[BUFFER];
 	char *args[BUFFER];
-	uint16_t nbArgs;
+	int16_t nbArgs = -1;
 
 	int8_t res;
 	uint32_t port;

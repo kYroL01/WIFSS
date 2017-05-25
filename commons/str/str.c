@@ -40,9 +40,9 @@ void prompt_keyboard(char *const buffer)
 }
 
 
-void free_args(char **args, uint16_t *const nbArgs)
+void free_args(char **args, int16_t *const nbArgs)
 {
-	for(uint16_t i = 0; i < *nbArgs; i++)
+	for(int16_t i = 0; i < *nbArgs; i++)
 	{
 		free(args[i]);
 		args[i] = NULL;
@@ -52,7 +52,7 @@ void free_args(char **args, uint16_t *const nbArgs)
 }
 
 
-void parse_command(char *const buffer, char **const args, uint16_t *const nbArgs)
+void parse_command(char *const buffer, char **const args, int16_t *const nbArgs)
 {
 	size_t size = 0;
 	char *ptr = NULL;
@@ -90,7 +90,7 @@ void parse_command(char *const buffer, char **const args, uint16_t *const nbArgs
 }
 
 
-bool command_validation(const char *const *const args, const uint16_t nbArgs, const char *const command, const uint8_t nbCommandArgs)
+bool command_validation(const char *const *const args, const int16_t nbArgs, const char *const command, const uint8_t nbCommandArgs)
 {
 	if(strcmp(args[0], command) || nbArgs != nbCommandArgs)
 	{
@@ -121,7 +121,7 @@ bool str_beginwith(const char *w, const char *s)
 }
 
 
-bool prompt_yes_no(char *const buffer, char **const args, uint16_t *const nbArgs)
+bool prompt_yes_no(char *const buffer, char **const args, int16_t *const nbArgs)
 {
 	while(1)
 	{

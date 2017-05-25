@@ -8,7 +8,7 @@ void* command_handler(void *foo)
 
 	char buffer[BUFFER];
 	char *args[BUFFER];
-	uint16_t nbArgs;
+	int16_t nbArgs = -1;
 
 	while(1)
 	{

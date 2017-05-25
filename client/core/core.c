@@ -11,7 +11,7 @@ bool start_client(void)
 
 	char address[BUFFER];
 	char *args[BUFFER];
-	uint16_t nbArgs;
+	int16_t nbArgs = -1;
 
 	do
 	{

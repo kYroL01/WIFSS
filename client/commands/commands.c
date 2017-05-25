@@ -40,7 +40,7 @@ void* client_communication(void *param)
 
 	char buffer[BUFFER];
 	char *args[BUFFER];
-	uint16_t nbArgs;
+	int16_t nbArgs = -1;
 
 	while(1)
 	{
