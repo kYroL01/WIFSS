@@ -54,26 +54,83 @@ bool start_client(void)
 	int16_t status = getaddrinfo(address, args[0], &hints, &servinfo);
 	if(status != 0)
 	{
-	    fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while trying to get some information about your host: %s.\n\033[0m\n\n", gai_strerror(status));
+	    fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while trying to get some information about your host: %s.\033[0m\n\n", gai_strerror(status));
 	    exit(1);
 	}
 
-	int16_t sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if(sock == -1)
-	{
-		printf("\n\033[31m[WIFSS] Error while creating an endpoint for communication with server: %s.\033[0m\n\n", strerror(errno));
-		return false;
-	}
-
 	char buffer[BUFFER];
-	int16_t result = -1;
+
+	// Some stuff to set a timeout on `connect`
+	int16_t sock     = -1;
+	int8_t error     = 0;
+	socklen_t lenght = sizeof(error);
+	int16_t nbFds    = -1;
+	fd_set readfds, writefds;
 	do
 	{
 		for(struct addrinfo *tmp = servinfo; tmp != NULL; tmp = tmp->ai_next)
 		{
-			result = connect(sock, tmp->ai_addr, sizeof(*tmp->ai_addr));
-			if(result != -1)
+			/* Only for previous iterations */
+			if(sock != -1 && close(sock) == -1)
 			{
+				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while closing a socket: %s.\033[0m\n\n", strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+			/* ____________________________ */
+
+			sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+			if(sock == -1)
+			{
+				printf("\n\033[31m[WIFSS] Error while creating an endpoint for communication with server: %s.\033[0m\n\n", strerror(errno));
+				return false;
+			}
+
+			// Before the connection procedure, we'll set the socket as NON-BLOCKING
+			fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, false) | O_NONBLOCK);
+
+			// Let's launch the connection procedure
+			connect(sock, tmp->ai_addr, sizeof(*tmp->ai_addr));
+			if(errno != EINPROGRESS)
+			{
+				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while running the connection procedure to: ");
+				printEndpoint(tmp);
+				printf(" (%s).\033[0m\n\n", strerror(errno));
+				continue;
+			}
+
+			// Let's now set a watch dog of 3 seconds on it
+			FD_ZERO(&readfds);
+			FD_ZERO(&writefds);
+			FD_SET(sock, &readfds);
+			nbFds = select(sock + 1, &readfds, &writefds, NULL, &(struct timeval){3, 0});
+			if(nbFds == 0)
+			{
+				// The timeout has been elapsed...
+				printf("\n\033[31m[WIFSS] Error while connecting to ");
+				printEndpoint(tmp);
+				printf(": timeout reached.\033[0m\n");
+				continue;
+			}
+
+			else if(nbFds == -1)
+			{
+				// Again ? An error occurred...
+				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while waiting for the connection procedure ending: %s.\033[0m\n\n", strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+
+			// Two cases: The connection has been established OR a f*cking new error occurred (before the timeout !)...
+			if(getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &lenght) != 0)
+			{
+				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while retrieving some information about the socket: %s.\033[0m\n\n", gai_strerror(status));
+				exit(EXIT_FAILURE);
+			}
+
+			if(error == 0)
+			{
+				// For the future, let's set again the socket as BLOCKING
+				fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, false) ^ O_NONBLOCK);
+
 				printf("\n\033[32m[WIFSS] Connected to ");
 				printEndpoint(tmp);
 				printf(".\033[0m\n");
@@ -97,17 +154,20 @@ bool start_client(void)
 			}
 		}
 
-		if(result != -1)
+		if(g_core_variables.client_id != -1)
 		{
 			// Yeah... We've to `break` the loop a second time 
 			break;
 		}
 
-		printf("\nWould you like to retry now ? (YES / no)\n\n");
-		if(!prompt_yes_no(buffer, args, &nbArgs))
+		else
 		{
-			printf("\n");
-			return false;
+			printf("\nWould you like to retry now ? (YES / no)\n\n");
+			if(!prompt_yes_no(buffer, args, &nbArgs))
+			{
+				printf("\n");
+				return false;
+			}
 		}
 
 	} while(true);
