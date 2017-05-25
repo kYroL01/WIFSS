@@ -16,6 +16,13 @@ void start_server(void)
 		exit(EXIT_FAILURE);
 	}
 
+	socklen_t yes = 1;
+	if(setsockopt(listen_socket, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1)
+	{
+		printf("\n\n\033[31m[WIFSS] Error while authorizing the socket to reuse a busy port: %s.\033[0m\n\n", strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+
 	struct sockaddr_in server;
 	server.sin_family      = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
