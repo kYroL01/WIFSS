@@ -25,5 +25,5 @@ void printEndpoint(const struct addrinfo *const p)
 		exit(EXIT_FAILURE);
 	}
 
-	printf("\'%s:%d\'", ipstr, port);
+	printf("\'%s [%d]\'", ipstr, port);
 }
