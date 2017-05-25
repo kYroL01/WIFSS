@@ -31,10 +31,10 @@ void who(const int8_t sender)
 
 void message(const char *command, const uint8_t sender_id)
 {
-	char copy[BUFFER]    = "";
+	char copy[BUFFER]   = "";
 	char buffer[BUFFER] = "";
 
-	sscanf(command, "send %[^\n]", buffer);
+	strncpy(buffer, getSecondArgsGroup(command), BUFFER);
 	sprintf(copy, "[Client %d] : \"%s\".", sender_id, buffer);
 	broadcast(sender_id, copy);
 	printf("\n\n[Client %d] says: \"%s\".\n\n", sender_id, buffer);
@@ -78,8 +78,7 @@ void broadcast(const uint8_t sender, const char *msg)
 
 void disconnect(const char *buffer)
 {
-	int8_t idTemp = -2;
-	sscanf(buffer, "disconnect %" SCNd8, &idTemp);
+	int8_t idTemp = getSecondArgsGroupAsInteger(buffer);
 	if(idTemp == -1)
 	{
 		close_all_connections(); 

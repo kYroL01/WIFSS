@@ -14,8 +14,6 @@
 #define WHISPER     "whisper"
 #define DISCONNECT  "disconnect"
 
-#define ARGWHISPER   3
-
 
 typedef struct
 {

@@ -47,9 +47,9 @@ bool start_client(void)
 
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof hints);
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family   = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
+	hints.ai_flags    = AI_PASSIVE;
 
 	int16_t status = getaddrinfo(address, args[0], &hints, &servinfo);
 	if(status != 0)
@@ -71,10 +71,12 @@ bool start_client(void)
 	{
 		for(struct addrinfo *tmp = servinfo; tmp != NULL; tmp = tmp->ai_next)
 		{
-			result = connect(sock, (struct sockaddr*)tmp->ai_addr, sizeof(*tmp->ai_addr));
+			result = connect(sock, tmp->ai_addr, sizeof(*tmp->ai_addr));
 			if(result != -1)
 			{
-				printf("\n\033[32m[WIFSS] Connected to \'%s:%d\'.\033[0m\n", address, port);
+				printf("\n\033[32m[WIFSS] Connected to ");
+				printEndpoint(tmp);
+				printf(".\033[0m\n");
 
 				strncpy(buffer, "", BUFFER);
 				recv(sock, buffer, BUFFER, false);
@@ -86,6 +88,13 @@ bool start_client(void)
 
 				break;
 			}
+
+			else
+			{
+				printf("\n\033[31m[WIFSS] Error while connecting to ");
+				printEndpoint(tmp);
+				printf(": %s.\033[0m\n", strerror(errno));
+			}
 		}
 
 		if(result != -1)
@@ -94,17 +103,14 @@ bool start_client(void)
 			break;
 		}
 
-		printf("\n\033[31m[WIFSS] Error while connecting to \'%s:%d\': %s.\033[0m\n\n", address, port, strerror(errno));
 		printf("\nWould you like to retry now ? (YES / no)\n\n");
-
 		if(!prompt_yes_no(buffer, args, &nbArgs))
 		{
 			printf("\n");
 			return false;
 		}
 
-	} while(result == -1);
-
+	} while(true);
 
 	// We free here the previous linked list
 	freeaddrinfo(servinfo);

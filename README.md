@@ -1,4 +1,5 @@
 # WIFSS
+_WIFSS Is a F*cking Simple Service_
 
 ## How to use it
 
@@ -33,6 +34,6 @@ Run with:
 
 ### Additional notes
 
-1. You can try the system by connecting your client to a local server with `localhost` as address, once the server is running and listening.  
+1. The client now relies on `getAddrInfo()` to retrieve some additional information about the address you wanna connect to. So you may use `localhost` as host address to test this project in local, once the server is running and listening. 
 
 2. No data are saved by server, it's just a "bridge" between clients.

@@ -12,8 +12,8 @@ all: $(EXEC)
 
 # Client
 WClient: ccommands.o ccore.o cclient.o
-	$(MAKE) str.o
-	$(CC) -o $@ $^ str.o $(LDFLAGS)
+	$(MAKE) str.o ip.o
+	$(CC) -o $@ $^ str.o ip.o $(LDFLAGS)
 	$(MAKE) clean
 
 ccommands.o: client/commands/*
@@ -26,8 +26,8 @@ cclient.o: client/core/*
 
 # Server
 WServer: scommands.o score.o sserver.o sprotocols.o
-	$(MAKE) str.o
-	$(CC) -o $@ $^ str.o $(LDFLAGS)
+	$(MAKE) str.o ip.o
+	$(CC) -o $@ $^ str.o ip.o $(LDFLAGS)
 	$(MAKE) clean
 
 scommands.o: server/commands/*
@@ -43,6 +43,10 @@ sprotocols.o: server/protocols/*
 # Common string functions
 str.o: commons/str/*
 	$(CC) -o $@ -c commons/str/str.c $(CFLAGS)
+
+# Common IP functions
+ip.o: commons/ip/*
+	$(CC) -o $@ -c commons/ip/ip.c $(CFLAGS)
 
 
 .SILENT:

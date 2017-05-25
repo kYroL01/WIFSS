@@ -75,7 +75,7 @@ void start_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	printf("\n\n[WIFSS] Server opened, waiting for clients on port %" SCNu16 "...\033[0m\n\n", ntohs(server.sin_port));
+	printf("\n\n[WIFSS] Server opened, waiting for clients on port %d...\033[0m\n\n", ntohs(server.sin_port));
 }
 
 

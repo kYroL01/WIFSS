@@ -144,14 +144,23 @@ void* connections_handler(void *foo)
 		sock = accept(g_core_variables.server_sock, (struct sockaddr*)&client, &asize);
 		if(sock == -1)
 		{
-			printf("\033[31m[WIFSS] Error during a tentative of accepting connection: %s.\033[0m\n\n", strerror(errno));
+			printf("\033[31m[WIFSS] Error during a connection acceptation: %s.\033[0m\n\n", strerror(errno));
 			continue;
+		}
+
+		char host[1024]  = "";
+		char service[32] = "";
+
+		if(getnameinfo((struct sockaddr*)&client, sizeof(client), host, sizeof(host), service, sizeof(service), 0) != 0)
+		{
+			printf("\033[31m[WIFSS] An error occurred while retrieving some information about : %s.\033[0m\n\n", strerror(errno));
+			exit(EXIT_FAILURE);
 		}
 
 		if(count + 1 >= MAX_CLIENTS)
 		{
 			char buffer[BUFFER] = "";
-			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s:%" SCNu8 ")\n", inet_ntoa(client.sin_addr), (uint8_t)ntohs(client.sin_port));
+			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s [%s])\n", host, service);
 			snprintf(buffer, BUFFER, "%s", "Maximum capacity reached, no more slot available for you yet.");
 			send(sock, buffer, BUFFER, false);
 			close(sock);
@@ -169,8 +178,8 @@ void* connections_handler(void *foo)
 				break;
 			}
 		}
-		
-		printf("\n\n[WIFSS] Connection received \'%s:%" SCNu16 "\' -> ID given: %" SCNu8 ".\n", inet_ntoa(client.sin_addr), ntohs(client.sin_port), current_id);
+
+		printf("\n\n[WIFSS] Connection received \'%s [%s]\' -> ID given: %d.\n", host, service, current_id);
 
 		client_t new_client;
 		new_client.id     = current_id;
@@ -199,7 +208,7 @@ void* connections_handler(void *foo)
 			}
 		}
 
-		printf("[WIFSS] There is %" SCNu8 " client(s) connected.\n\n", count);
+		printf("[WIFSS] There is %d client(s) connected.\n\n", count);
 
 		command_cursor();
 	}
@@ -212,11 +221,11 @@ void* on_connection(void *data)
 
 	char buffer[BUFFER] = "";
 
-	snprintf(buffer, BUFFER, "[Client %" SCNd8 "] is connected.", client.id);
+	snprintf(buffer, BUFFER, "[Client %d] is connected.", client.id);
 	broadcast(client.id, buffer);
 
 	strncpy(buffer, "", BUFFER);
-	snprintf(buffer, BUFFER, "id: %" SCNd8, client.id);
+	snprintf(buffer, BUFFER, "id: %d", client.id);
 	send(client.sock, buffer, BUFFER, false);
 
 	ssize_t res;
@@ -233,7 +242,7 @@ void* on_connection(void *data)
 		process_command(buffer, client.id);
 	}
 
-	printf("\n\n[Client %" SCNd8 "] is disconnected.\n\n", client.id);
+	printf("\n\n[Client %d] is disconnected.\n\n", client.id);
 
 	strncpy(buffer, "", BUFFER);
 	snprintf(buffer, BUFFER, "[Client %d] is disconnected.", client.id);
@@ -241,7 +250,7 @@ void* on_connection(void *data)
 
 	if(close(client.sock) == -1)
 	{
-		printf("\033[31m[WIFSS] Error while closing the socket of client %" SCNd8 ": %s.\033[0m\n\n", client.id, strerror(errno));
+		printf("\033[31m[WIFSS] Error while closing the socket of client %d: %s.\033[0m\n\n", client.id, strerror(errno));
 	}
 	
 	command_cursor();
