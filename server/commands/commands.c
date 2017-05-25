@@ -58,7 +58,7 @@ void* command_handler(void *foo)
 			}
 		}
 
-		else if(command_validation((const char* const*)args, nbArgs, DISCONNECT, ARGDISCONNECT))
+		else if(command_validation((const char* const*)args, nbArgs, DISCONNECT, 2))
 		{
 			disconnect(buffer);
 		}

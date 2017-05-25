@@ -14,6 +14,7 @@ typedef enum
 {
 	FREE,
 	TAKEN
+
 } STATUS;
 
 typedef struct
