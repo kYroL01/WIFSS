@@ -8,14 +8,14 @@ void printEndpoint(const struct addrinfo *const p)
 
 	if(p->ai_family == AF_INET)
 	{
-	    addr = &(((struct sockaddr_in*)p->ai_addr)->sin_addr);
-	    port = ((struct sockaddr_in*)p->ai_addr)->sin_port;
+		addr = &(((struct sockaddr_in*)p->ai_addr)->sin_addr);
+		port = ((struct sockaddr_in*)p->ai_addr)->sin_port;
 	}
 
 	else
 	{
-	    addr = &(((struct sockaddr_in6*)p->ai_addr)->sin6_addr);
-	    port = ((struct sockaddr_in6*)p->ai_addr)->sin6_port;
+		addr = &(((struct sockaddr_in6*)p->ai_addr)->sin6_addr);
+		port = ((struct sockaddr_in6*)p->ai_addr)->sin6_port;
 	}
 
 	char ipstr[INET6_ADDRSTRLEN];
@@ -25,5 +25,5 @@ void printEndpoint(const struct addrinfo *const p)
 		exit(EXIT_FAILURE);
 	}
 
-	printf("\'%s [%d]\'", ipstr, port);
+	printf("\'%s [%d]\'", ipstr, ntohs(port));
 }
