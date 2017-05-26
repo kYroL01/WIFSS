@@ -78,7 +78,7 @@ bool start_client(void)
 			}
 			/* ____________________________ */
 
-			sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+			sock = socket(tmp->ai_family, tmp->ai_socktype, tmp->ai_protocol);
 			if(sock == -1)
 			{
 				printf("\n\033[31m[WIFSS] Error while creating an endpoint for communication with server: %s.\033[0m\n\n", strerror(errno));
@@ -89,7 +89,7 @@ bool start_client(void)
 			fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, false) | O_NONBLOCK);
 
 			// Let's launch the connection procedure
-			connect(sock, tmp->ai_addr, sizeof(*tmp->ai_addr));
+			connect(sock, tmp->ai_addr, tmp->ai_addrlen);
 			if(errno != EINPROGRESS)
 			{
 				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while running the connection procedure to: ");
@@ -175,9 +175,8 @@ bool start_client(void)
 	// We free here the previous linked list
 	freeaddrinfo(servinfo);
 
-	/* We save the server's port, socket and address values for the future */
+	/* We save the socket value for the future */
 	g_core_variables.server_sock = sock;
-	g_core_variables.server_port = port;
 
 	return true;
 }
@@ -211,6 +210,5 @@ void stop_client(void)
 void init_global_variables(void)
 {
 	g_core_variables.server_sock = -1;
-	g_core_variables.server_port = -1;
 	g_core_variables.client_id   = -1;
 }

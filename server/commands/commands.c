@@ -134,8 +134,8 @@ void* connections_handler(void *foo)
 	/* In order to deal with '-Wextra' "Unused variable" warning */
 	(void)foo;
 
-	struct sockaddr_in client;
-	uint32_t asize = sizeof(struct sockaddr_in);
+	struct sockaddr_in6 client;
+	uint32_t asize = sizeof(client);
 
 	int8_t sock;
 	uint8_t count = 0;

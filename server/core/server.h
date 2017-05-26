@@ -19,7 +19,7 @@ typedef enum
 
 typedef struct
 {
-	struct sockaddr_in addr;
+	struct sockaddr_in6 addr;
 	int8_t id;
 	int8_t sock;
 	STATUS status;

@@ -9,7 +9,7 @@ void start_server(void)
 
 	init_global_variables();
 
-	int8_t listen_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int8_t listen_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if(listen_socket == -1)
 	{
 		printf("\n\n\033[31m[WIFSS] Error during creation of an endpoint for listening socket: %s.\033[0m\n\n", strerror(errno));
@@ -23,9 +23,9 @@ void start_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	struct sockaddr_in server;
-	server.sin_family      = AF_INET;
-	server.sin_addr.s_addr = INADDR_ANY;
+	struct sockaddr_in6 server;
+	server.sin6_family = AF_INET6;
+	server.sin6_addr   = in6addr_any;
 
 	char buffer[BUFFER];
 	char *args[BUFFER];
@@ -54,10 +54,9 @@ void start_server(void)
 
 		} while((port < 1024 && geteuid() != 0) || port > 65535);
 
-		server.sin_port = htons(port);
+		server.sin6_port = htons(port);
 
-		/* Let's save these values to the global variables structure */
-		g_core_variables.server_port = port;
+		/* Let's save this value in the global variables structure */
 		g_core_variables.server_sock = listen_socket;
 
 		res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
@@ -82,7 +81,7 @@ void start_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	printf("\n\n[WIFSS] Server opened, waiting for clients on port %d...\033[0m\n\n", ntohs(server.sin_port));
+	printf("\n\n[WIFSS] Server opened, waiting for clients on port %d...\033[0m\n\n", ntohs(server.sin6_port));
 }
 
 

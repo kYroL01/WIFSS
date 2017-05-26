@@ -11,7 +11,6 @@
 typedef struct
 {
 	int16_t server_sock;
-	int16_t server_port;
 	int8_t client_id;
 
 } core_variables_t;
