@@ -8,20 +8,11 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdint.h>
 #include <errno.h>
-#include <inttypes.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <ctype.h>
 #include <pthread.h>
-#include <signal.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #include <sys/select.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
 #define BUFFER        1024
