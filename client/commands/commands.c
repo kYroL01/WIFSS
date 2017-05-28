@@ -55,7 +55,7 @@ void* client_communication(void *param)
 			continue;
 		}
 
-		if(command_validation((const char* const*)args, nbArgs, EXIT, 1) || command_validation((const char* const*)args, nbArgs, LOGOUT, 1))
+		if(command_validation((const char* const*)args, nbArgs, EXIT, 1))
 		{
 			pthread_cancel(*(threads->sthread));
 			pthread_exit(NULL);
@@ -91,9 +91,7 @@ void* client_communication(void *param)
 				"send <message>",
 				"whisper <idClient> <message>",
 				"exit",
-				"logout",
-				"clear",
-				"\n"
+				"clear"
 			};
 
 			for(uint8_t i = 0; helpMenu[i] != NULL; i++)

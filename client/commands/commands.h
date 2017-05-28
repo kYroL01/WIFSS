@@ -8,7 +8,6 @@
 #define EXIT        "exit"
 #define SEND        "send"
 #define CLEAR       "clear"
-#define LOGOUT      "logout"
 #define REMOVE      "remove"
 #define RENAME      "rename"
 #define WHISPER     "whisper"

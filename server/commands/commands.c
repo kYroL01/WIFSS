@@ -83,8 +83,7 @@ void* command_handler(void *foo)
 				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",
 				"exit",
-				"clear",
-				"\n"
+				"clear"
 			};
 
 			for(uint8_t j = 0; helpMenu[j] != NULL; j++)

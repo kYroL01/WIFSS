@@ -19,8 +19,7 @@ Run with:
 `send <message>`  
 `whisper <idClient> <message>`  
 `exit`  
-`logout`  
-`clear`  
+`clear`
 
 ### List of commands currently available for the server
 
