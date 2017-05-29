@@ -12,6 +12,8 @@ typedef struct
 {
 	int16_t server_sock;
 	int8_t client_id;
+	SSL *ssl;
+	SSL_CTX *ctx;
 
 } core_variables_t;
 

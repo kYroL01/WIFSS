@@ -8,11 +8,11 @@ void* server_communication(void *param)
 
 	THREADS *threads = (THREADS*)param;
 
-	while(1)
+	while(true)
 	{
 		strncpy(buffer, "", BUFFER);
 
-		result = recv(g_core_variables.server_sock, buffer, BUFFER, false);
+		result = SSL_read(g_core_variables.ssl, buffer, BUFFER);
 
 		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
@@ -42,7 +42,7 @@ void* client_communication(void *param)
 	char *args[BUFFER];
 	int16_t nbArgs = -1;
 
-	while(1)
+	while(true)
 	{
 		command_cursor();
 		prompt_keyboard(buffer);
@@ -63,18 +63,18 @@ void* client_communication(void *param)
 
 		else if(str_beginwith(buffer, SEND))
 		{
-			send(g_core_variables.server_sock, buffer, BUFFER, false);
+			SSL_write(g_core_variables.ssl, buffer, BUFFER);
 		}
 
 		else if(str_beginwith(buffer, WHISPER))
 		{
-			send(g_core_variables.server_sock, buffer, BUFFER, false);
+			SSL_write(g_core_variables.ssl, buffer, BUFFER);
 		}
 
 		else if(command_validation((const char* const*)args, nbArgs, WHO, 1))
 		{
 			char temp[BUFFER] = WHO;
-			send(g_core_variables.server_sock, temp, BUFFER, false);
+			SSL_write(g_core_variables.ssl, temp, BUFFER);
 		}
 
 		else if(command_validation((const char* const*)args, nbArgs, CLEAR, 1))
@@ -91,7 +91,8 @@ void* client_communication(void *param)
 				"send <message>",
 				"whisper <idClient> <message>",
 				"exit",
-				"clear"
+				"clear",
+				""
 			};
 
 			for(uint8_t i = 0; helpMenu[i] != NULL; i++)

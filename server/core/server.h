@@ -23,6 +23,7 @@ typedef struct
 	int8_t id;
 	int8_t sock;
 	STATUS status;
+	SSL *ssl;
 
 } client_t;
 
@@ -36,6 +37,7 @@ typedef struct
 	pthread_t connections_thread;
 	pthread_t threads[MAX_CLIENTS];
 	client_t clients[MAX_CLIENTS];
+	SSL_CTX *ctx;
 
 } core_variables_t;
 

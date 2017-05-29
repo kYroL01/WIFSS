@@ -10,7 +10,7 @@ void* command_handler(void *foo)
 	char *args[BUFFER];
 	int16_t nbArgs = -1;
 
-	while(1)
+	while(true)
 	{
 		command_cursor();
 		prompt_keyboard(buffer);
@@ -49,7 +49,7 @@ void* command_handler(void *foo)
 			if(idTemp >= 0 && g_core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
 			{
 				snprintf(buffTemp, BUFFER, "[Server] whispers to you: \"%s\".", cpy);
-				send(g_core_variables.clients[idTemp].sock, buffTemp, BUFFER, false);
+				SSL_write(g_core_variables.clients[idTemp].ssl, buffTemp, BUFFER);
 			}
 
 			else
@@ -83,7 +83,8 @@ void* command_handler(void *foo)
 				"whisper <idClient> <message>",
 				"disconnect <idClient> ['-1' for all]",
 				"exit",
-				"clear"
+				"clear",
+				""
 			};
 
 			for(uint8_t j = 0; helpMenu[j] != NULL; j++)
@@ -138,7 +139,7 @@ void* connections_handler(void *foo)
 
 	int8_t sock;
 	uint8_t count = 0;
-	while(1)
+	while(true)
 	{
 		sock = accept(g_core_variables.server_sock, (struct sockaddr*)&client, &asize);
 		if(sock == -1)
@@ -158,10 +159,20 @@ void* connections_handler(void *foo)
 
 		if(count + 1 >= MAX_CLIENTS)
 		{
-			char buffer[BUFFER] = "";
-			printf("\n\n[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s [%s])\n", host, service);
-			snprintf(buffer, BUFFER, "%s", "Maximum capacity reached, no more slot available for you yet.");
-			send(sock, buffer, BUFFER, false);
+			printf("\n\033[35m[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s [%s])\033[0m\n", host, service);
+			close(sock);
+			command_cursor();
+			continue;
+		}
+
+		// Enables SSL !
+		SSL *ssl = SSL_new(g_core_variables.ctx);
+		SSL_set_fd(ssl, sock);
+
+		if(SSL_accept(ssl) <= 0)
+		{
+			ERR_print_errors_fp(stderr);
+			printf("\n\n\033[35m[WIFSS] Can\'t accept the SSL connection with the client \'%s [%s]\'\033[0m\n\n", host, service);
 			close(sock);
 			command_cursor();
 			continue;
@@ -185,6 +196,7 @@ void* connections_handler(void *foo)
 		new_client.addr   = client;
 		new_client.sock   = sock;
 		new_client.status = TAKEN;
+		new_client.ssl    = ssl;
 
 		g_core_variables.clients[current_id] = new_client;
 
@@ -225,21 +237,21 @@ void* on_connection(void *data)
 
 	strncpy(buffer, "", BUFFER);
 	snprintf(buffer, BUFFER, "id: %d", client.id);
-	send(client.sock, buffer, BUFFER, false);
+	SSL_write(client.ssl, buffer, BUFFER);
 
-	ssize_t res;
-	while(client.sock > 0)
+	do
 	{
 		strncpy(buffer, "", BUFFER);
 
-		res = recv(client.sock, buffer, BUFFER, false);
-		if(res <= 0)
+		if(SSL_read(client.ssl, buffer, BUFFER) <= 0)
 		{
+			fprintf(stderr, "\n\n\033[31m[WIFSS] Error: Couldn\'t read data from the [Client %d]. He\'ll be disconnected from now.\033[0m\n", client.id);
 			break; /* Client is offline */
 		}
 
 		process_command(buffer, client.id);
-	}
+
+	} while(true);
 
 	printf("\n\n[Client %d] is disconnected.\n\n", client.id);
 
@@ -247,16 +259,19 @@ void* on_connection(void *data)
 	snprintf(buffer, BUFFER, "[Client %d] is disconnected.", client.id);
 	broadcast(client.id, buffer);
 
+	SSL_free(client.ssl);
+
 	if(close(client.sock) == -1)
 	{
-		printf("\033[31m[WIFSS] Error while closing the socket of client %d: %s.\033[0m\n\n", client.id, strerror(errno));
+		printf("\033[35m[WIFSS] Error while closing the socket of client %d: %s.\033[0m\n\n", client.id, strerror(errno));
 	}
-	
+
 	command_cursor();
 
 	g_core_variables.clients[client.id].status = FREE;
 	g_core_variables.clients[client.id].id     = -1;
 	g_core_variables.clients[client.id].sock   = -1;
+	g_core_variables.clients[client.id].ssl    = NULL;
 
 	return NULL;
 }

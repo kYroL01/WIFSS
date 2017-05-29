@@ -55,7 +55,7 @@ bool start_client(void)
 	if(status != 0)
 	{
 	    fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while trying to get some information about your host: %s.\033[0m\n\n", gai_strerror(status));
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 
 	char buffer[BUFFER];
@@ -102,7 +102,7 @@ bool start_client(void)
 			FD_ZERO(&readfds);
 			FD_ZERO(&writefds);
 			FD_SET(sock, &readfds);
-			nbFds = select(sock + 1, &readfds, &writefds, NULL, &(struct timeval){3, 0});
+			nbFds = 1; /* select(sock + 1, &readfds, &writefds, NULL, &(struct timeval){3, 0}); */ /* THIS IS TEMPORARY ! */
 			if(nbFds == 0)
 			{
 				// The timeout has been elapsed...
@@ -131,12 +131,64 @@ bool start_client(void)
 				// For the future, let's set again the socket as BLOCKING
 				fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, false) ^ O_NONBLOCK);
 
+				// SSL stuffs
+				SSL *ssl = SSL_new(g_core_variables.ctx);
+				if(ssl == NULL)
+				{
+					fprintf(stderr, "\n\n\033[31mSSL Error: Couldn\'t enable the SSL layer on the socket.\n\n");
+					exit(EXIT_FAILURE);
+				}
+
+				if(SSL_set_cipher_list(ssl, (const char *const)"HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4") != 1)
+				{
+					fprintf(stderr, "\n\n\033[31mSSL Error: Couldn\'t set the ciphers list.\n\n");
+					exit(EXIT_FAILURE);
+				}
+
+				SSL_set_fd(ssl, sock);
+
+				if(SSL_connect(ssl) <= 0)
+				{
+					printf("\n\n\033[31m[WIFSS] Couldn\'t create a TLS tunnel with the host...\033[0m\n\n");
+					ERR_print_errors_fp(stderr);
+					exit(EXIT_FAILURE);
+				}
+
+				// SSL Verification + Certificate information
+				if(SSL_get_verify_result(ssl) != X509_V_OK)
+				{
+					fprintf(stderr, "\n\n\033[31mSSL Error: The result got from SSL is not valid.\n\n");
+					exit(EXIT_FAILURE);
+				}
+
+				X509 *cert = SSL_get_peer_certificate(ssl);
+				if(cert == NULL)
+				{
+					fprintf(stderr, "\n\n\033[31mSSL Error: No certificate was sent by server.\n\n");
+					exit(EXIT_FAILURE);
+				}
+
+				printf("\n\033[34m\tTLS cipher used for this connection: %s\n", SSL_get_cipher(ssl));
+
+				char *str = NULL;
+				printf("\tServer certificate:\n");
+				str = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+				printf("\t\tSubject: %s\n", (str != NULL ? str : "None"));
+				OPENSSL_free(str);
+				str = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+				printf("\t\tIssuer : %s\033[0m\n", (str != NULL ? str : "None"));
+				OPENSSL_free(str);
+				X509_free(cert);
+				// __________________________________________
+
+				g_core_variables.ssl = ssl;
+
 				printf("\n\033[32m[WIFSS] Connected to ");
 				printEndpoint(tmp);
 				printf(".\033[0m\n");
 
 				strncpy(buffer, "", BUFFER);
-				recv(sock, buffer, BUFFER, false);
+				SSL_read(ssl, buffer, BUFFER);
 				uint8_t temp_id = getSecondArgsGroupAsInteger(buffer);
 				printf("\n\033[32m[WIFSS] Your id on the server is %d.\033[0m\n\n", temp_id);
 
@@ -184,6 +236,9 @@ bool start_client(void)
 
 void stop_client(void)
 {
+	SSL_shutdown(g_core_variables.ssl);
+	SSL_free(g_core_variables.ssl);
+
 	if(g_core_variables.server_sock >= 0)
 	{
 		if(close(g_core_variables.server_sock) == -1)
@@ -195,6 +250,8 @@ void stop_client(void)
 			printf("\n\n[WIFSS] Socket successfully closed.\n\n");
 		}
 	}
+
+	SSL_CTX_free(g_core_variables.ctx);
 	
 	printf("[WIFSS] Client is shutting down for now.\n");
 
@@ -211,4 +268,25 @@ void init_global_variables(void)
 {
 	g_core_variables.server_sock = -1;
 	g_core_variables.client_id   = -1;
+	g_core_variables.ssl         = NULL;
+
+	// SSL stuffs
+	OpenSSL_add_ssl_algorithms();
+	SSL_load_error_strings();
+
+	SSL_CTX *ctx = SSL_CTX_new(TLSv1_2_client_method());
+	if(ctx == NULL)
+	{
+		fprintf(stderr, "\n\033[31m\033[31mSSL Error: Couldn\'t create a SSL context.\033[0m\n\n");
+		exit(EXIT_FAILURE);
+	}
+
+	SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_COMPRESSION);
+
+	if(SSL_CTX_load_verify_locations(ctx, "client.crt", NULL) != 1)
+	{
+		fprintf(stderr, "\n\033[31mSSL Error: Couldn\'t verify the location of, or load, the server\'s certificate.\033[0m\n\n");
+	}
+
+	g_core_variables.ctx = ctx;
 }

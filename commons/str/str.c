@@ -123,7 +123,7 @@ bool str_beginwith(const char *w, const char *s)
 
 bool prompt_yes_no(char *const buffer, char **const args, int16_t *const nbArgs)
 {
-	while(1)
+	while(true)
 	{
 		command_cursor();
 		prompt_keyboard(buffer);

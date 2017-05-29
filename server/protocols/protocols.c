@@ -19,7 +19,7 @@ void who(const int8_t sender)
 	if(sender >= 0)
 	{
 		printf("\n\n[WIFSS] [Client %d] has just listed others connected clients.\n\n", sender);
-		send(g_core_variables.clients[sender].sock, buffer, BUFFER, false);
+		SSL_write(g_core_variables.clients[sender].ssl, buffer, BUFFER);
 	}
 
 	else
@@ -52,13 +52,13 @@ void whisper(const char *command, const uint8_t sender_id)
 	if(g_core_variables.clients[idTemp].status == TAKEN && sender_id != idTemp && idTemp >= 0 && idTemp < MAX_CLIENTS)
 	{
 		sprintf(buffer, "[Client %d] whispers: \"%s\".", sender_id, copy);
-		send(g_core_variables.clients[idTemp].sock, buffer, BUFFER, false);
+		SSL_write(g_core_variables.clients[idTemp].ssl, buffer, BUFFER);
 		printf("\n\n[Client %d] whispers to [Client %d]: \"%s\".\n\n", sender_id, idTemp, copy);
 	}
 	else
 	{
 		sprintf(buffer, "%s", "Error: This client is not connected or its identifier is invalid. Take a look to \"help\".");
-		send(g_core_variables.clients[sender_id].sock, buffer, BUFFER, false);
+		SSL_write(g_core_variables.clients[sender_id].ssl, buffer, BUFFER);
 		printf("\n\n[Client %d] tried to whisper to [Client %d]: \"%s\", but he is not connected.\n\n", sender_id, idTemp, copy);
 	}
 }
@@ -68,9 +68,9 @@ void broadcast(const uint8_t sender, const char *msg)
 {
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{
-		if(i != sender)
+		if(i != sender && g_core_variables.clients[i].status == TAKEN)
 		{
-			send(g_core_variables.clients[i].sock, msg, BUFFER, false);
+			SSL_write(g_core_variables.clients[i].ssl, msg, BUFFER);
 		}
 	}
 }
@@ -79,16 +79,18 @@ void broadcast(const uint8_t sender, const char *msg)
 void disconnect(const char *buffer)
 {
 	int8_t idTemp = getSecondArgsGroupAsInteger(buffer);
+
 	if(idTemp == -1)
 	{
 		close_all_connections(); 
 		printf("\n");
 	}
+
 	else if(idTemp >= 0 && idTemp < MAX_CLIENTS)
 	{
 		if(g_core_variables.clients[idTemp].status == TAKEN)
 		{
-			send(g_core_variables.clients[idTemp].sock, DISCONNECT, BUFFER, false);
+			SSL_write(g_core_variables.clients[idTemp].ssl, DISCONNECT, BUFFER);
 			close(g_core_variables.clients[idTemp].sock);
 		}
 		else
@@ -96,6 +98,7 @@ void disconnect(const char *buffer)
 			printf("\n[WIFSS] This client is already offline. You can\'t disconnect him.\n\n");
 		}
 	}
+
 	else
 	{
 		printf("\n[WIFSS] This client identifier is invalid.\n\n");
@@ -111,7 +114,7 @@ void close_all_connections(void)
 	{
 		if(g_core_variables.clients[i].status == TAKEN)
 		{
-			send(g_core_variables.clients[i].sock, DISCONNECT, BUFFER, false);
+			SSL_write(g_core_variables.clients[i].ssl, DISCONNECT, BUFFER);
 		}
 
 		printf(".");
