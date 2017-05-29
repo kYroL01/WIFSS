@@ -247,13 +247,13 @@ void stop_client(void)
 		}
 		else
 		{
-			printf("\n\n[WIFSS] Socket successfully closed.\n\n");
+			printf("\n\n\033[32m[WIFSS] Socket successfully closed.\033[0m\n\n");
 		}
 	}
 
 	SSL_CTX_free(g_core_variables.ctx);
 	
-	printf("[WIFSS] Client is shutting down for now.\n");
+	printf("\033[35m[WIFSS] Client is shutting down for now.\033[0m\n");
 
 	for(uint8_t i = 0; i < 64; i++)
 	{

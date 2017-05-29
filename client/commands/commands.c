@@ -103,7 +103,7 @@ void* client_communication(void *param)
 
 		else
 		{
-			printf("\nUnknown command. Try \"help\" for further information.\n\n");
+			printf("\n\033[35mUnknown command. Try \"help\" for further information.\033[0m\n\n");
 		}
 	}
 }

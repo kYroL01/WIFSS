@@ -7,13 +7,13 @@ void clear_console(void)
 	switch(status)
 	{
 		case -1:
-			printf("Couldn\'t \'fork()\' the current process into a child: %s\n", strerror(errno));
+			printf("\n\n\033[35mCouldn\'t \'fork()\' the current process into a child: %s\033[0m\n\n", strerror(errno));
 			break;
 
 		case 0:
 			if(execvp("clear", (char *const[]){"clear", NULL}) == -1)
 			{
-				printf("Couldn\'t \'exec()\' the command: %s\n", strerror(errno));
+				printf("\n\n\033[35mCouldn\'t \'exec()\' the command: %s\033[0m\n\n", strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 

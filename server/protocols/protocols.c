@@ -95,20 +95,20 @@ void disconnect(const char *buffer)
 		}
 		else
 		{
-			printf("\n[WIFSS] This client is already offline. You can\'t disconnect him.\n\n");
+			printf("\n\033[35m[WIFSS] This client is already offline. You can\'t disconnect him.\033[0m\n\n");
 		}
 	}
 
 	else
 	{
-		printf("\n[WIFSS] This client identifier is invalid.\n\n");
+		printf("\n\033[35m[WIFSS] This client identifier is invalid.\033[0m\n\n");
 	}
 }
 
 
 void close_all_connections(void)
 {
-	printf("\n[WIFSS] Closing all connections...");
+	printf("\n\033[35m[WIFSS] Closing all connections...\033[0m");
 
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{

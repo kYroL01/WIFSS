@@ -54,7 +54,7 @@ void* command_handler(void *foo)
 
 			else
 			{
-				printf("\n[WIFSS] This client identifier is invalid.\n\n");
+				printf("\n\n\033[35m[WIFSS] This client identifier is invalid.\033[0m\n\n");
 			}
 		}
 
@@ -95,7 +95,7 @@ void* command_handler(void *foo)
 
 		else
 		{
-			printf("\nUnknown command. Try \"help\" for further information.\n\n");
+			printf("\n\033[35mUnknown command. Try \"help\" for further information.\033[0m\n\n");
 		}
 	}
 
@@ -122,7 +122,7 @@ void process_command(const char *command, const uint8_t sender_id)
 
 	else
 	{
-		printf("\n\n[WIFSS] Unknown command from [Client %d]: \"%s\".\n\n", sender_id, command);
+		printf("\n\n\033[35m[WIFSS] Unknown command from [Client %d]: \"%s\".\033[0m\n\n", sender_id, command);
 	}
 
 	command_cursor();
@@ -189,7 +189,7 @@ void* connections_handler(void *foo)
 			}
 		}
 
-		printf("\n\n[WIFSS] Connection received \'%s [%s]\' -> ID given: %d.\n", host, service, current_id);
+		printf("\n\n\033[35m[WIFSS] Connection received \'%s [%s]\' -> ID given: %d.\033[0m\n", host, service, current_id);
 
 		client_t new_client;
 		new_client.id     = current_id;
@@ -219,7 +219,7 @@ void* connections_handler(void *foo)
 			}
 		}
 
-		printf("[WIFSS] There is %d client(s) connected.\n\n", count);
+		printf("\033[35m[WIFSS] There is %d client(s) connected.\033[0m\n\n", count);
 
 		command_cursor();
 	}
@@ -245,15 +245,13 @@ void* on_connection(void *data)
 
 		if(SSL_read(client.ssl, buffer, BUFFER) <= 0)
 		{
-			fprintf(stderr, "\n\n\033[31m[WIFSS] Error: Couldn\'t read data from the [Client %d]. He\'ll be disconnected from now.\033[0m\n", client.id);
+			fprintf(stderr, "\n\n\033[35m[WIFSS] [Client %d]\'s socket has been closed. He\'ll be disconnected from now.\033[0m\n\n", client.id);
 			break; /* Client is offline */
 		}
 
 		process_command(buffer, client.id);
 
 	} while(true);
-
-	printf("\n\n[Client %d] is disconnected.\n\n", client.id);
 
 	strncpy(buffer, "", BUFFER);
 	snprintf(buffer, BUFFER, "[Client %d] is disconnected.", client.id);

@@ -86,7 +86,7 @@ void start_server(void)
 		exit(EXIT_FAILURE);
 	}
 
-	printf("\n\n[WIFSS] Server opened, waiting for clients on port %d...\033[0m\n\n", ntohs(server.sin6_port));
+	printf("\n\n\033[35m[WIFSS] Server opened, waiting for clients on port %d...\033[0m\n\n", ntohs(server.sin6_port));
 }
 
 
@@ -115,7 +115,7 @@ void close_server(void)
 	SSL_CTX_free(g_core_variables.ctx);
 	EVP_cleanup();
 
-	printf("[WIFSS] Server is shutting down for now.\n");
+	printf("\033[35m[WIFSS] Server is shutting down for now.\033[0m\n");
 
 	for(uint8_t i = 0; i < 64; i++)
 	{
