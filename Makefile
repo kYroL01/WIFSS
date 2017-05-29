@@ -2,7 +2,7 @@
 
 CC=gcc
 CFLAGS=-D _XOPEN_SOURCE=200809L -std=c99 -O3 -pthread -Wall -Wextra -Wpedantic -Wshadow -Wno-missing-field-initializers -Wstrict-overflow
-LDFLAGS=-pthread
+LDFLAGS=-pthread -lssl -lcrypto
 EXEC=WClient WServer
 
 
