@@ -3,12 +3,17 @@ _WIFSS Is a F*cking Simple Service_
 
 ## How to use it
 
-Compile the whole project with: `make`  
-... or just one side with: `make WClient` or `make WServer`
+1.  `#  aptitude install gcc make openssl libssl-dev`
 
-Run with:
+2. * `$  openssl genrsa -des3 -out server.temp.key 4096`
+   * `$  openssl rsa -in server.temp.key -out server.key && rm server.temp.key`
+   * `$  openssl req -new -key server.key -out server.csr`
+   * `$  openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt`
+   * `$  cp server.crt client.crt`
 
-` ./WClient`  and `./WServer`
+3. `make` OR `make WClient` OR `make WServer`
+
+4. `./WServer` AND / OR `./WClient`
 
 ## Commands
 
