@@ -14,7 +14,7 @@ bool command_validation(const char *const *const, const int16_t, const char *con
 bool str_beginwith(const char*, const char*);
 bool prompt_yes_no(char *const, char **const, int16_t *const);
 const char* getSecondArgsGroup(const char *const);
-int8_t getSecondArgsGroupAsInteger(const char *const);
+int16_t getSecondArgsGroupAsInteger(const char *const);
 const char* getThirdArgsGroup(const char *const);
 
 

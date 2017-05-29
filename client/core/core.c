@@ -189,11 +189,11 @@ bool start_client(void)
 
 				strncpy(buffer, "", BUFFER);
 				SSL_read(ssl, buffer, BUFFER);
-				uint8_t temp_id = getSecondArgsGroupAsInteger(buffer);
-				printf("\n\033[32m[WIFSS] Your id on the server is %d.\033[0m\n\n", temp_id);
+				uint16_t idTemp = getSecondArgsGroupAsInteger(buffer);
+				printf("\n\033[32m[WIFSS] Your id on the server is %d.\033[0m\n\n", idTemp);
 
 				/* We save the ID of the client for the future */
-				g_core_variables.client_id = temp_id;
+				g_core_variables.client_id = idTemp;
 
 				break;
 			}

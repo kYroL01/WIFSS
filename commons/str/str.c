@@ -155,9 +155,18 @@ const char* getSecondArgsGroup(const char *const buffer)
 }
 
 
-int8_t getSecondArgsGroupAsInteger(const char *const buffer)
+int16_t getSecondArgsGroupAsInteger(const char *const buffer)
 {
-	return strtoul(strstr(buffer, " ") + 1, NULL, 10);
+	char *nptr   = strstr(buffer, " ") + 1;
+	char *endptr = NULL;
+
+	int16_t integer = strtoul(nptr, &endptr, 10);
+	if(nptr == endptr)
+	{
+		integer = -2;
+	}
+
+	return integer;
 }
 
 

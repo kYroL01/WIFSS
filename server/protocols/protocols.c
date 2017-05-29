@@ -46,7 +46,7 @@ void whisper(const char *command, const uint8_t sender_id)
 	char copy[BUFFER]   = "";
 	char buffer[BUFFER] = "";
 
-	int8_t idTemp = getSecondArgsGroupAsInteger(command);
+	int16_t idTemp = getSecondArgsGroupAsInteger(command);
 	strncpy(copy, getThirdArgsGroup(command), BUFFER);
 
 	if(g_core_variables.clients[idTemp].status == TAKEN && sender_id != idTemp && idTemp >= 0 && idTemp < MAX_CLIENTS)
@@ -78,7 +78,7 @@ void broadcast(const uint8_t sender, const char *msg)
 
 void disconnect(const char *buffer)
 {
-	int8_t idTemp = getSecondArgsGroupAsInteger(buffer);
+	int16_t idTemp = getSecondArgsGroupAsInteger(buffer);
 
 	if(idTemp == -1)
 	{

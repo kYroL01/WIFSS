@@ -43,7 +43,7 @@ void* command_handler(void *foo)
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
 
-			int8_t idTemp = getSecondArgsGroupAsInteger(buffer);
+			int16_t idTemp = getSecondArgsGroupAsInteger(buffer);
 			strncpy(cpy, getThirdArgsGroup(buffer), BUFFER);
 
 			if(idTemp >= 0 && g_core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
