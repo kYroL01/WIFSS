@@ -16,7 +16,7 @@ void* server_communication(void *param)
 
 		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
-			printf("\n\033[35m[Server] is demanding this client disconnection. Stopping now.\033[0m");
+			printf("\n\n\033[35m[Server] is demanding this client disconnection. Stopping now.\033[0m");
 			pthread_cancel(*(threads->cthread));
 			pthread_exit(NULL);
 		}

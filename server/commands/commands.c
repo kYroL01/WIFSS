@@ -271,7 +271,7 @@ void* on_connection(void *data)
 
 	if(close(client.sock) == -1)
 	{
-		printf("\033[35m[WIFSS] Error while closing the socket of client %d: %s.\033[0m\n\n", client.id, strerror(errno));
+		printf("\033[35m[WIFSS] Warning: couldn\'t close the [Client %d]\'s socket (already closed ?): %s.\033[0m\n\n", client.id, strerror(errno));
 	}
 
 	command_cursor();
