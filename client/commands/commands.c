@@ -6,7 +6,7 @@ void* server_communication(void *param)
 	int16_t result;
 	char buffer[BUFFER];
 
-	THREADS *threads = (THREADS*)param;
+	Threads *threads = (Threads*)param;
 
 	while(true)
 	{
@@ -36,7 +36,7 @@ void* server_communication(void *param)
 
 void* client_communication(void *param)
 {
-	THREADS *threads = (THREADS*)param;
+	Threads *threads = (Threads*)param;
 
 	char buffer[BUFFER];
 	char *args[BUFFER];

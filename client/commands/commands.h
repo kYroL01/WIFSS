@@ -19,7 +19,7 @@ typedef struct
 	pthread_t *cthread;
 	pthread_t *sthread;
 
-} THREADS;
+} Threads;
 
 
 void* server_communication(void*);
