@@ -242,8 +242,11 @@ bool start_client(void)
 
 void stop_client(void)
 {
-	SSL_shutdown(g_core_variables.ssl);
-	SSL_free(g_core_variables.ssl);
+	if(g_core_variables.ssl != NULL)
+	{
+		SSL_shutdown(g_core_variables.ssl);
+		SSL_free(g_core_variables.ssl);
+	}
 
 	if(g_core_variables.server_sock >= 0)
 	{
@@ -275,6 +278,7 @@ void init_global_variables(void)
 	g_core_variables.server_sock = -1;
 	g_core_variables.client_id   = -1;
 	g_core_variables.ssl         = NULL;
+	g_core_variables.ctx         = NULL;
 
 	// SSL stuffs
 	OpenSSL_add_ssl_algorithms();
