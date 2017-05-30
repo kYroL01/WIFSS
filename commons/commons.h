@@ -24,5 +24,7 @@
 #define BUFFER        1024
 #define COMMANDBUFFER 2048
 
+#define CLIENT_SERVER_SYNC "CLIENT_SERVER_SYNC"
+
 
 #endif

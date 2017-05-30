@@ -157,12 +157,22 @@ void* connections_handler(void *foo)
 			exit(EXIT_FAILURE);
 		}
 
-		if(count + 1 >= MAX_CLIENTS)
+		if(count >= MAX_CLIENTS)
 		{
-			printf("\n\033[35m[WIFSS] Maximum capacity reached, can\'t accept a new client yet... (%s [%s])\033[0m\n", host, service);
+			printf("\n\n\033[35m[WIFSS] Maximum capacity reached, can\'t accept a new client yet... (%s [%s])\033[0m\n\n", host, service);
+
+			const char *const local = "\n\033[35m[Server] Maximum capacity reached, please try again later !\033[0m\n";
+			send(sock, local, strlen(local), false);
+
 			close(sock);
 			command_cursor();
 			continue;
+		}
+
+		else
+		{
+			// Whereas the connection has been accepted, just send a packet in order to synchronize the `select` call...
+			send(sock, CLIENT_SERVER_SYNC, strlen(CLIENT_SERVER_SYNC), false);
 		}
 
 		// Enables SSL !

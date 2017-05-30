@@ -65,7 +65,7 @@ bool start_client(void)
 	int8_t error     = 0;
 	socklen_t lenght = sizeof(error);
 	int16_t nbFds    = -1;
-	fd_set readfds, writefds;
+	fd_set readfds;
 	do
 	{
 		for(struct addrinfo *tmp = servinfo; tmp != NULL; tmp = tmp->ai_next)
@@ -100,9 +100,8 @@ bool start_client(void)
 
 			// Let's now set a watch dog of 3 seconds on it
 			FD_ZERO(&readfds);
-			FD_ZERO(&writefds);
 			FD_SET(sock, &readfds);
-			nbFds = 1; /* select(sock + 1, &readfds, &writefds, NULL, &(struct timeval){3, 0}); */ /* THIS IS TEMPORARY ! */
+			nbFds = select(sock + 1, &readfds, NULL, NULL, &(struct timeval){3, 0});
 			if(nbFds == 0)
 			{
 				// The timeout has been elapsed...
@@ -117,6 +116,18 @@ bool start_client(void)
 				// Again ? An error occurred...
 				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while waiting for the connection procedure ending: %s.\033[0m\n\n", strerror(errno));
 				exit(EXIT_FAILURE);
+			}
+
+			else
+			{
+				// Fetch the buffered SYNC data [see @server/commands.c]
+				recv(sock, buffer, BUFFER, false);
+
+				if(strcmp(buffer, CLIENT_SERVER_SYNC))
+				{
+					printf("%s\n", buffer);
+					exit(EXIT_FAILURE);
+				}
 			}
 
 			// Two cases: The connection has been established OR a f*cking new error occurred (before the timeout !)...
