@@ -9,11 +9,11 @@ int main(int argc, const char *argv[])
 
 	start_server();
 
-	pthread_create(&g_core_variables.command_thread, NULL, &command_handler, NULL);
-	pthread_create(&g_core_variables.connections_thread, NULL, &connections_handler, NULL);
+	pthread_create(&core_variables.command_thread, NULL, &command_handler, NULL);
+	pthread_create(&core_variables.connections_thread, NULL, &connections_handler, NULL);
 
-	pthread_join(g_core_variables.command_thread, NULL);
-	pthread_cancel(g_core_variables.connections_thread);
+	pthread_join(core_variables.command_thread, NULL);
+	pthread_cancel(core_variables.connections_thread);
 
 	close_server();
 

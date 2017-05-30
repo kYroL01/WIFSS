@@ -13,9 +13,9 @@ void parse_command(char *const, char **const, int16_t *const);
 bool command_validation(const char *const *const, const int16_t, const char *const, const uint8_t);
 bool str_beginwith(const char*, const char*);
 bool prompt_yes_no(char *const, char **const, int16_t *const);
-const char* getSecondArgsGroup(const char *const);
-int16_t getSecondArgsGroupAsInteger(const char *const);
-const char* getThirdArgsGroup(const char *const);
+const char* get_second_args_group(const char *const);
+int16_t get_second_args_group_as_integer(const char *const);
+const char* get_third_arg_group(const char *const);
 
 
 #endif

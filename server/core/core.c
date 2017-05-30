@@ -57,7 +57,7 @@ void start_server(void)
 		server.sin6_port = htons(port);
 
 		/* Let's save this value in the global variables structure */
-		g_core_variables.server_sock = listen_socket;
+		core_variables.server_sock = listen_socket;
 
 		res = bind(listen_socket, (struct sockaddr*)&server, sizeof(server));
 		if(res == -1)
@@ -94,9 +94,9 @@ void close_server(void)
 {
 	close_all_connections();
 
-	if(g_core_variables.server_sock >= 0)
+	if(core_variables.server_sock >= 0)
 	{
-		if(close(g_core_variables.server_sock) == -1)
+		if(close(core_variables.server_sock) == -1)
 		{
 			printf("\n\033[35m[WIFSS] Socket of server couldn't be successfully closed.\033[0m\n\n");
 		}
@@ -108,11 +108,11 @@ void close_server(void)
 
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{
-		pthread_cancel(g_core_variables.threads[i]);
+		pthread_cancel(core_variables.threads[i]);
 	}
 
 	// SSL stuffs
-	SSL_CTX_free(g_core_variables.ctx);
+	SSL_CTX_free(core_variables.ctx);
 	EVP_cleanup();
 
 	printf("\033[35m[WIFSS] Server is shutting down for now.\033[0m\n");
@@ -128,17 +128,16 @@ void close_server(void)
 
 void init_global_variables(void)
 {
-	printf("\n\033[32m[WIFSS] Initialization of clients list [%d client slots would be available]...\033[0m\n", MAX_CLIENTS);
+	core_variables.server_sock = -1;
 
-	g_core_variables.server_port = -1;
-	g_core_variables.server_sock = -1;
+	printf("\n\033[32m[WIFSS] Initialization of clients list [%d client slot%s will be available]...\033[0m\n", MAX_CLIENTS, (MAX_CLIENTS > 1 ? "s" : ""));
 
 	for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 	{
-		g_core_variables.clients[i].id     = -1;
-		g_core_variables.clients[i].sock   = -1;
-		g_core_variables.clients[i].status = FREE;
-		g_core_variables.clients[i].ssl    = NULL;
+		core_variables.clients[i].id     = -1;
+		core_variables.clients[i].sock   = -1;
+		core_variables.clients[i].status = FREE;
+		core_variables.clients[i].ssl    = NULL;
 	}
 
 	// SSL stuffs
@@ -170,5 +169,5 @@ void init_global_variables(void)
 		exit(EXIT_FAILURE);
 	}
 
-	g_core_variables.ctx = ctx;
+	core_variables.ctx = ctx;
 }

@@ -149,13 +149,13 @@ bool prompt_yes_no(char *const buffer, char **const args, int16_t *const nbArgs)
 }
 
 
-const char* getSecondArgsGroup(const char *const buffer)
+const char* get_second_args_group(const char *const buffer)
 {
 	return strstr(buffer, " ") + 1;
 }
 
 
-int16_t getSecondArgsGroupAsInteger(const char *const buffer)
+int16_t get_second_args_group_as_integer(const char *const buffer)
 {
 	char *nptr   = strstr(buffer, " ") + 1;
 	char *endptr = NULL;
@@ -170,7 +170,7 @@ int16_t getSecondArgsGroupAsInteger(const char *const buffer)
 }
 
 
-const char* getThirdArgsGroup(const char *const buffer)
+const char* get_third_arg_group(const char *const buffer)
 {
 	return strstr(strstr(buffer, " ") + 1, " ") + 1;
 }

@@ -93,7 +93,7 @@ bool start_client(void)
 			if(errno != EINPROGRESS)
 			{
 				fprintf(stderr, "\n\033[31m[WIFSS] An error occurred while running the connection procedure to: ");
-				printEndpoint(tmp);
+				print_endpoint(tmp);
 				printf(" (%s).\033[0m\n\n", strerror(errno));
 				continue;
 			}
@@ -107,7 +107,7 @@ bool start_client(void)
 			{
 				// The timeout has been elapsed...
 				printf("\n\033[31m[WIFSS] Error while connecting to ");
-				printEndpoint(tmp);
+				print_endpoint(tmp);
 				printf(": timeout reached.\033[0m\n");
 				continue;
 			}
@@ -132,7 +132,7 @@ bool start_client(void)
 				fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, false) ^ O_NONBLOCK);
 
 				// SSL stuffs
-				SSL *ssl = SSL_new(g_core_variables.ctx);
+				SSL *ssl = SSL_new(core_variables.ctx);
 				if(ssl == NULL)
 				{
 					fprintf(stderr, "\n\n\033[31mSSL Error: Couldn\'t enable the SSL layer on the socket.\n\n");
@@ -181,10 +181,10 @@ bool start_client(void)
 				X509_free(cert);
 				// __________________________________________
 
-				g_core_variables.ssl = ssl;
+				core_variables.ssl = ssl;
 
 				printf("\n\033[32m[WIFSS] Connected to ");
-				printEndpoint(tmp);
+				print_endpoint(tmp);
 				printf(".\033[0m\n");
 
 				strncpy(buffer, "", BUFFER);
@@ -195,11 +195,11 @@ bool start_client(void)
 					exit(EXIT_FAILURE);
 				}
 
-				uint16_t idTemp = getSecondArgsGroupAsInteger(buffer);
+				uint16_t idTemp = get_second_args_group_as_integer(buffer);
 				printf("\n\033[32m[WIFSS] Your ID on the server is %d.\033[0m\n\n", idTemp);
 
 				/* We save the ID of the client for the future */
-				g_core_variables.client_id = idTemp;
+				core_variables.client_id = idTemp;
 
 				break;
 			}
@@ -207,12 +207,12 @@ bool start_client(void)
 			else
 			{
 				printf("\n\033[31m[WIFSS] Error while connecting to ");
-				printEndpoint(tmp);
+				print_endpoint(tmp);
 				printf(": %s.\033[0m\n", strerror(errno));
 			}
 		}
 
-		if(g_core_variables.client_id != -1)
+		if(core_variables.client_id != -1)
 		{
 			// Yeah... We've to `break` the loop a second time 
 			break;
@@ -234,7 +234,7 @@ bool start_client(void)
 	freeaddrinfo(servinfo);
 
 	/* We save the socket value for the future */
-	g_core_variables.server_sock = sock;
+	core_variables.server_sock = sock;
 
 	return true;
 }
@@ -242,15 +242,15 @@ bool start_client(void)
 
 void stop_client(void)
 {
-	if(g_core_variables.ssl != NULL)
+	if(core_variables.ssl != NULL)
 	{
-		SSL_shutdown(g_core_variables.ssl);
-		SSL_free(g_core_variables.ssl);
+		SSL_shutdown(core_variables.ssl);
+		SSL_free(core_variables.ssl);
 	}
 
-	if(g_core_variables.server_sock >= 0)
+	if(core_variables.server_sock >= 0)
 	{
-		if(close(g_core_variables.server_sock) == -1)
+		if(close(core_variables.server_sock) == -1)
 		{
 			printf("\n\033[35m[WIFSS] Socket couldn't be successfully closed.\033[0m\n\n");
 		}
@@ -260,7 +260,7 @@ void stop_client(void)
 		}
 	}
 
-	SSL_CTX_free(g_core_variables.ctx);
+	SSL_CTX_free(core_variables.ctx);
 	
 	printf("\033[35m[WIFSS] Client is shutting down for now.\033[0m\n");
 
@@ -275,10 +275,10 @@ void stop_client(void)
 
 void init_global_variables(void)
 {
-	g_core_variables.server_sock = -1;
-	g_core_variables.client_id   = -1;
-	g_core_variables.ssl         = NULL;
-	g_core_variables.ctx         = NULL;
+	core_variables.server_sock = -1;
+	core_variables.client_id   = -1;
+	core_variables.ssl         = NULL;
+	core_variables.ctx         = NULL;
 
 	// SSL stuffs
 	OpenSSL_add_ssl_algorithms();
@@ -298,5 +298,5 @@ void init_global_variables(void)
 		fprintf(stderr, "\n\033[31mSSL Error: Couldn\'t verify the location of, or load, the server\'s certificate.\033[0m\n\n");
 	}
 
-	g_core_variables.ctx = ctx;
+	core_variables.ctx = ctx;
 }

@@ -1,7 +1,7 @@
 #include "ip.h"
 
 
-void printEndpoint(const struct addrinfo *const p)
+void print_endpoint(const struct addrinfo *const p)
 {
 	void *addr = NULL;
 	uint16_t port = -1;

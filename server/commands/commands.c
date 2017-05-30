@@ -33,7 +33,7 @@ void* command_handler(void *foo)
 		{
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
-			strncat(cpy, getSecondArgsGroup(buffer), BUFFER);
+			strncat(cpy, get_second_args_group(buffer), BUFFER);
 			snprintf(buffTemp, BUFFER, "[Server] says: \"%s\".", cpy);
 			broadcast(SID, buffTemp);
 		}
@@ -43,13 +43,13 @@ void* command_handler(void *foo)
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
 
-			int16_t idTemp = getSecondArgsGroupAsInteger(buffer);
-			strncpy(cpy, getThirdArgsGroup(buffer), BUFFER);
+			int16_t idTemp = get_second_args_group_as_integer(buffer);
+			strncpy(cpy, get_third_arg_group(buffer), BUFFER);
 
-			if(idTemp >= 0 && g_core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
+			if(idTemp >= 0 && core_variables.clients[idTemp].status == TAKEN && idTemp < MAX_CLIENTS)
 			{
 				snprintf(buffTemp, BUFFER, "[Server] whispers to you: \"%s\".", cpy);
-				SSL_write(g_core_variables.clients[idTemp].ssl, buffTemp, BUFFER);
+				SSL_write(core_variables.clients[idTemp].ssl, buffTemp, BUFFER);
 			}
 
 			else
@@ -141,7 +141,7 @@ void* connections_handler(void *foo)
 	uint8_t count = 0;
 	while(true)
 	{
-		sock = accept(g_core_variables.server_sock, (struct sockaddr*)&client, &asize);
+		sock = accept(core_variables.server_sock, (struct sockaddr*)&client, &asize);
 		if(sock == -1)
 		{
 			printf("\033[31m[WIFSS] Error during a connection acceptation: %s.\033[0m\n\n", strerror(errno));
@@ -159,14 +159,14 @@ void* connections_handler(void *foo)
 
 		if(count + 1 >= MAX_CLIENTS)
 		{
-			printf("\n\033[35m[WIFSS] Maximum capacity reached, can't accept a new client yet... (%s [%s])\033[0m\n", host, service);
+			printf("\n\033[35m[WIFSS] Maximum capacity reached, can\'t accept a new client yet... (%s [%s])\033[0m\n", host, service);
 			close(sock);
 			command_cursor();
 			continue;
 		}
 
 		// Enables SSL !
-		SSL *ssl = SSL_new(g_core_variables.ctx);
+		SSL *ssl = SSL_new(core_variables.ctx);
 		SSL_set_fd(ssl, sock);
 
 		if(SSL_accept(ssl) <= 0)
@@ -181,26 +181,26 @@ void* connections_handler(void *foo)
 		uint8_t current_id = -1;
 		for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(g_core_variables.clients[i].status == FREE)
+			if(core_variables.clients[i].status == FREE)
 			{
 				current_id = i;
-				g_core_variables.clients[i].status = TAKEN;
+				core_variables.clients[i].status = TAKEN;
 				break;
 			}
 		}
 
 		printf("\n\n\033[35m[WIFSS] Connection received \'%s [%s]\' -> ID given: %d.\033[0m\n", host, service, current_id);
 
-		client_t new_client;
+		Client new_client;
 		new_client.id     = current_id;
 		new_client.addr   = client;
 		new_client.sock   = sock;
 		new_client.status = TAKEN;
 		new_client.ssl    = ssl;
 
-		g_core_variables.clients[current_id] = new_client;
+		core_variables.clients[current_id] = new_client;
 
-		int16_t res = pthread_create(&g_core_variables.threads[current_id], NULL, &on_connection, (void*)&new_client);
+		int16_t res = pthread_create(&core_variables.threads[current_id], NULL, &on_connection, (void*)&new_client);
 		if(res != 0)
 		{
 			printf("\033[31m[WIFSS] Error during thread creation %d: Error (%d).\033[0m\n\n", current_id, res);
@@ -213,13 +213,13 @@ void* connections_handler(void *foo)
 		count = 0;
 		for(uint8_t i = 0; i < MAX_CLIENTS; i++)
 		{
-			if(g_core_variables.clients[i].status == TAKEN)
+			if(core_variables.clients[i].status == TAKEN)
 			{
 				count++;
 			}
 		}
 
-		printf("\033[35m[WIFSS] There is %d client(s) connected.\033[0m\n\n", count);
+		printf("\033[35m[WIFSS] There is %d client%s connected.\033[0m\n\n", count, (count > 1 ? "s" : ""));
 
 		command_cursor();
 	}
@@ -228,7 +228,7 @@ void* connections_handler(void *foo)
 
 void* on_connection(void *data)
 {
-	client_t client = *((client_t*)data);
+	Client client = *((Client*)data);
 
 	char buffer[BUFFER] = "";
 
@@ -266,10 +266,10 @@ void* on_connection(void *data)
 
 	command_cursor();
 
-	g_core_variables.clients[client.id].status = FREE;
-	g_core_variables.clients[client.id].id     = -1;
-	g_core_variables.clients[client.id].sock   = -1;
-	g_core_variables.clients[client.id].ssl    = NULL;
+	core_variables.clients[client.id].status = FREE;
+	core_variables.clients[client.id].id     = -1;
+	core_variables.clients[client.id].sock   = -1;
+	core_variables.clients[client.id].ssl    = NULL;
 
 	return NULL;
 }

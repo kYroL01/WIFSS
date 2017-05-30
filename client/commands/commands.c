@@ -12,11 +12,11 @@ void* server_communication(void *param)
 	{
 		strncpy(buffer, "", BUFFER);
 
-		result = SSL_read(g_core_variables.ssl, buffer, BUFFER);
+		result = SSL_read(core_variables.ssl, buffer, BUFFER);
 
 		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
-			printf("\n\033[35m[SERVER] is demanding this client disconnection. Stopping now.\033[0m");
+			printf("\n\033[35m[Server] is demanding this client disconnection. Stopping now.\033[0m");
 			pthread_cancel(*(threads->cthread));
 			pthread_exit(NULL);
 		}
@@ -26,7 +26,7 @@ void* server_communication(void *param)
 			/* We received from server a non-null string, let's print it */
 			if(strcmp(buffer, ""))
 			{
-				printf("\n\033[35m[SERVER] %s\033[0m\n\n", buffer);
+				printf("\n\n\033[35m[Server] %s\033[0m\n\n", buffer);
 				command_cursor();
 			}
 		}
@@ -63,18 +63,18 @@ void* client_communication(void *param)
 
 		else if(str_beginwith(buffer, SEND) && nbArgs >= 3)
 		{
-			SSL_write(g_core_variables.ssl, buffer, BUFFER);
+			SSL_write(core_variables.ssl, buffer, BUFFER);
 		}
 
 		else if(str_beginwith(buffer, WHISPER) && nbArgs >= 3)
 		{
-			SSL_write(g_core_variables.ssl, buffer, BUFFER);
+			SSL_write(core_variables.ssl, buffer, BUFFER);
 		}
 
 		else if(command_validation((const char* const*)args, nbArgs, WHO, 1))
 		{
 			char temp[BUFFER] = WHO;
-			SSL_write(g_core_variables.ssl, temp, BUFFER);
+			SSL_write(core_variables.ssl, temp, BUFFER);
 		}
 
 		else if(command_validation((const char* const*)args, nbArgs, CLEAR, 1))

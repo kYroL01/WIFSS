@@ -15,9 +15,9 @@ typedef struct
 	SSL *ssl;
 	SSL_CTX *ctx;
 
-} core_variables_t;
+} CoreVariables;
 
-core_variables_t g_core_variables;
+CoreVariables core_variables;
 
 
 bool start_client(void);

@@ -15,33 +15,32 @@ typedef enum
 	FREE,
 	TAKEN
 
-} STATUS;
+} Status;
 
 typedef struct
 {
 	struct sockaddr_in6 addr;
 	int8_t id;
 	int8_t sock;
-	STATUS status;
+	Status status;
 	SSL *ssl;
 
-} client_t;
+} Client;
 
 
 #define MAX_CLIENTS	8
 typedef struct
 {
-	int8_t server_port;
 	int8_t server_sock;
 	pthread_t command_thread;
 	pthread_t connections_thread;
 	pthread_t threads[MAX_CLIENTS];
-	client_t clients[MAX_CLIENTS];
+	Client clients[MAX_CLIENTS];
 	SSL_CTX *ctx;
 
-} core_variables_t;
+} CoreVariables;
 
-core_variables_t g_core_variables;
+CoreVariables core_variables;
 
 
 void start_server(void);
