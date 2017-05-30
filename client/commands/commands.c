@@ -61,12 +61,12 @@ void* client_communication(void *param)
 			pthread_exit(NULL);
 		}
 
-		else if(str_beginwith(buffer, SEND))
+		else if(str_beginwith(buffer, SEND) && nbArgs >= 3)
 		{
 			SSL_write(g_core_variables.ssl, buffer, BUFFER);
 		}
 
-		else if(str_beginwith(buffer, WHISPER))
+		else if(str_beginwith(buffer, WHISPER) && nbArgs >= 3)
 		{
 			SSL_write(g_core_variables.ssl, buffer, BUFFER);
 		}

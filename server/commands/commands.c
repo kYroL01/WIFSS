@@ -29,7 +29,7 @@ void* command_handler(void *foo)
 			pthread_exit(NULL);
 		}
 
-		else if(str_beginwith(buffer, SEND))
+		else if(str_beginwith(buffer, SEND) && nbArgs >= 3)
 		{
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
@@ -38,7 +38,7 @@ void* command_handler(void *foo)
 			broadcast(SID, buffTemp);
 		}
 
-		else if(str_beginwith(buffer, WHISPER))
+		else if(str_beginwith(buffer, WHISPER) && nbArgs >= 3)
 		{
 			char cpy[BUFFER]      = "";
 			char buffTemp[BUFFER] = "";
@@ -54,7 +54,7 @@ void* command_handler(void *foo)
 
 			else
 			{
-				printf("\n\n\033[35m[WIFSS] This client identifier is invalid.\033[0m\n\n");
+				printf("\n\033[35m[WIFSS] This client identifier is invalid.\033[0m\n\n");
 			}
 		}
 

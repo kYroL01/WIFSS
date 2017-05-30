@@ -157,7 +157,7 @@ bool start_client(void)
 				// SSL Verification + Certificate information
 				if(SSL_get_verify_result(ssl) != X509_V_OK)
 				{
-					fprintf(stderr, "\n\n\033[31mSSL Error: The result got from SSL is not valid.\n\n");
+					fprintf(stderr, "\n\n\033[31mSSL Error: The result got from SSL is not valid (is your certificate correct ?).\n\n");
 					exit(EXIT_FAILURE);
 				}
 

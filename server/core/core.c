@@ -162,6 +162,7 @@ void init_global_variables(void)
 		exit(EXIT_FAILURE);
 	}
 
+	// Is this check already automatically done during the latest block ? It looks like...
 	if(!SSL_CTX_check_private_key(ctx))
 	{
 		printf("\n\n");
