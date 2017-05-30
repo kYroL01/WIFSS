@@ -1,7 +1,7 @@
 # WIFSS
 _WIFSS Is a F*cking Simple Service_
 
-## How to use it
+## What do I have to install and how can I use it ?
 
 1.  `#  aptitude install gcc make openssl libssl-dev`
 
@@ -11,13 +11,15 @@ _WIFSS Is a F*cking Simple Service_
    * `$  openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt`
    * `$  cp server.crt client.crt`
 
-3. `make` OR `make WClient` OR `make WServer`
+3. `$  make`
 
-4. `./WServer` AND / OR `./WClient`
+4. `$  ./WServer`
 
-## Commands
+5. `$  ./WClient`
 
-### List of commands currently available for clients
+## Commands available...
+
+### ... for the clients
 
 `help`  
 `who`  
@@ -26,7 +28,7 @@ _WIFSS Is a F*cking Simple Service_
 `exit`  
 `clear`
 
-### List of commands currently available for the server
+### ... for the server
 
 `help`  
 `who`  
@@ -42,11 +44,15 @@ _WIFSS Is a F*cking Simple Service_
 
 2. No data are saved by server, it's just a "bridge" between clients.
 
+3. Do not hesitate to open a new **issue** if you encounter any problem or any case not yet handled by _WIFSS_.
+
+## What we had to say
+
 ### Why ?
 
-Because at the very beginning, the project was about creating a software solution which could propose a "file transfer service", between some clients, relayed by an unique server.  
+> Because at the very beginning, the project was about creating a software solution which could propose a "file transfer service", between some clients, relayed by an unique server.  
 But _WIFSS_ original architecture was not designed to deal with "protocols" like that, so we've fallen back on a simple centralized chat service (like the v0.1 [never tagged] was in 2014 :confused:).
 
-> And the real _why_ behind all this ?
+### And the real _why_ behind all this ?
 
-Yeah sorry. This project has been created in order to learn how we can use the API socket in C (the real one we should say ?), and... despite everything, we think this is the case now :relieved:
+> Yeah sorry. This project has been created in order to learn how we can use the API socket in C ("The real one", should we say ?), and... despite everything, we think this is the case now :relieved:
