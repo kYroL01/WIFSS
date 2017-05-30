@@ -16,7 +16,7 @@ void* server_communication(void *param)
 
 		if(result <= 0 || !strcmp(buffer, DISCONNECT))
 		{
-			printf("\n\n[sthread] Server is demanding this client disconnection. Stopping now.");
+			printf("\n\033[35m[SERVER] is demanding this client disconnection. Stopping now.\033[0m");
 			pthread_cancel(*(threads->cthread));
 			pthread_exit(NULL);
 		}
@@ -26,7 +26,7 @@ void* server_communication(void *param)
 			/* We received from server a non-null string, let's print it */
 			if(strcmp(buffer, ""))
 			{
-				printf("\n\n[sthread] %s\n\n", buffer);
+				printf("\n\033[35m[SERVER] %s\033[0m\n\n", buffer);
 				command_cursor();
 			}
 		}
